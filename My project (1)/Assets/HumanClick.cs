@@ -61,6 +61,7 @@ public class HumanClick : MonoBehaviour
         }
     }
 
+
     void HandleClick()
     {
         Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -196,6 +197,7 @@ public class HumanClick : MonoBehaviour
             }
         }
     }
+
 
     void CheckAndKillCollisions(HumanClick blockTree)
     {

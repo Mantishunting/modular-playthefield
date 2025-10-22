@@ -6,6 +6,12 @@ Shader "Custom/BracketAtlasShader"
         _BackgroundColor ("Background Color", Color) = (1,1,1,0)
         _BracketColor ("Bracket Color", Color) = (0,0,0,1)
         
+        [Header(Spawn Boundaries)]
+        _LeftEdge ("Left Spawn Boundary", Range(0, 0.5)) = 0
+        _RightEdge ("Right Spawn Boundary", Range(0, 0.5)) = 0
+        _TopEdge ("Top Spawn Boundary", Range(0, 0.5)) = 0
+        _BottomEdge ("Bottom Spawn Boundary", Range(0, 0.5)) = 0
+        
         [Header(Bracket Types)]
         [Toggle] _UseRoundOpen ("Use (", Float) = 1
         [Toggle] _UseRoundClose ("Use )", Float) = 1
@@ -26,6 +32,12 @@ Shader "Custom/BracketAtlasShader"
         [Header(Rotation Controls)]
         _GlobalRotation ("Global Rotation", Range(0, 360)) = 0
         _RandomRotation ("Random Rotation Amount", Range(0, 1)) = 1.0
+        
+        [Header(Wiggle Animation)]
+        _WiggleSpeed ("Wiggle Speed", Range(0, 10)) = 2.0
+        _WiggleAmount ("Wiggle Position Amount", Range(0, 1)) = 0.1
+        _WiggleRotation ("Wiggle Rotation Amount", Range(0, 180)) = 15.0
+        _WiggleScale ("Wiggle Scale Amount", Range(0, 1)) = 0.1
         
         [Header(Rendering)]
         _Seed ("Random Seed", Float) = 0
@@ -61,6 +73,11 @@ Shader "Custom/BracketAtlasShader"
             float4 _BackgroundColor;
             float4 _BracketColor;
             
+            float _LeftEdge;
+            float _RightEdge;
+            float _TopEdge;
+            float _BottomEdge;
+            
             float _UseRoundOpen;
             float _UseRoundClose;
             float _UseCurlyOpen;
@@ -76,6 +93,12 @@ Shader "Custom/BracketAtlasShader"
             float _GlobalRotation;
             float _RandomRotation;
             float _Seed;
+            
+            // Wiggle parameters
+            float _WiggleSpeed;
+            float _WiggleAmount;
+            float _WiggleRotation;
+            float _WiggleScale;
             
             v2f vert (appdata v)
             {
@@ -102,6 +125,51 @@ Shader "Custom/BracketAtlasShader"
                 float c = cos(angle);
                 float s = sin(angle);
                 return float2(p.x * c - p.y * s, p.x * s + p.y * c);
+            }
+            
+            // Check if a grid cell center is within spawn boundaries
+            bool isWithinSpawnBounds(float2 gridCenterUV)
+            {
+                return gridCenterUV.x >= _LeftEdge && 
+                       gridCenterUV.x <= (1.0 - _RightEdge) && 
+                       gridCenterUV.y >= _BottomEdge && 
+                       gridCenterUV.y <= (1.0 - _TopEdge);
+            }
+            
+            // Wiggle function - creates unique motion for each bracket
+            float2 getWiggleOffset(float2 seed, float time)
+            {
+                // Create unique phase offsets for this bracket
+                float phaseX = hash(seed + 0.123) * 6.28318;
+                float phaseY = hash(seed + 0.456) * 6.28318;
+                
+                // Create unique frequencies for more natural motion
+                float freqX = 1.0 + hash(seed + 0.789) * 0.5;
+                float freqY = 1.0 + hash(seed + 0.987) * 0.5;
+                
+                // Calculate wiggle offset
+                float2 wiggle = float2(
+                    sin(time * _WiggleSpeed * freqX + phaseX),
+                    sin(time * _WiggleSpeed * freqY + phaseY)
+                );
+                
+                return wiggle * _WiggleAmount;
+            }
+            
+            // Wiggle rotation - unique rotation animation per bracket
+            float getWiggleRotation(float2 seed, float time)
+            {
+                float phase = hash(seed + 0.654) * 6.28318;
+                float freq = 1.0 + hash(seed + 0.321) * 0.5;
+                return sin(time * _WiggleSpeed * freq + phase) * _WiggleRotation * 0.0174533; // Convert to radians
+            }
+            
+            // Wiggle scale - subtle scale pulsing
+            float getWiggleScale(float2 seed, float time)
+            {
+                float phase = hash(seed + 0.147) * 6.28318;
+                float freq = 1.0 + hash(seed + 0.258) * 0.5;
+                return 1.0 + sin(time * _WiggleSpeed * freq + phase) * _WiggleScale;
             }
             
             bool isEnabled(int type)
@@ -161,6 +229,7 @@ Shader "Custom/BracketAtlasShader"
             fixed4 frag (v2f i) : SV_Target
             {
                 float4 finalColor = _BackgroundColor;
+                float time = _Time.y; // Use Unity's built-in time
                 
                 int layers = (int)_Density;
                 
@@ -172,6 +241,16 @@ Shader "Custom/BracketAtlasShader"
                     float2 gridPos = frac(gridUV + hash2(seed) * 10.0);
                     
                     float2 cellSeed = gridID + float2(layer * 100, _Seed);
+                    
+                    // Calculate the base grid cell center in UV space (0-1)
+                    float2 gridCellCenter = (gridID + 0.5) * _GridSize;
+                    
+                    // Check if this grid cell center is within spawn boundaries
+                    if (!isWithinSpawnBounds(gridCellCenter))
+                    {
+                        continue; // Skip this bracket entirely
+                    }
+                    
                     float r1 = hash(cellSeed);
                     float r2 = hash(cellSeed + 1.1);
                     float r3 = hash(cellSeed + 2.2);
@@ -180,14 +259,22 @@ Shader "Custom/BracketAtlasShader"
                     
                     if (!isEnabled(bracketType)) continue;
                     
-                    float2 offset = (hash2(cellSeed + 5.5) - 0.5) * _RandomOffset;
+                    // Calculate wiggle effects
+                    float2 wiggleOffset = getWiggleOffset(cellSeed, time);
+                    float wiggleRot = getWiggleRotation(cellSeed, time);
+                    float wiggleScaleMult = getWiggleScale(cellSeed, time);
+                    
+                    // Apply base offset and wiggle
+                    float2 offset = (hash2(cellSeed + 5.5) - 0.5) * _RandomOffset + wiggleOffset;
                     float2 centerPos = gridPos - 0.5 - offset;
                     
-                    float scale = lerp(_MinScale, _MaxScale, r2);
+                    // Apply scale with wiggle
+                    float scale = lerp(_MinScale, _MaxScale, r2) * wiggleScaleMult;
                     
+                    // Apply rotation with wiggle
                     float randomAngle = (r3 - 0.5) * 6.28318 * _RandomRotation;
                     float globalAngle = _GlobalRotation * 0.0174533;
-                    float totalAngle = globalAngle + randomAngle;
+                    float totalAngle = globalAngle + randomAngle + wiggleRot;
                     
                     // Transform UV to bracket space
                     float2 localPos = (gridPos - (0.5 + offset)) / scale;

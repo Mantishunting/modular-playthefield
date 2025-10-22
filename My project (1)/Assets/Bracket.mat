@@ -8,12 +8,12 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Bracket
-  m_Shader: {fileID: 4800000, guid: d7803ea6c4d3d9647add20d748c76492, type: 3}
+  m_Shader: {fileID: 4800000, guid: 21c17d9816f1ce44aae89d61f3023c89, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
-  - _USEROUNDCLOSE_ON
+  - _USECURLYCLOSE_ON
   - _USEROUNDOPEN_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -47,21 +47,34 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Density: 10.6
+    - _BottomEdge: 0
+    - _Density: 23.4
+    - _EdgeMargin: 0.5
+    - _EdgePaddingBottom: 0.2
+    - _EdgePaddingLeft: 0.2
+    - _EdgePaddingRight: 0.2
+    - _EdgePaddingTop: 0.2
     - _EnableExternalAlpha: 0
     - _GlobalRotation: 0
-    - _GridSize: 0.5
-    - _MaxScale: 0.63
-    - _MinScale: 0.8
+    - _GridSize: 0.248
+    - _LeftEdge: 0
+    - _MaxScale: 1.08
+    - _MinScale: 0.86
     - _RandomOffset: 0
     - _RandomRotation: 0
+    - _RightEdge: 0
     - _Seed: 10
-    - _UseCurlyClose: 0
+    - _TopEdge: 0
+    - _UseCurlyClose: 1
     - _UseCurlyOpen: 0
-    - _UseRoundClose: 1
+    - _UseRoundClose: 0
     - _UseRoundOpen: 1
     - _UseSquareClose: 0
     - _UseSquareOpen: 0
+    - _WiggleAmount: 0.1
+    - _WiggleRotation: 15
+    - _WiggleScale: 0.1
+    - _WiggleSpeed: 2
     m_Colors:
     - _BackgroundColor: {r: 1, g: 1, b: 1, a: 0}
     - _BracketColor: {r: 0.4590993, g: 1, b: 0, a: 1}

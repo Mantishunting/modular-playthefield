@@ -15,6 +15,9 @@ public class HumanClick : MonoBehaviour
     private static bool isSpawning = false;
     private static bool checkCollisions = true;
 
+    // Block type tracking
+    private BlockType myBlockType;
+
     // Parent tracking
     private HumanClick parent;
 
@@ -66,6 +69,27 @@ public class HumanClick : MonoBehaviour
     }
 
 
+    bool IsValidPlacement(BlockType selectedType, HumanClick childToMove)
+    {
+        // Rule 1: Wood cannot be child of Leaf
+        if (selectedType.blockName == "Wood" && myBlockType != null && myBlockType.blockName == "Leaf")
+        {
+            return false;
+        }
+
+        // Rule 2: Leaf cannot insert between Wood parent and Wood child
+        if (selectedType.blockName == "Leaf" && childToMove != null &&
+            myBlockType != null && myBlockType.blockName == "Wood" &&
+            childToMove.GetBlockType() != null && childToMove.GetBlockType().blockName == "Wood")
+        {
+            return false;
+        }
+
+        // Future rules will go here
+
+        return true;
+    }
+
     void HandleClick()
     {
         Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -78,6 +102,14 @@ public class HumanClick : MonoBehaviour
 
         if (Mathf.Abs(difference.x) > halfSize * clickRangeMultiplier || Mathf.Abs(difference.y) > halfSize * clickDepthMultiplier)
         {
+            return;
+        }
+
+        // Get the selected block type from BlockTypeManager
+        BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
+        if (selectedType == null)
+        {
+            Debug.LogError("No block type selected!");
             return;
         }
 
@@ -94,6 +126,12 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(blockSize, 0, 0);
                 childToMove = eastChild;
 
+                // Validate placement rules
+                if (!IsValidPlacement(selectedType, childToMove))
+                {
+                    return;
+                }
+
                 // If adding (no child) and position occupied, abort
                 if (childToMove == null && IsPositionOccupied(spawnPosition))
                 {
@@ -108,7 +146,7 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
-                newBlock = spawner.SpawnBlockAt(spawnPosition);
+                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
@@ -132,6 +170,12 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(-blockSize, 0, 0);
                 childToMove = westChild;
 
+                // Validate placement rules
+                if (!IsValidPlacement(selectedType, childToMove))
+                {
+                    return;
+                }
+
                 // If adding (no child) and position occupied, abort
                 if (childToMove == null && IsPositionOccupied(spawnPosition))
                 {
@@ -146,7 +190,7 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
-                newBlock = spawner.SpawnBlockAt(spawnPosition);
+                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
@@ -173,6 +217,12 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(0, blockSize, 0);
                 childToMove = northChild;
 
+                // Validate placement rules
+                if (!IsValidPlacement(selectedType, childToMove))
+                {
+                    return;
+                }
+
                 // If adding (no child) and position occupied, abort
                 if (childToMove == null && IsPositionOccupied(spawnPosition))
                 {
@@ -187,7 +237,7 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
-                newBlock = spawner.SpawnBlockAt(spawnPosition);
+                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
@@ -211,6 +261,12 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(0, -blockSize, 0);
                 childToMove = southChild;
 
+                // Validate placement rules
+                if (!IsValidPlacement(selectedType, childToMove))
+                {
+                    return;
+                }
+
                 // If adding (no child) and position occupied, abort
                 if (childToMove == null && IsPositionOccupied(spawnPosition))
                 {
@@ -225,7 +281,7 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
-                newBlock = spawner.SpawnBlockAt(spawnPosition);
+                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
@@ -381,7 +437,17 @@ public class HumanClick : MonoBehaviour
         }
     }
 
+    // New method to set the block type
+    public void SetBlockType(BlockType blockType)
+    {
+        myBlockType = blockType;
+        Debug.Log($"Block {blockId} set to type: {blockType.blockName}");
+    }
 
+    public BlockType GetBlockType()
+    {
+        return myBlockType;
+    }
 
     public int GetBlockId()
     {

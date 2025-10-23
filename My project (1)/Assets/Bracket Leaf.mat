@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Bracket
+  m_Name: Bracket Leaf
   m_Shader: {fileID: 4800000, guid: 21c17d9816f1ce44aae89d61f3023c89, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -77,7 +77,7 @@ Material:
     - _WiggleSpeed: 2
     m_Colors:
     - _BackgroundColor: {r: 1, g: 1, b: 1, a: 0}
-    - _BracketColor: {r: 1, g: 0.983191, b: 0, a: 1}
+    - _BracketColor: {r: 0.23584042, g: 0.754717, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}

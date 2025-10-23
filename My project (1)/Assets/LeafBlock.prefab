@@ -1,0 +1,188 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9001448909574542960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5271642053659760612}
+  - component: {fileID: 6286400785320338356}
+  - component: {fileID: -1379168262426883360}
+  - component: {fileID: 5265162345202399798}
+  - component: {fileID: -3697364007385318876}
+  m_Layer: 0
+  m_Name: LeafBlock
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5271642053659760612
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &6286400785320338356
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: edcc3f622dd7e524bb2e6e66e812426c, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!114 &-1379168262426883360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90e1edec30aded841adfe7eec71b3976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockSize: 1
+  clickRangeMultiplier: 1.5
+  clickDepthMultiplier: 1.5
+  wobbleDuration: 0.3
+  wobbleAmount: 0.1
+  northChild: {fileID: 0}
+  southChild: {fileID: 0}
+  eastChild: {fileID: 0}
+  westChild: {fileID: 0}
+--- !u!114 &5265162345202399798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14e138cc416076e4fae57b819b2aa5b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level0:
+    speed: 0
+    amount: 0
+    rotation: 0
+    scale: 0
+  level1:
+    speed: 1.5
+    amount: 0.03
+    rotation: 5
+    scale: 0.03
+  level2:
+    speed: 2.5
+    amount: 0.08
+    rotation: 15
+    scale: 0.08
+  level3:
+    speed: 4
+    amount: 0.15
+    rotation: 30
+    scale: 0.15
+  level4:
+    speed: 6
+    amount: 0.3
+    rotation: 60
+    scale: 0.3
+  shudderDuration: 3
+  transitionSpeed: 5
+--- !u!114 &-3697364007385318876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14e138cc416076e4fae57b819b2aa5b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level0:
+    speed: 0
+    amount: 0
+    rotation: 0
+    scale: 0
+  level1:
+    speed: 1.5
+    amount: 0.03
+    rotation: 5
+    scale: 0.03
+  level2:
+    speed: 2.5
+    amount: 0.08
+    rotation: 15
+    scale: 0.08
+  level3:
+    speed: 4
+    amount: 0.15
+    rotation: 30
+    scale: 0.15
+  level4:
+    speed: 6
+    amount: 0.3
+    rotation: 60
+    scale: 0.3
+  shudderDuration: 3
+  transitionSpeed: 5

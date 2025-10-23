@@ -12,7 +12,7 @@ public class BlockShudder : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float shudderDuration = 3f;
-    [SerializeField] private float transitionSpeed = 5f;
+    [SerializeField] private float transitionSpeed = 10f; // CHANGED: Increased from 5f to 10f for snappier transitions
 
     private Material materialInstance;
     private HumanClick humanClick;

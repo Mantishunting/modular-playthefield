@@ -107,19 +107,18 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     eastChild = newChild;
-                    newChild.parent = this; // Set parent
+                    newChild.parent = this;
 
                     if (childToMove != null)
                     {
                         newChild.eastChild = childToMove;
-                        childToMove.parent = newChild; // Update moved child's parent
+                        childToMove.parent = newChild;
                     }
 
-                    // Check collisions FIRST
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    // THEN trigger wave along the affected branch
+                    // CHANGED: Increased delay from 0.1f to 0.3f
                     StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
 
                 }
@@ -143,19 +142,17 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     westChild = newChild;
-                    newChild.parent = this; // Set parent
+                    newChild.parent = this;
 
                     if (childToMove != null)
                     {
                         newChild.westChild = childToMove;
-                        childToMove.parent = newChild; // Update moved child's parent
+                        childToMove.parent = newChild;
                     }
 
-                    // Check collisions FIRST
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    // THEN trigger wave along the affected branch
                     StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
 
                 }
@@ -182,19 +179,17 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     northChild = newChild;
-                    newChild.parent = this; // Set parent
+                    newChild.parent = this;
 
                     if (childToMove != null)
                     {
                         newChild.northChild = childToMove;
-                        childToMove.parent = newChild; // Update moved child's parent
+                        childToMove.parent = newChild;
                     }
 
-                    // Check collisions FIRST
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    // THEN trigger wave along the affected branch
                     StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
 
                 }
@@ -218,19 +213,17 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     southChild = newChild;
-                    newChild.parent = this; // Set parent
+                    newChild.parent = this;
 
                     if (childToMove != null)
                     {
                         newChild.southChild = childToMove;
-                        childToMove.parent = newChild; // Update moved child's parent
+                        childToMove.parent = newChild;
                     }
 
-                    // Check collisions FIRST
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    // THEN trigger wave along the affected branch
                     StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
 
                 }
@@ -328,16 +321,13 @@ public class HumanClick : MonoBehaviour
         return null;
     }
 
-    /// <summary>
-    /// Helper coroutine to trigger wave after a frame delay.
-    /// This ensures the new block's Start() method has run first.
-    /// </summary>
     private System.Collections.IEnumerator TriggerWaveAfterFrame(HumanClick block, HumanClick affectedChild)
     {
-        yield return null; // Wait one frame
+        yield return null;
         if (block != null)
         {
-            block.PropagateBranchShudder(affectedChild, 4, 0.1f);
+            // CHANGED: Increased delay from 0.1f to 0.3f for better visibility
+            block.PropagateBranchShudder(affectedChild, 4, 0.3f);
         }
     }
 
@@ -386,16 +376,6 @@ public class HumanClick : MonoBehaviour
         }
     }
 
-    // ============================================
-    // CASCADING SHUDDER WAVE SYSTEM
-    // ============================================
-
-    /// <summary>
-    /// Triggers a cascading shudder wave that propagates through parent and children.
-    /// Starts at the specified level and counts down with each hop.
-    /// </summary>
-    /// <param name="startLevel">Starting shudder intensity (0-4)</param>
-    /// <param name="delayBetweenBlocks">Time delay between each block's shudder</param>
     public void PropagateShudderWave(int startLevel = 4, float delayBetweenBlocks = 0.1f)
     {
         StartCoroutine(CascadeShudder(startLevel, delayBetweenBlocks));
@@ -403,28 +383,23 @@ public class HumanClick : MonoBehaviour
 
     private System.Collections.IEnumerator CascadeShudder(int currentLevel, float delay)
     {
-        // Trigger this block's shudder
         BlockShudder shudder = GetComponent<BlockShudder>();
         if (shudder != null)
         {
             shudder.TriggerShudderLevel(currentLevel);
         }
 
-        // Stop propagating if we've reached level 0
         if (currentLevel <= 0) yield break;
 
-        // Wait before propagating to neighbors
         yield return new WaitForSeconds(delay);
 
         int nextLevel = currentLevel - 1;
 
-        // Propagate to parent (if exists)
         if (parent != null)
         {
             StartCoroutine(parent.CascadeShudder(nextLevel, delay));
         }
 
-        // Propagate to all children
         if (northChild != null)
         {
             StartCoroutine(northChild.CascadeShudder(nextLevel, delay));
@@ -443,10 +418,6 @@ public class HumanClick : MonoBehaviour
         }
     }
 
-    // ============================================
-    // PUBLIC GETTERS
-    // ============================================
-
     public int GetBlockId()
     {
         return blockId;
@@ -462,17 +433,6 @@ public class HumanClick : MonoBehaviour
     public HumanClick GetEastChild() { return eastChild; }
     public HumanClick GetWestChild() { return westChild; }
 
-    // ============================================
-    // CASCADING SHUDDER WAVE SYSTEM
-    // ============================================
-
-    /// <summary>
-    /// Triggers a cascading shudder wave along the affected branch only.
-    /// Propagates upstream to parent chain and downstream to the specified child chain.
-    /// </summary>
-    /// <param name="affectedChild">The specific child that was part of the insert (can be null if no child)</param>
-    /// <param name="startLevel">Starting shudder intensity (0-4)</param>
-    /// <param name="delayBetweenBlocks">Time delay between each block's shudder</param>
     public void PropagateBranchShudder(HumanClick affectedChild, int startLevel = 4, float delayBetweenBlocks = 0.1f)
     {
         StartCoroutine(CascadeBranchShudder(affectedChild, startLevel, delayBetweenBlocks));
@@ -480,28 +440,23 @@ public class HumanClick : MonoBehaviour
 
     private System.Collections.IEnumerator CascadeBranchShudder(HumanClick affectedChild, int currentLevel, float delay)
     {
-        // Trigger this block's shudder
         BlockShudder shudder = GetComponent<BlockShudder>();
         if (shudder != null)
         {
             shudder.TriggerShudderLevel(currentLevel);
         }
 
-        // Stop propagating if we've reached level 0
         if (currentLevel <= 0) yield break;
 
-        // Wait before propagating
         yield return new WaitForSeconds(delay);
 
         int nextLevel = currentLevel - 1;
 
-        // Propagate UPSTREAM to parent
         if (parent != null)
         {
             StartCoroutine(parent.CascadeBranchShudder(null, nextLevel, delay));
         }
 
-        // Propagate DOWNSTREAM only to the affected child (if any)
         if (affectedChild != null)
         {
             StartCoroutine(affectedChild.CascadeBranchShudder(null, nextLevel, delay));

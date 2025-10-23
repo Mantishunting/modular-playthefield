@@ -141,10 +141,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level0:
-    speed: 1.500001
-    amount: 0.03000002
-    rotation: 5.000006
-    scale: 0.03000002
+    speed: 1.501214
+    amount: 0.03005824
+    rotation: 5.012135
+    scale: 0.03005824
   level1:
     speed: 1.5
     amount: 0.03
@@ -362,6 +362,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5265162345202399798, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+    - {fileID: -3697364007385318876, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:

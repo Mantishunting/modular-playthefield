@@ -13,8 +13,8 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords:
-  - _USECURLYCLOSE_ON
   - _USEROUNDOPEN_ON
+  - _USESQUAREOPEN_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -48,7 +48,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BottomEdge: 0
-    - _Density: 23.4
+    - _Density: 44.9
     - _EdgeMargin: 0.5
     - _EdgePaddingBottom: 0.2
     - _EdgePaddingLeft: 0.2
@@ -58,19 +58,19 @@ Material:
     - _GlobalRotation: 0
     - _GridSize: 0.248
     - _LeftEdge: 0
-    - _MaxScale: 1.08
-    - _MinScale: 0.86
+    - _MaxScale: 1.4
+    - _MinScale: 0.68
     - _RandomOffset: 0
     - _RandomRotation: 0
     - _RightEdge: 0
-    - _Seed: 10
+    - _Seed: 52
     - _TopEdge: 0
-    - _UseCurlyClose: 1
+    - _UseCurlyClose: 0
     - _UseCurlyOpen: 0
     - _UseRoundClose: 0
     - _UseRoundOpen: 1
     - _UseSquareClose: 0
-    - _UseSquareOpen: 0
+    - _UseSquareOpen: 1
     - _WiggleAmount: 0.1
     - _WiggleRotation: 15
     - _WiggleScale: 0.1

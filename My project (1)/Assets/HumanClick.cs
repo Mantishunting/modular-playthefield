@@ -94,10 +94,17 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(blockSize, 0, 0);
                 childToMove = eastChild;
 
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                if (IsPositionOccupied(spawnPosition))
                 {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
+                    if (childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
                 isSpawning = true;
@@ -129,10 +136,17 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(-blockSize, 0, 0);
                 childToMove = westChild;
 
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                if (IsPositionOccupied(spawnPosition))
                 {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
+                    if (childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
                 isSpawning = true;
@@ -166,10 +180,17 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(0, blockSize, 0);
                 childToMove = northChild;
 
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                if (IsPositionOccupied(spawnPosition))
                 {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
+                    if (childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
                 isSpawning = true;
@@ -200,10 +221,17 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(0, -blockSize, 0);
                 childToMove = southChild;
 
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                if (IsPositionOccupied(spawnPosition))
                 {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
+                    if (childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
                 isSpawning = true;

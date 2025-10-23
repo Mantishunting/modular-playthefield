@@ -94,6 +94,12 @@ public class HumanClick : MonoBehaviour
                 moveDirection = new Vector3(blockSize, 0, 0);
                 childToMove = eastChild;
 
+                // If adding (no child) and position occupied, abort
+                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                {
+                    return;
+                }
+
                 if (IsPositionOccupied(spawnPosition) && childToMove != null)
                 {
                     checkCollisions = false;
@@ -118,9 +124,6 @@ public class HumanClick : MonoBehaviour
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    // CHANGED: Increased delay from 0.1f to 0.3f
-                    StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
-
                 }
             }
             else if (difference.x < -halfSize)
@@ -128,6 +131,12 @@ public class HumanClick : MonoBehaviour
                 spawnPosition = blockCenter + new Vector3(-blockSize, 0, 0);
                 moveDirection = new Vector3(-blockSize, 0, 0);
                 childToMove = westChild;
+
+                // If adding (no child) and position occupied, abort
+                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                {
+                    return;
+                }
 
                 if (IsPositionOccupied(spawnPosition) && childToMove != null)
                 {
@@ -153,8 +162,6 @@ public class HumanClick : MonoBehaviour
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
-
                 }
             }
         }
@@ -165,6 +172,12 @@ public class HumanClick : MonoBehaviour
                 spawnPosition = blockCenter + new Vector3(0, blockSize, 0);
                 moveDirection = new Vector3(0, blockSize, 0);
                 childToMove = northChild;
+
+                // If adding (no child) and position occupied, abort
+                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                {
+                    return;
+                }
 
                 if (IsPositionOccupied(spawnPosition) && childToMove != null)
                 {
@@ -190,8 +203,6 @@ public class HumanClick : MonoBehaviour
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
-
                 }
             }
             else if (difference.y < -halfSize)
@@ -199,6 +210,12 @@ public class HumanClick : MonoBehaviour
                 spawnPosition = blockCenter + new Vector3(0, -blockSize, 0);
                 moveDirection = new Vector3(0, -blockSize, 0);
                 childToMove = southChild;
+
+                // If adding (no child) and position occupied, abort
+                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                {
+                    return;
+                }
 
                 if (IsPositionOccupied(spawnPosition) && childToMove != null)
                 {
@@ -224,14 +241,10 @@ public class HumanClick : MonoBehaviour
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
-                    StartCoroutine(TriggerWaveAfterFrame(newChild, childToMove));
-
                 }
             }
         }
     }
-
-
 
     void CheckAndKillCollisions(HumanClick blockTree)
     {
@@ -321,15 +334,7 @@ public class HumanClick : MonoBehaviour
         return null;
     }
 
-    private System.Collections.IEnumerator TriggerWaveAfterFrame(HumanClick block, HumanClick affectedChild)
-    {
-        yield return null;
-        if (block != null)
-        {
-            // CHANGED: Increased delay from 0.1f to 0.3f for better visibility
-            block.PropagateBranchShudder(affectedChild, 4, 0.3f);
-        }
-    }
+
 
     public void Die()
     {
@@ -376,47 +381,7 @@ public class HumanClick : MonoBehaviour
         }
     }
 
-    public void PropagateShudderWave(int startLevel = 4, float delayBetweenBlocks = 0.1f)
-    {
-        StartCoroutine(CascadeShudder(startLevel, delayBetweenBlocks));
-    }
 
-    private System.Collections.IEnumerator CascadeShudder(int currentLevel, float delay)
-    {
-        BlockShudder shudder = GetComponent<BlockShudder>();
-        if (shudder != null)
-        {
-            shudder.TriggerShudderLevel(currentLevel);
-        }
-
-        if (currentLevel <= 0) yield break;
-
-        yield return new WaitForSeconds(delay);
-
-        int nextLevel = currentLevel - 1;
-
-        if (parent != null)
-        {
-            StartCoroutine(parent.CascadeShudder(nextLevel, delay));
-        }
-
-        if (northChild != null)
-        {
-            StartCoroutine(northChild.CascadeShudder(nextLevel, delay));
-        }
-        if (southChild != null)
-        {
-            StartCoroutine(southChild.CascadeShudder(nextLevel, delay));
-        }
-        if (eastChild != null)
-        {
-            StartCoroutine(eastChild.CascadeShudder(nextLevel, delay));
-        }
-        if (westChild != null)
-        {
-            StartCoroutine(westChild.CascadeShudder(nextLevel, delay));
-        }
-    }
 
     public int GetBlockId()
     {
@@ -433,33 +398,4 @@ public class HumanClick : MonoBehaviour
     public HumanClick GetEastChild() { return eastChild; }
     public HumanClick GetWestChild() { return westChild; }
 
-    public void PropagateBranchShudder(HumanClick affectedChild, int startLevel = 4, float delayBetweenBlocks = 0.1f)
-    {
-        StartCoroutine(CascadeBranchShudder(affectedChild, startLevel, delayBetweenBlocks));
-    }
-
-    private System.Collections.IEnumerator CascadeBranchShudder(HumanClick affectedChild, int currentLevel, float delay)
-    {
-        BlockShudder shudder = GetComponent<BlockShudder>();
-        if (shudder != null)
-        {
-            shudder.TriggerShudderLevel(currentLevel);
-        }
-
-        if (currentLevel <= 0) yield break;
-
-        yield return new WaitForSeconds(delay);
-
-        int nextLevel = currentLevel - 1;
-
-        if (parent != null)
-        {
-            StartCoroutine(parent.CascadeBranchShudder(null, nextLevel, delay));
-        }
-
-        if (affectedChild != null)
-        {
-            StartCoroutine(affectedChild.CascadeBranchShudder(null, nextLevel, delay));
-        }
-    }
 }

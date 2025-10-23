@@ -12,13 +12,12 @@ public class BlockShudder : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float shudderDuration = 3f;
-    [SerializeField] private float transitionSpeed = 10f; // CHANGED: Increased from 5f to 10f for snappier transitions
+    [SerializeField] private float transitionSpeed = 5f;
 
     private Material materialInstance;
     private HumanClick humanClick;
     private WigglePreset currentTarget;
     private WigglePreset currentValues;
-    private Coroutine activeShudderCoroutine;
 
     void Start()
     {
@@ -84,11 +83,7 @@ public class BlockShudder : MonoBehaviour
 
     void StartShudder()
     {
-        if (activeShudderCoroutine != null)
-        {
-            StopCoroutine(activeShudderCoroutine);
-        }
-        activeShudderCoroutine = StartCoroutine(ShudderSequence());
+        StartCoroutine(ShudderSequence());
     }
 
     IEnumerator ShudderSequence()
@@ -103,37 +98,12 @@ public class BlockShudder : MonoBehaviour
         // Go to level 1
         currentTarget = level1;
         Debug.Log("BlockShudder: Shudder complete, going to level 1");
-
-        activeShudderCoroutine = null;
     }
 
     void SetLevel(int level)
     {
         currentTarget = GetPresetForLevel(level);
         Debug.Log($"BlockShudder: Manual set to level {level}");
-    }
-
-    // ============================================
-    // PUBLIC METHOD FOR CASCADING WAVE SYSTEM
-    // ============================================
-
-    /// <summary>
-    /// Triggers a shudder at the specified level.
-    /// Called by HumanClick during wave propagation.
-    /// </summary>
-    /// <param name="level">Shudder intensity level (0-4)</param>
-    public void TriggerShudderLevel(int level)
-    {
-        // Stop any existing automatic shudder
-        if (activeShudderCoroutine != null)
-        {
-            StopCoroutine(activeShudderCoroutine);
-            activeShudderCoroutine = null;
-        }
-
-        // Set to the requested level
-        currentTarget = GetPresetForLevel(level);
-        Debug.Log($"BlockShudder: Triggered wave shudder at level {level} for block {(humanClick != null ? humanClick.GetBlockId().ToString() : "unknown")}");
     }
 
     void SmoothTransition()

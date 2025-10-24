@@ -10,6 +10,10 @@ public class BlockType : ScriptableObject
     [Header("Prefab")]
     public GameObject prefab;
 
+    [Header("Cost")]
+    [Tooltip("How much Food it costs to place this block")]
+    public int cost = 1;
+
     [Header("Future Properties")]
     [Tooltip("Will this block produce resources? (Not implemented yet)")]
     public bool producesResources = false;

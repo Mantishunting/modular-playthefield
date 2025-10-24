@@ -193,6 +193,12 @@ public class HumanClick : MonoBehaviour
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
+                    // Validate that pushed Leaf blocks are still within range of Wood
+                    if (childToMove != null)
+                    {
+                        ValidateAndRemoveInvalidLeafs(childToMove);
+                    }
+
                 }
             }
             else if (difference.x < -halfSize)
@@ -236,6 +242,12 @@ public class HumanClick : MonoBehaviour
 
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
+
+                    // Validate that pushed Leaf blocks are still within range of Wood
+                    if (childToMove != null)
+                    {
+                        ValidateAndRemoveInvalidLeafs(childToMove);
+                    }
 
                 }
             }
@@ -284,6 +296,12 @@ public class HumanClick : MonoBehaviour
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
+                    // Validate that pushed Leaf blocks are still within range of Wood
+                    if (childToMove != null)
+                    {
+                        ValidateAndRemoveInvalidLeafs(childToMove);
+                    }
+
                 }
             }
             else if (difference.y < -halfSize)
@@ -328,6 +346,12 @@ public class HumanClick : MonoBehaviour
                     checkCollisions = true;
                     CheckAndKillCollisions(childToMove);
 
+                    // Validate that pushed Leaf blocks are still within range of Wood
+                    if (childToMove != null)
+                    {
+                        ValidateAndRemoveInvalidLeafs(childToMove);
+                    }
+
                 }
             }
         }
@@ -361,6 +385,55 @@ public class HumanClick : MonoBehaviour
         if (blockTree.westChild != null)
         {
             CheckAndKillCollisions(blockTree.westChild);
+        }
+    }
+
+    void ValidateAndRemoveInvalidLeafs(HumanClick block)
+    {
+        if (block == null) return;
+
+        // Check if this is a Leaf block
+        BlockType blockType = block.GetBlockType();
+        if (blockType != null && blockType.blockName == "Leaf")
+        {
+            // Check if still within range of Wood
+            List<HumanClick> nearbyBlocks = TreeLooker.GetBlocksInRadius(block.transform.position, 3f);
+            bool hasWoodNearby = false;
+
+            foreach (HumanClick nearbyBlock in nearbyBlocks)
+            {
+                BlockType nearbyType = nearbyBlock.GetBlockType();
+                if (nearbyType != null && nearbyType.blockName == "Wood")
+                {
+                    hasWoodNearby = true;
+                    break;
+                }
+            }
+
+            // If no Wood nearby, this Leaf is invalid - remove it
+            if (!hasWoodNearby)
+            {
+                block.Die();
+                return; // Don't check children if this block was removed
+            }
+        }
+
+        // Recursively validate children
+        if (block.northChild != null)
+        {
+            ValidateAndRemoveInvalidLeafs(block.northChild);
+        }
+        if (block.southChild != null)
+        {
+            ValidateAndRemoveInvalidLeafs(block.southChild);
+        }
+        if (block.eastChild != null)
+        {
+            ValidateAndRemoveInvalidLeafs(block.eastChild);
+        }
+        if (block.westChild != null)
+        {
+            ValidateAndRemoveInvalidLeafs(block.westChild);
         }
     }
 

@@ -16,6 +16,9 @@ public class HumanClick : MonoBehaviour
     private static bool isSpawning = false;
     private static bool checkCollisions = true;
 
+    // Track total blocks in game for dynamic pricing
+    private static int totalBlockCount = 0;
+
     // Block type tracking
     private BlockType myBlockType;
 
@@ -39,6 +42,9 @@ public class HumanClick : MonoBehaviour
         blockId = nextId;
         nextId++;
         originalScale = transform.localScale;
+
+        // Increment total block count
+        totalBlockCount++;
     }
 
     void Update()
@@ -69,6 +75,26 @@ public class HumanClick : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Calculates the cost to place a block based on current game state
+    /// Wood: 5 + totalBlockCount
+    /// Leaf: 1 + Ceiling(totalBlockCount / 10)
+    /// </summary>
+    int GetDynamicCost(BlockType blockType)
+    {
+        if (blockType.blockName == "Wood")
+        {
+            return 5 + totalBlockCount;
+        }
+        else if (blockType.blockName == "Leaf")
+        {
+            return 1 + Mathf.CeilToInt(totalBlockCount / 10f);
+        }
+
+        // Fallback: use BlockType's cost field
+        return blockType.cost;
+    }
 
     bool IsValidPlacement(BlockType selectedType, HumanClick childToMove)
     {
@@ -144,8 +170,11 @@ public class HumanClick : MonoBehaviour
             return;
         }
 
+        // Calculate dynamic cost based on total blocks in game
+        int dynamicCost = GetDynamicCost(selectedType);
+
         // Check if player can afford this block type (early check to save processing)
-        if (!Resources.Instance.CanAfford(selectedType.cost))
+        if (!Resources.Instance.CanAfford(dynamicCost))
         {
             // Not enough Food - silently fail
             return;
@@ -186,7 +215,7 @@ public class HumanClick : MonoBehaviour
                 StartWobble();
 
                 // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                if (!Resources.Instance.TrySpendFood(dynamicCost))
                 {
                     // This shouldn't happen since we checked earlier, but safety check
                     isSpawning = false;
@@ -245,7 +274,7 @@ public class HumanClick : MonoBehaviour
                 StartWobble();
 
                 // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                if (!Resources.Instance.TrySpendFood(dynamicCost))
                 {
                     // This shouldn't happen since we checked earlier, but safety check
                     isSpawning = false;
@@ -307,7 +336,7 @@ public class HumanClick : MonoBehaviour
                 StartWobble();
 
                 // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                if (!Resources.Instance.TrySpendFood(dynamicCost))
                 {
                     // This shouldn't happen since we checked earlier, but safety check
                     isSpawning = false;
@@ -366,7 +395,7 @@ public class HumanClick : MonoBehaviour
                 StartWobble();
 
                 // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                if (!Resources.Instance.TrySpendFood(dynamicCost))
                 {
                     // This shouldn't happen since we checked earlier, but safety check
                     isSpawning = false;
@@ -541,6 +570,9 @@ public class HumanClick : MonoBehaviour
 
     public void Die()
     {
+        // Decrement total block count
+        totalBlockCount--;
+
         if (northChild != null)
         {
             northChild.Die();

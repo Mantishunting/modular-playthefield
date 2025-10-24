@@ -8,6 +8,10 @@ public class LeafProduction : MonoBehaviour
 
     private HumanClick humanClick;
     private BlockType myBlockType;
+    private Sun sun;
+
+    private bool isProducing = false;
+    private float lightCheckInterval = 0.25f; // Check 4 times per second
 
     void Start()
     {
@@ -26,10 +30,17 @@ public class LeafProduction : MonoBehaviour
             return;
         }
 
-        // Only start production if this block type produces resources
+        // Find the Sun
+        sun = FindObjectOfType<Sun>();
+        if (sun == null)
+        {
+            Debug.LogWarning("LeafProduction: No Sun found in scene! Production will not work.");
+        }
+
+        // Only start if this block type produces resources
         if (myBlockType.producesResources)
         {
-            StartCoroutine(ProductionLoop());
+            StartCoroutine(LightCheckingLoop());
 
             if (showDebugLogs)
             {
@@ -45,16 +56,83 @@ public class LeafProduction : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Loop A: Continuously checks if this leaf is lit by the sun (4x per second)
+    /// </summary>
+    IEnumerator LightCheckingLoop()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(lightCheckInterval);
+
+            // Check if we're lit
+            bool isLit = IsSunShining();
+
+            // If lit and not already producing, start production
+            if (isLit && !isProducing)
+            {
+                if (showDebugLogs)
+                {
+                    Debug.Log($"Leaf at {transform.position} detected sunlight, starting production");
+                }
+
+                StartCoroutine(ProductionLoop());
+            }
+        }
+    }
+
+    /// <summary>
+    /// Loop B: Production timer - produces food at intervals while lit
+    /// </summary>
     IEnumerator ProductionLoop()
     {
+        isProducing = true;
+
         while (true)
         {
             // Wait for the production interval from BlockType
             yield return new WaitForSeconds(myBlockType.productionRate);
 
-            // Produce food
-            ProduceFood();
+            // Check if we're still lit
+            bool isStillLit = IsSunShining();
+
+            if (isStillLit)
+            {
+                // Produce food
+                ProduceFood();
+
+                // Continue loop (will check again after next interval)
+            }
+            else
+            {
+                // Not lit anymore, stop producing
+                if (showDebugLogs)
+                {
+                    Debug.Log($"Leaf at {transform.position} no longer lit, stopping production");
+                }
+
+                isProducing = false;
+                yield break; // Exit this loop, LightCheckingLoop continues
+            }
         }
+    }
+
+    /// <summary>
+    /// Checks if this leaf is currently receiving sunlight
+    /// For now, just returns true (placeholder for Phase 3 raycast)
+    /// </summary>
+    bool IsSunShining()
+    {
+        // Phase 2: Simple placeholder - always return true for testing
+        // Phase 3: Will add raycast blocking logic here
+
+        if (sun == null)
+        {
+            return false; // No sun, no light
+        }
+
+        // TODO Phase 3: Add raycast check here
+        return true; // For now, always lit
     }
 
     void ProduceFood()
@@ -77,8 +155,7 @@ public class LeafProduction : MonoBehaviour
 
     void OnDestroy()
     {
-        // Coroutine automatically stops when GameObject is destroyed
-        // This is just for debug logging
+        // Both coroutines automatically stop when GameObject is destroyed
         if (showDebugLogs && myBlockType != null)
         {
             Debug.Log($"LeafProduction stopped on {myBlockType.blockName} at {transform.position}");

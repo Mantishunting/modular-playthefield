@@ -3,6 +3,10 @@ using System.Collections;
 
 public class LeafProduction : MonoBehaviour
 {
+    [Header("Sun Settings")]
+    [SerializeField] private bool requireSunlight = true;
+    [Tooltip("If false, produces food constantly like before sun system")]
+
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
 
@@ -119,20 +123,68 @@ public class LeafProduction : MonoBehaviour
 
     /// <summary>
     /// Checks if this leaf is currently receiving sunlight
-    /// For now, just returns true (placeholder for Phase 3 raycast)
+    /// Casts a ray from leaf toward sun to check for blocking
     /// </summary>
     bool IsSunShining()
     {
-        // Phase 2: Simple placeholder - always return true for testing
-        // Phase 3: Will add raycast blocking logic here
+        // If sun checking is disabled, always return true (old behavior)
+        if (!requireSunlight)
+        {
+            return true;
+        }
 
         if (sun == null)
         {
             return false; // No sun, no light
         }
 
-        // TODO Phase 3: Add raycast check here
-        return true; // For now, always lit
+        // Get direction FROM this leaf TOWARD the sun
+        Vector3 toSun = (sun.transform.position - transform.position).normalized;
+
+        // Calculate raycast distance (sun's orbit radius + buffer)
+        float rayDistance = Vector3.Distance(transform.position, Vector3.zero) + sun.GetOrbitRadius() + 100f;
+
+        // Offset the ray origin slightly so it doesn't hit our own collider
+        Vector3 rayOrigin = transform.position + (toSun * 1.5f);
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"Raycast from {rayOrigin} toward sun at {sun.transform.position}, direction: {toSun}, distance: {rayDistance}");
+        }
+
+        // Cast ray from this leaf toward the sun
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, toSun, rayDistance);
+
+        if (showDebugLogs)
+        {
+            if (hit.collider != null)
+            {
+                Debug.Log($"Raycast HIT something: {hit.collider.gameObject.name} at {hit.point}");
+            }
+            else
+            {
+                Debug.Log($"Raycast hit NOTHING");
+            }
+        }
+
+        if (hit.collider != null)
+        {
+            // Ray hit something - check if it's another block
+            HumanClick hitBlock = hit.collider.GetComponent<HumanClick>();
+
+            if (hitBlock != null && hitBlock != humanClick)
+            {
+                // Hit another block - we're blocked!
+                if (showDebugLogs)
+                {
+                    Debug.Log($"Leaf at {transform.position} blocked by block at {hitBlock.transform.position}");
+                }
+                return false;
+            }
+        }
+
+        // No blocking, we're lit!
+        return true;
     }
 
     void ProduceFood()

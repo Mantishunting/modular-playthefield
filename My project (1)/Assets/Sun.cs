@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Sun : MonoBehaviour
 {
@@ -16,8 +17,15 @@ public class Sun : MonoBehaviour
     [Tooltip("Time in seconds to complete rotation from start to stop")]
     [SerializeField] private float rotationDuration = 10f;
 
+    [Tooltip("Time in seconds to wait at stop before looping back to start")]
+    [SerializeField] private float loopDelay = 5f;
+
+    [Tooltip("If true, sun will loop back to start after reaching stop")]
+    [SerializeField] private bool loopRotation = true;
+
     [Header("Auto Start")]
     [SerializeField] private bool startOnAwake = true;
+    [SerializeField] private bool sunEnabled = true;
 
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
@@ -49,6 +57,12 @@ public class Sun : MonoBehaviour
 
     void Update()
     {
+        // If sun is disabled, don't rotate
+        if (!sunEnabled)
+        {
+            return;
+        }
+
         if (isRotating)
         {
             // Increment angle based on time
@@ -63,6 +77,12 @@ public class Sun : MonoBehaviour
                 if (showDebugLogs)
                 {
                     Debug.Log("Sun reached stop angle, rotation complete");
+                }
+
+                // Start loop coroutine if looping is enabled
+                if (loopRotation)
+                {
+                    StartCoroutine(LoopBackToStart());
                 }
             }
 
@@ -124,12 +144,56 @@ public class Sun : MonoBehaviour
         }
     }
 
+    IEnumerator LoopBackToStart()
+    {
+        if (showDebugLogs)
+        {
+            Debug.Log($"Sun waiting {loopDelay} seconds before looping back");
+        }
+
+        // Wait at the stop position
+        yield return new WaitForSeconds(loopDelay);
+
+        // Jump back to start
+        currentAngle = startAngle;
+        UpdatePosition();
+
+        if (showDebugLogs)
+        {
+            Debug.Log("Sun looped back to start, resuming rotation");
+        }
+
+        // Start rotating again
+        StartRotation();
+    }
+
     /// <summary>
     /// Gets the direction light rays travel (from sun toward center)
+    /// Returns zero vector if sun is disabled
     /// </summary>
     public Vector3 GetLightDirection()
     {
+        if (!sunEnabled)
+        {
+            return Vector3.zero;
+        }
         return (centerPoint - transform.position).normalized;
+    }
+
+    /// <summary>
+    /// Gets whether the sun is currently enabled
+    /// </summary>
+    public bool IsSunEnabled()
+    {
+        return sunEnabled;
+    }
+
+    /// <summary>
+    /// Gets the orbit radius for raycast distance calculations
+    /// </summary>
+    public float GetOrbitRadius()
+    {
+        return orbitRadius;
     }
 
     /// <summary>

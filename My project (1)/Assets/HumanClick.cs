@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class HumanClick : MonoBehaviour
 {
@@ -83,6 +84,36 @@ public class HumanClick : MonoBehaviour
             childToMove.GetBlockType() != null && childToMove.GetBlockType().blockName == "Wood")
         {
             return false;
+        }
+
+        // Rule 3: Leaf cannot insert if it would push Wood (Wood can't be child of Leaf)
+        if (selectedType.blockName == "Leaf" && childToMove != null &&
+            childToMove.GetBlockType() != null && childToMove.GetBlockType().blockName == "Wood")
+        {
+            return false;
+        }
+
+        // Rule 4: Leaf blocks must be within 3 blocks of a Wood block
+        if (selectedType.blockName == "Leaf")
+        {
+            // Check if any Wood block exists within radius 3
+            List<HumanClick> nearbyBlocks = TreeLooker.GetBlocksInRadius(transform.position, 3f);
+            bool woodFound = false;
+
+            foreach (HumanClick block in nearbyBlocks)
+            {
+                BlockType blockType = block.GetBlockType();
+                if (blockType != null && blockType.blockName == "Wood")
+                {
+                    woodFound = true;
+                    break;
+                }
+            }
+
+            if (!woodFound)
+            {
+                return false; // No Wood nearby, cannot place Leaf
+            }
         }
 
         // Future rules will go here

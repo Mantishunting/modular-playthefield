@@ -7,6 +7,11 @@ public class LeafProduction : MonoBehaviour
     [SerializeField] private bool requireSunlight = true;
     [Tooltip("If false, produces food constantly like before sun system")]
 
+    [Header("Visual Feedback")]
+    [SerializeField] private bool enableProductionAnimation = true;
+    [SerializeField] private float spinDuration = 0.5f;
+    [SerializeField] private float spinAmount = 360f; // degrees
+
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
 
@@ -92,6 +97,12 @@ public class LeafProduction : MonoBehaviour
     {
         isProducing = true;
 
+        // Spin when first starting production (hit by sunlight)
+        if (enableProductionAnimation)
+        {
+            StartCoroutine(SpinAnimation());
+        }
+
         while (true)
         {
             // Wait for the production interval from BlockType
@@ -144,8 +155,8 @@ public class LeafProduction : MonoBehaviour
         // Calculate raycast distance (sun's orbit radius + buffer)
         float rayDistance = Vector3.Distance(transform.position, Vector3.zero) + sun.GetOrbitRadius() + 100f;
 
-        // Offset the ray origin slightly so it doesn't hit our own collider
-        Vector3 rayOrigin = transform.position + (toSun * 1.5f);
+        // Offset the ray origin by 0.6 units so it clears our own 1x1 collider
+        Vector3 rayOrigin = transform.position + (toSun * 0.6f);
 
         if (showDebugLogs)
         {
@@ -199,10 +210,40 @@ public class LeafProduction : MonoBehaviour
         // Add food to the resource pool (always 1 for now)
         Resources.Instance.AddFood(1);
 
+        // Play production animation
+        if (enableProductionAnimation)
+        {
+            StartCoroutine(SpinAnimation());
+        }
+
         if (showDebugLogs)
         {
             Debug.Log($"{myBlockType.blockName} block at {transform.position} produced 1 food!");
         }
+    }
+
+    IEnumerator SpinAnimation()
+    {
+        float elapsedTime = 0f;
+        float startRotation = transform.rotation.eulerAngles.z;
+        float targetRotation = startRotation + spinAmount;
+
+        while (elapsedTime < spinDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / spinDuration;
+
+            // Smooth spin using ease-out
+            float easedT = 1f - Mathf.Pow(1f - t, 3f);
+            float currentRotation = Mathf.Lerp(startRotation, targetRotation, easedT);
+
+            transform.rotation = Quaternion.Euler(0, 0, currentRotation);
+
+            yield return null;
+        }
+
+        // Ensure we end at the target rotation
+        transform.rotation = Quaternion.Euler(0, 0, targetRotation);
     }
 
     void OnDestroy()

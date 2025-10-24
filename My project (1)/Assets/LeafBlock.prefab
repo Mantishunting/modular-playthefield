@@ -160,6 +160,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87cc426fd2d364a40999fac02327ed15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  requireSunlight: 1
+  enableProductionAnimation: 1
+  spinDuration: 0.2
+  spinAmount: 360
   showDebugLogs: 1
 --- !u!61 &4709957717378282403
 BoxCollider2D:

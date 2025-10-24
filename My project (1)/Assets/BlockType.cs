@@ -15,9 +15,9 @@ public class BlockType : ScriptableObject
     public int cost = 1;
 
     [Header("Future Properties")]
-    [Tooltip("Will this block produce resources? (Not implemented yet)")]
+    [Tooltip("Will this block produce resources?")]
     public bool producesResources = false;
 
-    [Tooltip("Resource production rate (Not implemented yet)")]
-    public float productionRate = 0f;
+    [Tooltip("Production interval in seconds (e.g., 5 = produce every 5 seconds)")]
+    public float productionRate = 5f;
 }

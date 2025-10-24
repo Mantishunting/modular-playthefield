@@ -3,21 +3,45 @@ using System.Collections;
 
 public class LeafProduction : MonoBehaviour
 {
-    [Header("Production Settings")]
-    [SerializeField] private float productionInterval = 5f;
-    [SerializeField] private int foodPerProduction = 1;
-
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
 
+    private HumanClick humanClick;
+    private BlockType myBlockType;
+
     void Start()
     {
-        // Start the production loop immediately
-        StartCoroutine(ProductionLoop());
-
-        if (showDebugLogs)
+        // Get references
+        humanClick = GetComponent<HumanClick>();
+        if (humanClick == null)
         {
-            Debug.Log($"LeafProduction started on block at {transform.position}");
+            Debug.LogError("LeafProduction requires HumanClick component!");
+            return;
+        }
+
+        myBlockType = humanClick.GetBlockType();
+        if (myBlockType == null)
+        {
+            Debug.LogError("LeafProduction: BlockType is null!");
+            return;
+        }
+
+        // Only start production if this block type produces resources
+        if (myBlockType.producesResources)
+        {
+            StartCoroutine(ProductionLoop());
+
+            if (showDebugLogs)
+            {
+                Debug.Log($"LeafProduction started on {myBlockType.blockName} at {transform.position}");
+            }
+        }
+        else
+        {
+            if (showDebugLogs)
+            {
+                Debug.Log($"Block type {myBlockType.blockName} does not produce resources, production disabled.");
+            }
         }
     }
 
@@ -25,8 +49,8 @@ public class LeafProduction : MonoBehaviour
     {
         while (true)
         {
-            // Wait for the production interval
-            yield return new WaitForSeconds(productionInterval);
+            // Wait for the production interval from BlockType
+            yield return new WaitForSeconds(myBlockType.productionRate);
 
             // Produce food
             ProduceFood();
@@ -42,12 +66,12 @@ public class LeafProduction : MonoBehaviour
             return;
         }
 
-        // Add food to the resource pool
-        Resources.Instance.AddFood(foodPerProduction);
+        // Add food to the resource pool (always 1 for now)
+        Resources.Instance.AddFood(1);
 
         if (showDebugLogs)
         {
-            Debug.Log($"Leaf block at {transform.position} produced {foodPerProduction} food!");
+            Debug.Log($"{myBlockType.blockName} block at {transform.position} produced 1 food!");
         }
     }
 
@@ -55,9 +79,9 @@ public class LeafProduction : MonoBehaviour
     {
         // Coroutine automatically stops when GameObject is destroyed
         // This is just for debug logging
-        if (showDebugLogs)
+        if (showDebugLogs && myBlockType != null)
         {
-            Debug.Log($"LeafProduction stopped on block at {transform.position}");
+            Debug.Log($"LeafProduction stopped on {myBlockType.blockName} at {transform.position}");
         }
     }
 }

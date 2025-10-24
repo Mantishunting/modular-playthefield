@@ -144,6 +144,13 @@ public class HumanClick : MonoBehaviour
             return;
         }
 
+        // Check if player can afford this block type (early check to save processing)
+        if (!Resources.Instance.CanAfford(selectedType.cost))
+        {
+            // Not enough Food - silently fail
+            return;
+        }
+
         GameObject newBlock = null;
         Vector3 spawnPosition = Vector3.zero;
         Vector3 moveDirection = Vector3.zero;
@@ -177,6 +184,15 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
+
+                // Spend the Food cost
+                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                {
+                    // This shouldn't happen since we checked earlier, but safety check
+                    isSpawning = false;
+                    return;
+                }
+
                 newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {
@@ -227,6 +243,15 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
+
+                // Spend the Food cost
+                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                {
+                    // This shouldn't happen since we checked earlier, but safety check
+                    isSpawning = false;
+                    return;
+                }
+
                 newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {
@@ -280,6 +305,15 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
+
+                // Spend the Food cost
+                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                {
+                    // This shouldn't happen since we checked earlier, but safety check
+                    isSpawning = false;
+                    return;
+                }
+
                 newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {
@@ -330,6 +364,15 @@ public class HumanClick : MonoBehaviour
 
                 isSpawning = true;
                 StartWobble();
+
+                // Spend the Food cost
+                if (!Resources.Instance.TrySpendFood(selectedType.cost))
+                {
+                    // This shouldn't happen since we checked earlier, but safety check
+                    isSpawning = false;
+                    return;
+                }
+
                 newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
                 if (newBlock != null)
                 {

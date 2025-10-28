@@ -20,4 +20,8 @@ public class BlockType : ScriptableObject
 
     [Tooltip("Production interval in seconds (e.g., 5 = produce every 5 seconds)")]
     public float productionRate = 5f;
+
+    [Header("Lifespan")]
+    [Tooltip("How long this block lives in seconds. Set to 0 for immortal (lives forever).")]
+    public float lifespanSeconds = 0f; // 0 = immortal
 }

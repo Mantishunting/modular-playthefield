@@ -18,3 +18,4 @@ MonoBehaviour:
   cost: 1
   producesResources: 1
   productionRate: 5
+  lifespanSeconds: 15

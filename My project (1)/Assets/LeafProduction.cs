@@ -22,6 +22,10 @@ public class LeafProduction : MonoBehaviour
     private bool isProducing = false;
     private float lightCheckInterval = 0.25f; // Check 4 times per second
 
+    // Lifespan tracking
+    private float timeAlive = 0f;
+    private bool isAlive = true;
+
     void Start()
     {
         // Get references
@@ -61,6 +65,17 @@ public class LeafProduction : MonoBehaviour
             if (showDebugLogs)
             {
                 Debug.Log($"Block type {myBlockType.blockName} does not produce resources, production disabled.");
+            }
+        }
+
+        // Start lifespan timer if this block has a lifespan
+        if (myBlockType.lifespanSeconds > 0)
+        {
+            StartCoroutine(LifespanTimer());
+
+            if (showDebugLogs)
+            {
+                Debug.Log($"{myBlockType.blockName} at {transform.position} will die after {myBlockType.lifespanSeconds} seconds");
             }
         }
     }
@@ -244,6 +259,45 @@ public class LeafProduction : MonoBehaviour
 
         // Ensure we end at the target rotation
         transform.rotation = Quaternion.Euler(0, 0, targetRotation);
+    }
+
+    /// <summary>
+    /// Tracks how long this block has been alive and dies when lifespan expires
+    /// </summary>
+    IEnumerator LifespanTimer()
+    {
+        while (isAlive)
+        {
+            timeAlive += Time.deltaTime;
+
+            // Check if lifespan has expired
+            if (timeAlive >= myBlockType.lifespanSeconds)
+            {
+                DieOfOldAge();
+                yield break;
+            }
+
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Handles death of this block due to old age
+    /// </summary>
+    void DieOfOldAge()
+    {
+        isAlive = false;
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"{myBlockType.blockName} at {transform.position} died of old age after {timeAlive:F1} seconds");
+        }
+
+        // Call Die() which handles killing this block and all descendants
+        if (humanClick != null)
+        {
+            humanClick.Die();
+        }
     }
 
     void OnDestroy()

@@ -1408,6 +1408,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2046838584}
   - component: {fileID: 2046838585}
+  - component: {fileID: 2046838586}
+  - component: {fileID: 2046838587}
   m_Layer: 0
   m_Name: BlockSpawner
   m_TagString: Untagged
@@ -1443,6 +1445,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockPrefab: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+--- !u!114 &2046838586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046838583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69178ed65eea1f645a133bcdebf9c68d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  refreshKey: 120
+  showDebugMessage: 1
+--- !u!114 &2046838587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046838583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de0fcdfce80fd344a9de1e52ad42df1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upkeepInterval: 10
+  costPerBlock: 0.1
+  penaltyType: 0
+  showDebugLogs: 1
 --- !u!114 &2142251018 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8074107489225717264, guid: 2aec72025187d3e45891206e6193eece, type: 3}

@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 3f240e92835a8dd4dbb7427733e3358c
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _BracketAtlas: {fileID: 2800000, guid: 350c5cdfd2ec22644908c2cd4d175c0e, type: 3}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

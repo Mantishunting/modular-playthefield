@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4765644148942960966}
   - component: {fileID: 6471179590154509204}
   - component: {fileID: 8781197092773077391}
-  - component: {fileID: 140950213718744233}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -107,42 +106,3 @@ MonoBehaviour:
   southChild: {fileID: 0}
   eastChild: {fileID: 0}
   westChild: {fileID: 0}
---- !u!114 &140950213718744233
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8865235583272836622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14e138cc416076e4fae57b819b2aa5b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  level0:
-    speed: 0
-    amount: 0
-    rotation: 0
-    scale: 0
-  level1:
-    speed: 1.5
-    amount: 0.03
-    rotation: 5
-    scale: 0.03
-  level2:
-    speed: 2.5
-    amount: 0.08
-    rotation: 15
-    scale: 0.08
-  level3:
-    speed: 4
-    amount: 0.15
-    rotation: 30
-    scale: 0.15
-  level4:
-    speed: 6
-    amount: 0.3
-    rotation: 60
-    scale: 0.3
-  shudderDuration: 3
-  transitionSpeed: 5

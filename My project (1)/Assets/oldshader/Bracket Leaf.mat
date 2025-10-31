@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Bracket Leaf
-  m_Shader: {fileID: 4800000, guid: 21c17d9816f1ce44aae89d61f3023c89, type: 3}
+  m_Shader: {fileID: 4800000, guid: 3f240e92835a8dd4dbb7427733e3358c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -30,7 +30,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BracketAtlas:
-        m_Texture: {fileID: 2800000, guid: e58ef4355087d9845b4ff81d27e81e3f, type: 3}
+        m_Texture: {fileID: 2800000, guid: 758f35e4ce26b04429d7ad35947cf36f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -48,6 +48,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BottomEdge: 0
+    - _BracketSize: 0.1
     - _Density: 44.9
     - _EdgeMargin: 0.5
     - _EdgePaddingBottom: 0.2
@@ -56,14 +57,18 @@ Material:
     - _EdgePaddingTop: 0.2
     - _EnableExternalAlpha: 0
     - _GlobalRotation: 0
+    - _GridCount: 8
     - _GridSize: 0.248
     - _LeftEdge: 0
+    - _LocalRotationRange: 30
     - _MaxScale: 1.4
     - _MinScale: 0.68
     - _RandomOffset: 0
     - _RandomRotation: 0
     - _RightEdge: 0
     - _Seed: 52
+    - _Spacing: 0.15
+    - _StaticJitter: 0.3
     - _TopEdge: 0
     - _UseCurlyClose: 0
     - _UseCurlyOpen: 0

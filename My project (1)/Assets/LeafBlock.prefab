@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 5271642053659760612}
   - component: {fileID: 6286400785320338356}
   - component: {fileID: -1379168262426883360}
-  - component: {fileID: -3697364007385318876}
   - component: {fileID: 896641231359971637}
   - component: {fileID: 4709957717378282403}
+  - component: {fileID: -762371774904009461}
+  - component: {fileID: -7046886269897201575}
   m_Layer: 0
   m_Name: LeafBlock
   m_TagString: Untagged
@@ -109,45 +110,6 @@ MonoBehaviour:
   southChild: {fileID: 0}
   eastChild: {fileID: 0}
   westChild: {fileID: 0}
---- !u!114 &-3697364007385318876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9001448909574542960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14e138cc416076e4fae57b819b2aa5b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  level0:
-    speed: 0
-    amount: 0
-    rotation: 0
-    scale: 0
-  level1:
-    speed: 1.5
-    amount: 0.03
-    rotation: 5
-    scale: 0.03
-  level2:
-    speed: 2.5
-    amount: 0.08
-    rotation: 15
-    scale: 0.08
-  level3:
-    speed: 4
-    amount: 0.15
-    rotation: 30
-    scale: 0.15
-  level4:
-    speed: 6
-    amount: 0.3
-    rotation: 60
-    scale: 0.3
-  shudderDuration: 3
-  transitionSpeed: 5
 --- !u!114 &896641231359971637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,3 +172,35 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-762371774904009461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cad3cebebd76fd4f9a446be61256fdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingState: {fileID: 11400000, guid: 96b024fb33ba98b42988e5817c96966e, type: 2}
+  targetState: {fileID: 0}
+  transitionSpeed: 5
+  seedOverride: -1
+--- !u!114 &-7046886269897201575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32bbec03719171440894bd02d2f2573e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleState: {fileID: 11400000, guid: 96b024fb33ba98b42988e5817c96966e, type: 2}
+  producingState: {fileID: 11400000, guid: 60d9bd46d2854dc4f981a5e02a5506a1, type: 2}
+  completeState: {fileID: 11400000, guid: 58bd673a4eafb7446af032c79e559f97, type: 2}
+  completionDuration: 1

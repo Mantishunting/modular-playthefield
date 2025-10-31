@@ -17,5 +17,5 @@ MonoBehaviour:
   prefab: {fileID: 9001448909574542960, guid: fa49e04e78d9b2c4aa1d216d6504bd45, type: 3}
   cost: 1
   producesResources: 1
-  productionRate: 1
+  productionRate: 5
   lifespanSeconds: 100

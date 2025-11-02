@@ -18,11 +18,11 @@ MonoBehaviour:
   gridCount: 20
   leftEdge: 0
   rightEdge: 0
-  topEdge: 0
-  bottomEdge: 0
+  topEdge: 0.3
+  bottomEdge: 0.3
   minScale: 1
   maxScale: 1.5
-  localRotationRange: 30
+  localRotationRange: 14
   globalRotation: 90
   staticJitter: 0.3
   wiggleAmount: 0.1

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1379168262426883360}
   - component: {fileID: 956702901779546586}
   - component: {fileID: 8176186985293310067}
+  - component: {fileID: 1944116896667604093}
   m_Layer: 0
   m_Name: WoodBlock
   m_TagString: Untagged
@@ -169,3 +170,25 @@ MonoBehaviour:
   targetState: {fileID: 0}
   transitionSpeed: 5
   seedOverride: -1
+--- !u!114 &1944116896667604093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75c4b44d0aeb25641ac140a03eff679b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanClick: {fileID: 0}
+  stateController: {fileID: 0}
+  straightVerticalState: {fileID: 11400000, guid: aa65ab9cdf3c8a444b1732d580720f2e, type: 2}
+  straightHorizontalState: {fileID: 11400000, guid: da3c359528a1d3448be1f0fa46e20696, type: 2}
+  cornerNorthEastState: {fileID: 11400000, guid: b8b9651300eb8a3479fb8e618b02eaae, type: 2}
+  cornerNorthWestState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
+  cornerSouthEastState: {fileID: 11400000, guid: 1e5d30d39803fa14d8ececa8f36022a5, type: 2}
+  cornerSouthWestState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
+  standardState: {fileID: 11400000, guid: b1fbea34c0a3b5146a15ef4ef6ccb517, type: 2}
+  showDebugLogs: 0

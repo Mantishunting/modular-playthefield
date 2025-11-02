@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37f37ecc2e94090479602586e45ef599, type: 3}
-  m_Name: Corner1
+  m_Name: CornerSE
   m_EditorClassIdentifier: 
   stateDescription: left up
   spacing: 0.15
-  bracketSize: 0.2
+  bracketSize: 0.211
   gridCount: 20
-  leftEdge: 0
-  rightEdge: 0.2
+  leftEdge: 0.114
+  rightEdge: 0
   topEdge: 0
-  bottomEdge: 0.2
+  bottomEdge: 0.356
   minScale: 1
   maxScale: 1.5
-  localRotationRange: 90
-  globalRotation: 45
+  localRotationRange: 0
+  globalRotation: 315
   staticJitter: 0.3
   wiggleAmount: 0.1
   wiggleSpeed: 2

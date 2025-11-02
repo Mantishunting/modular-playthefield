@@ -12,6 +12,14 @@ public class HumanClick : MonoBehaviour
         East,
         West
     }
+
+    // ===== CONNECTION CHANGE EVENT SYSTEM =====
+    /// <summary>
+    /// Event triggered whenever this block's parent or children connections change.
+    /// Subscribe to this to react to connection changes (e.g., visual updates).
+    /// </summary>
+    public event System.Action OnConnectionsChanged;
+
     private BlockSpawner spawner;
     [SerializeField] private float blockSize = 1f;
     [SerializeField] private float clickRangeMultiplier = 1.5f;
@@ -88,6 +96,14 @@ public class HumanClick : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Notifies listeners that this block's connections have changed.
+    /// Call this whenever parent or child references are modified.
+    /// </summary>
+    private void NotifyConnectionsChanged()
+    {
+        OnConnectionsChanged?.Invoke();
+    }
 
     /// <summary>
     /// Calculates the cost to place a block based on current game state
@@ -239,13 +255,20 @@ public class HumanClick : MonoBehaviour
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                    // ===== CONNECTION POINT 1 (EAST) =====
                     eastChild = newChild;
-                    newChild.westParent = this; // Parent is to the WEST
+                    newChild.westParent = this;
+                    NotifyConnectionsChanged(); // Notify THIS block changed
+                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
 
                     if (childToMove != null)
                     {
+                        // ===== CONNECTION POINT 2 (EAST INSERTION) =====
                         newChild.eastChild = childToMove;
-                        childToMove.westParent = newChild; // newChild is to the WEST
+                        childToMove.westParent = newChild;
+                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
                     }
 
                     checkCollisions = true;
@@ -298,13 +321,20 @@ public class HumanClick : MonoBehaviour
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                    // ===== CONNECTION POINT 3 (WEST) =====
                     westChild = newChild;
-                    newChild.eastParent = this; // Parent is to the EAST
+                    newChild.eastParent = this;
+                    NotifyConnectionsChanged(); // Notify THIS block changed
+                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
 
                     if (childToMove != null)
                     {
+                        // ===== CONNECTION POINT 4 (WEST INSERTION) =====
                         newChild.westChild = childToMove;
-                        childToMove.eastParent = newChild; // newChild is to the EAST
+                        childToMove.eastParent = newChild;
+                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
                     }
 
                     checkCollisions = true;
@@ -360,13 +390,20 @@ public class HumanClick : MonoBehaviour
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                    // ===== CONNECTION POINT 5 (NORTH) =====
                     northChild = newChild;
-                    newChild.southParent = this; // Parent is to the SOUTH
+                    newChild.southParent = this;
+                    NotifyConnectionsChanged(); // Notify THIS block changed
+                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
 
                     if (childToMove != null)
                     {
+                        // ===== CONNECTION POINT 6 (NORTH INSERTION) =====
                         newChild.northChild = childToMove;
-                        childToMove.southParent = newChild; // newChild is to the SOUTH
+                        childToMove.southParent = newChild;
+                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
                     }
 
                     checkCollisions = true;
@@ -419,13 +456,20 @@ public class HumanClick : MonoBehaviour
                 if (newBlock != null)
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                    // ===== CONNECTION POINT 7 (SOUTH) =====
                     southChild = newChild;
-                    newChild.northParent = this; // Parent is to the NORTH
+                    newChild.northParent = this;
+                    NotifyConnectionsChanged(); // Notify THIS block changed
+                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
 
                     if (childToMove != null)
                     {
+                        // ===== CONNECTION POINT 8 (SOUTH INSERTION) =====
                         newChild.southChild = childToMove;
-                        childToMove.northParent = newChild; // newChild is to the NORTH
+                        childToMove.northParent = newChild;
+                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
                     }
 
                     checkCollisions = true;
@@ -655,6 +699,19 @@ public class HumanClick : MonoBehaviour
         if (westParent != null) return westParent;
         return null;
     }
+
+    /// <summary>
+    /// Returns which direction the parent is in (or None if no parent)
+    /// </summary>
+    public Direction GetParentDirection()
+    {
+        if (northParent != null) return Direction.North;
+        if (southParent != null) return Direction.South;
+        if (eastParent != null) return Direction.East;
+        if (westParent != null) return Direction.West;
+        return Direction.None;
+    }
+
     public HumanClick GetNorthParent() { return northParent; }
     public HumanClick GetSouthParent() { return southParent; }
     public HumanClick GetEastParent() { return eastParent; }

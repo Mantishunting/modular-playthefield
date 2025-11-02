@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37f37ecc2e94090479602586e45ef599, type: 3}
-  m_Name: Wood_UP
+  m_Name: Corner_SW
   m_EditorClassIdentifier: 
-  stateDescription: 
-  spacing: 0.15
+  stateDescription: left up
+  spacing: 0.1
   bracketSize: 0.2
   gridCount: 20
-  leftEdge: 0.2
-  rightEdge: 0.2
-  topEdge: 0
+  leftEdge: 0
+  rightEdge: 0.5
+  topEdge: 0.5
   bottomEdge: 0
   minScale: 1
   maxScale: 1.5
-  localRotationRange: 30
-  globalRotation: 0
-  staticJitter: 0.3
-  wiggleAmount: 0.1
-  wiggleSpeed: 2
+  localRotationRange: 0
+  globalRotation: 135
+  staticJitter: 0.277
+  wiggleAmount: 0.133
+  wiggleSpeed: 1.88

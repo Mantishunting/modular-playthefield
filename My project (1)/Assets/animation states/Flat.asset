@@ -18,8 +18,8 @@ MonoBehaviour:
   gridCount: 20
   leftEdge: 0
   rightEdge: 0
-  topEdge: 0.2
-  bottomEdge: 0.2
+  topEdge: 0.3
+  bottomEdge: 0.3
   minScale: 1
   maxScale: 1.5
   localRotationRange: 90

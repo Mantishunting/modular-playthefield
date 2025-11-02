@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 public class HumanClick : MonoBehaviour
 {
+    // ADD THIS ENUM FIRST (before any fields)
+    public enum Direction
+    {
+        None,
+        North,
+        South,
+        East,
+        West
+    }
     private BlockSpawner spawner;
     [SerializeField] private float blockSize = 1f;
     [SerializeField] private float clickRangeMultiplier = 1.5f;
@@ -22,8 +31,12 @@ public class HumanClick : MonoBehaviour
     // Block type tracking
     private BlockType myBlockType;
 
-    // Parent tracking
-    private HumanClick parent;
+    // Parent tracking (mirrors child structure)
+    private HumanClick northParent;
+    private HumanClick southParent;
+    private HumanClick eastParent;
+    private HumanClick westParent;
+
 
     // Child references
     public HumanClick northChild;
@@ -227,12 +240,12 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     eastChild = newChild;
-                    newChild.parent = this;
+                    newChild.westParent = this; // Parent is to the WEST
 
                     if (childToMove != null)
                     {
                         newChild.eastChild = childToMove;
-                        childToMove.parent = newChild;
+                        childToMove.westParent = newChild; // newChild is to the WEST
                     }
 
                     checkCollisions = true;
@@ -286,12 +299,12 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     westChild = newChild;
-                    newChild.parent = this;
+                    newChild.eastParent = this; // Parent is to the EAST
 
                     if (childToMove != null)
                     {
                         newChild.westChild = childToMove;
-                        childToMove.parent = newChild;
+                        childToMove.eastParent = newChild; // newChild is to the EAST
                     }
 
                     checkCollisions = true;
@@ -348,12 +361,12 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     northChild = newChild;
-                    newChild.parent = this;
+                    newChild.southParent = this; // Parent is to the SOUTH
 
                     if (childToMove != null)
                     {
                         newChild.northChild = childToMove;
-                        childToMove.parent = newChild;
+                        childToMove.southParent = newChild; // newChild is to the SOUTH
                     }
 
                     checkCollisions = true;
@@ -407,12 +420,12 @@ public class HumanClick : MonoBehaviour
                 {
                     HumanClick newChild = newBlock.GetComponent<HumanClick>();
                     southChild = newChild;
-                    newChild.parent = this;
+                    newChild.northParent = this; // Parent is to the NORTH
 
                     if (childToMove != null)
                     {
                         newChild.southChild = childToMove;
-                        childToMove.parent = newChild;
+                        childToMove.northParent = newChild; // newChild is to the NORTH
                     }
 
                     checkCollisions = true;
@@ -635,8 +648,17 @@ public class HumanClick : MonoBehaviour
 
     public HumanClick GetParent()
     {
-        return parent;
+        // Return whichever parent exists (only one will be non-null)
+        if (northParent != null) return northParent;
+        if (southParent != null) return southParent;
+        if (eastParent != null) return eastParent;
+        if (westParent != null) return westParent;
+        return null;
     }
+    public HumanClick GetNorthParent() { return northParent; }
+    public HumanClick GetSouthParent() { return southParent; }
+    public HumanClick GetEastParent() { return eastParent; }
+    public HumanClick GetWestParent() { return westParent; }
 
     public HumanClick GetNorthChild() { return northChild; }
     public HumanClick GetSouthChild() { return southChild; }

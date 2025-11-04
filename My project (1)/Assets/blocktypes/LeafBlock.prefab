@@ -123,9 +123,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requireSunlight: 1
-  enableProductionAnimation: 1
-  spinDuration: 0.2
-  spinAmount: 360
   showDebugLogs: 1
 --- !u!61 &4709957717378282403
 BoxCollider2D:
@@ -203,4 +200,4 @@ MonoBehaviour:
   idleState: {fileID: 11400000, guid: 96b024fb33ba98b42988e5817c96966e, type: 2}
   producingState: {fileID: 11400000, guid: 60d9bd46d2854dc4f981a5e02a5506a1, type: 2}
   completeState: {fileID: 11400000, guid: 58bd673a4eafb7446af032c79e559f97, type: 2}
-  completionDuration: 1
+  completionDuration: 3

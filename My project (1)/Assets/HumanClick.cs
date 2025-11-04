@@ -36,6 +36,10 @@ public class HumanClick : MonoBehaviour
     // Track total blocks in game for dynamic pricing
     private static int totalBlockCount = 0;
 
+    // Preview system tracking - shared across all blocks
+    private static bool anyBlockShowedPreviewThisFrame = false;
+    private static int lastPreviewFrame = -1;
+
     // Block type tracking
     private BlockType myBlockType;
 
@@ -90,6 +94,12 @@ public class HumanClick : MonoBehaviour
             }
         }
 
+        // Handle hover preview (every frame while not spawning)
+        if (!isSpawning)
+        {
+            UpdateHoverPreview();
+        }
+
         if (isWobbling)
         {
             UpdateWobble();
@@ -103,6 +113,123 @@ public class HumanClick : MonoBehaviour
     private void NotifyConnectionsChanged()
     {
         OnConnectionsChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Handles hover preview display - shows ghost block where placement would occur
+    /// </summary>
+    void UpdateHoverPreview()
+    {
+        // First block to update this frame resets the flag
+        int currentFrame = Time.frameCount;
+        if (lastPreviewFrame != currentFrame)
+        {
+            lastPreviewFrame = currentFrame;
+
+            // If no block showed preview last frame, hide it now
+            if (!anyBlockShowedPreviewThisFrame && PreviewBlockManager.Instance != null)
+            {
+                PreviewBlockManager.Instance.HidePreview();
+            }
+
+            anyBlockShowedPreviewThisFrame = false;
+        }
+
+        // Skip if PreviewBlockManager doesn't exist
+        if (PreviewBlockManager.Instance == null)
+        {
+            return;
+        }
+
+        Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        mousePos.z = 0;
+
+        Vector3 blockCenter = transform.position;
+        Vector3 difference = mousePos - blockCenter;
+        float halfSize = blockSize / 2f;
+
+        // Check if mouse is within clickable range
+        if (Mathf.Abs(difference.x) > halfSize * clickRangeMultiplier ||
+            Mathf.Abs(difference.y) > halfSize * clickDepthMultiplier)
+        {
+            // Don't call HidePreview here - let other blocks handle it
+            // Only the block that shows a preview should manage hiding it
+            return;
+        }
+
+        // Get selected block type
+        BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
+        if (selectedType == null)
+        {
+            // Don't hide preview - this is a global issue, not this block's responsibility
+            return;
+        }
+
+        // Calculate cost and affordability
+        int dynamicCost = GetDynamicCost(selectedType);
+        bool canAfford = Resources.Instance.CanAfford(dynamicCost);
+
+        // Determine which zone and calculate spawn position
+        Vector3 spawnPosition = Vector3.zero;
+        HumanClick childToMove = null;
+        bool isValidZone = false;
+
+        if (Mathf.Abs(difference.x) > Mathf.Abs(difference.y))
+        {
+            // Horizontal zones
+            if (difference.x > halfSize)
+            {
+                // East
+                spawnPosition = blockCenter + new Vector3(blockSize, 0, 0);
+                childToMove = eastChild;
+                isValidZone = true;
+            }
+            else if (difference.x < -halfSize)
+            {
+                // West
+                spawnPosition = blockCenter + new Vector3(-blockSize, 0, 0);
+                childToMove = westChild;
+                isValidZone = true;
+            }
+        }
+        else
+        {
+            // Vertical zones
+            if (difference.y > halfSize)
+            {
+                // North
+                spawnPosition = blockCenter + new Vector3(0, blockSize, 0);
+                childToMove = northChild;
+                isValidZone = true;
+            }
+            else if (difference.y < -halfSize)
+            {
+                // South
+                spawnPosition = blockCenter + new Vector3(0, -blockSize, 0);
+                childToMove = southChild;
+                isValidZone = true;
+            }
+        }
+
+        // Show preview if in valid zone
+        if (isValidZone)
+        {
+            // Check placement validity
+            bool isPlacementValid = IsValidPlacement(selectedType, childToMove);
+
+            // Check if position is already occupied (for additions, not insertions)
+            if (childToMove == null && IsPositionOccupied(spawnPosition))
+            {
+                isPlacementValid = false;
+            }
+
+            // Only show preview if placement rules allow it
+            if (isPlacementValid)
+            {
+                PreviewBlockManager.Instance.ShowPreview(spawnPosition, selectedType, canAfford, dynamicCost);
+                anyBlockShowedPreviewThisFrame = true; // Mark that a preview is showing
+            }
+        }
     }
 
     /// <summary>

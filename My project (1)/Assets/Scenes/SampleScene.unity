@@ -857,6 +857,58 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &684591153
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 684591155}
+  - component: {fileID: 684591154}
+  m_Layer: 0
+  m_Name: PreviewUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &684591154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684591153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d43be04d7c8e4a4e8a2724abb799b30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  woodPreviewPrefab: {fileID: 9001448909574542960, guid: 586f2f47780c79142b5e46ad535df323, type: 3}
+  leafPreviewPrefab: {fileID: 9001448909574542960, guid: 10ce3a054db6bf4438273b035b5efe65, type: 3}
+  woodCanAffordState: {fileID: 11400000, guid: 71c45f97915e82b4d9c3eb9cc1fbe011, type: 2}
+  woodCantAffordState: {fileID: 11400000, guid: 83a075e36f6af4147a9d3595dd73bcf2, type: 2}
+  leafCanAffordState: {fileID: 11400000, guid: c2271f654df7cdf4cb7aabe4319cebd5, type: 2}
+  leafCantAffordState: {fileID: 11400000, guid: f4a9b3c8043127f4ab9fb6f04e8ddb15, type: 2}
+  costTextOffset: 0.7
+  showDebugLogs: 0
+--- !u!4 &684591155
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684591153}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 94.104904, y: 195.54242, z: -0.31137744}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &771690154
 GameObject:
   m_ObjectHideFlags: 0
@@ -1508,7 +1560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd51f97e4498ceb4bb26d48a62996ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentFood: 500
+  currentFood: 1000
   showDebugLogs: 0
 --- !u!4 &1468730096
 Transform:
@@ -2258,3 +2310,4 @@ SceneRoots:
   - {fileID: 5389245201919930289}
   - {fileID: 2041030788}
   - {fileID: 1176403290}
+  - {fileID: 684591155}

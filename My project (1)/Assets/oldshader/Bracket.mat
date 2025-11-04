@@ -48,7 +48,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BottomEdge: 0
-    - _BracketSize: 0.1
+    - _BracketSize: 0.3
     - _Density: 44.9
     - _EdgeMargin: 0.5
     - _EdgePaddingBottom: 0.2
@@ -57,7 +57,7 @@ Material:
     - _EdgePaddingTop: 0.2
     - _EnableExternalAlpha: 0
     - _GlobalRotation: 0
-    - _GridCount: 8
+    - _GridCount: 2.44
     - _GridSize: 0.248
     - _LeftEdge: 0
     - _LocalRotationRange: 30
@@ -67,7 +67,7 @@ Material:
     - _RandomRotation: 0
     - _RightEdge: 0
     - _Seed: 52
-    - _Spacing: 0.15
+    - _Spacing: 0.101
     - _StaticJitter: 0.3
     - _TopEdge: 0
     - _UseCurlyClose: 0

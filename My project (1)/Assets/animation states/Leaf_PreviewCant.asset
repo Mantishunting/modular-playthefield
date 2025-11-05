@@ -15,7 +15,7 @@ MonoBehaviour:
   stateDescription: 
   spacing: 0.15
   bracketSize: 0.1
-  gridCount: 20
+  gridCount: 10
   leftEdge: 0
   rightEdge: 0
   topEdge: 0

@@ -33,6 +33,16 @@ public class PreviewBlockManager : MonoBehaviour
     [Tooltip("Vertical offset for cost text above preview block")]
     [SerializeField] private float costTextOffset = 0.7f;
 
+    [Header("Cost Display")]
+    [Tooltip("Font size for cost text")]
+    [SerializeField] private float costTextSize = 0.5f;
+
+    [Tooltip("Color for cost text when affordable")]
+    [SerializeField] private Color affordableColor = Color.white;
+
+    [Tooltip("Color for cost text when not affordable")]
+    [SerializeField] private Color unaffordableColor = Color.red;
+
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
 
@@ -41,6 +51,10 @@ public class PreviewBlockManager : MonoBehaviour
     private GameObject leafPreviewInstance;
     private BracketStateController woodPreviewController;
     private BracketStateController leafPreviewController;
+
+    // Cost text display
+    private GameObject costTextObject;
+    private TextMesh costTextMesh;
 
     // Currently active preview
     private GameObject activePreview;
@@ -63,6 +77,32 @@ public class PreviewBlockManager : MonoBehaviour
         }
 
         InitializePreviews();
+        InitializeCostText();
+    }
+
+    void InitializeCostText()
+    {
+        // Create a GameObject for the cost text
+        costTextObject = new GameObject("CostText");
+        costTextObject.transform.SetParent(transform); // Parent to PreviewBlockManager
+
+        // Add TextMesh component
+        costTextMesh = costTextObject.AddComponent<TextMesh>();
+        costTextMesh.fontSize = 50; // Will be scaled by transform
+        costTextMesh.anchor = TextAnchor.MiddleCenter;
+        costTextMesh.alignment = TextAlignment.Center;
+        costTextMesh.color = affordableColor;
+
+        // Set scale for desired size
+        costTextObject.transform.localScale = Vector3.one * costTextSize;
+
+        // Hide initially
+        costTextObject.SetActive(false);
+
+        if (showDebugLogs)
+        {
+            Debug.Log("PreviewBlockManager: Cost text initialized");
+        }
     }
 
     void InitializePreviews()
@@ -73,7 +113,7 @@ public class PreviewBlockManager : MonoBehaviour
             woodPreviewInstance = Instantiate(woodPreviewPrefab, Vector3.zero, Quaternion.identity);
             woodPreviewInstance.name = "WoodPreview";
             woodPreviewController = woodPreviewInstance.GetComponent<BracketStateController>();
-            
+
             if (woodPreviewController == null)
             {
                 Debug.LogError("PreviewBlockManager: Wood preview prefab missing BracketStateController!");
@@ -84,6 +124,14 @@ public class PreviewBlockManager : MonoBehaviour
             if (woodClick != null)
             {
                 woodClick.enabled = false;
+            }
+
+            // CRITICAL: Remove or disable collider to prevent blocking clicks
+            BoxCollider2D woodCollider = woodPreviewInstance.GetComponent<BoxCollider2D>();
+            if (woodCollider != null)
+            {
+                Destroy(woodCollider); // Remove completely
+                Debug.Log("PreviewBlockManager: Removed BoxCollider2D from Wood preview instance");
             }
 
             woodPreviewInstance.SetActive(false);
@@ -99,7 +147,7 @@ public class PreviewBlockManager : MonoBehaviour
             leafPreviewInstance = Instantiate(leafPreviewPrefab, Vector3.zero, Quaternion.identity);
             leafPreviewInstance.name = "LeafPreview";
             leafPreviewController = leafPreviewInstance.GetComponent<BracketStateController>();
-            
+
             if (leafPreviewController == null)
             {
                 Debug.LogError("PreviewBlockManager: Leaf preview prefab missing BracketStateController!");
@@ -117,6 +165,14 @@ public class PreviewBlockManager : MonoBehaviour
             if (leafProd != null)
             {
                 leafProd.enabled = false;
+            }
+
+            // CRITICAL: Remove or disable collider to prevent blocking clicks
+            BoxCollider2D leafCollider = leafPreviewInstance.GetComponent<BoxCollider2D>();
+            if (leafCollider != null)
+            {
+                Destroy(leafCollider); // Remove completely
+                Debug.Log("PreviewBlockManager: Removed BoxCollider2D from Leaf preview instance");
             }
 
             leafPreviewInstance.SetActive(false);
@@ -179,7 +235,7 @@ public class PreviewBlockManager : MonoBehaviour
         // Position and activate the correct preview
         previewToShow.transform.position = position;
         previewToShow.SetActive(true);
-        
+
         // Apply the appropriate visual state
         controller.SetState(stateToApply);
 
@@ -193,8 +249,8 @@ public class PreviewBlockManager : MonoBehaviour
             Debug.Log($"PreviewBlockManager: Showing {blockType.blockName} preview at {position}, cost: {cost}, canAfford: {canAfford}");
         }
 
-        // TODO: Update cost text UI when implemented
-        // UpdateCostDisplay(position + Vector3.up * costTextOffset, cost, canAfford);
+        // Update cost text display
+        UpdateCostDisplay(position + Vector3.up * costTextOffset, cost, canAfford);
     }
 
     /// <summary>
@@ -215,8 +271,8 @@ public class PreviewBlockManager : MonoBehaviour
             }
         }
 
-        // TODO: Hide cost text UI when implemented
-        // HideCostDisplay();
+        // Hide cost text display
+        HideCostDisplay();
     }
 
     /// <summary>
@@ -246,29 +302,36 @@ public class PreviewBlockManager : MonoBehaviour
         {
             Destroy(leafPreviewInstance);
         }
+        if (costTextObject != null)
+        {
+            Destroy(costTextObject);
+        }
     }
 
-    // ===== FUTURE: COST TEXT UI =====
-    /*
-    private TextMeshPro costText; // or UI Text
-    
+    // ===== COST TEXT DISPLAY =====
+
+    /// <summary>
+    /// Shows and positions the cost text above the preview
+    /// </summary>
     void UpdateCostDisplay(Vector3 position, int cost, bool canAfford)
     {
-        if (costText != null)
+        if (costTextMesh != null && costTextObject != null)
         {
-            costText.transform.position = position;
-            costText.text = cost.ToString();
-            costText.color = canAfford ? Color.white : Color.red;
-            costText.gameObject.SetActive(true);
+            costTextObject.transform.position = position;
+            costTextMesh.text = cost.ToString();
+            costTextMesh.color = canAfford ? affordableColor : unaffordableColor;
+            costTextObject.SetActive(true);
         }
     }
-    
+
+    /// <summary>
+    /// Hides the cost text
+    /// </summary>
     void HideCostDisplay()
     {
-        if (costText != null)
+        if (costTextObject != null)
         {
-            costText.gameObject.SetActive(false);
+            costTextObject.SetActive(false);
         }
     }
-    */
 }

@@ -60,6 +60,22 @@ public class HumanClick : MonoBehaviour
     private float wobbleTimer = 0f;
     private Vector3 originalScale;
 
+    private const string HazardTag = "NoGrow";
+
+    // Centralised hazard check — uses an area so thin Edge/Polygon colliders are still caught.
+    private bool IsHazard(Vector3 position)
+    {
+        // Slightly inset to avoid false positives on borders
+        Vector2 size = new Vector2(blockSize * 0.9f, blockSize * 0.9f);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(position, size, 0f);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i] != null && hits[i].CompareTag(HazardTag))
+                return true;
+        }
+        return false;
+    }
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -223,6 +239,11 @@ public class HumanClick : MonoBehaviour
                 isPlacementValid = false;
             }
 
+            if (IsHazard(spawnPosition))
+            {
+                isPlacementValid = false;
+            }
+
             // Only show preview if placement rules allow it
             if (isPlacementValid)
             {
@@ -303,319 +324,325 @@ public class HumanClick : MonoBehaviour
         return true;
     }
 
-    void HandleClick()
-    {
-        Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0;
-
-        Vector3 blockCenter = transform.position;
-        Vector3 difference = mousePos - blockCenter;
-
-        float halfSize = blockSize / 2f;
-
-        if (Mathf.Abs(difference.x) > halfSize * clickRangeMultiplier || Mathf.Abs(difference.y) > halfSize * clickDepthMultiplier)
+        void HandleClick()
         {
-            return;
-        }
+            Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0;
 
-        // Get the selected block type from BlockTypeManager
-        BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
-        if (selectedType == null)
-        {
-            Debug.LogError("No block type selected!");
-            return;
-        }
+            Vector3 blockCenter = transform.position;
+            Vector3 difference = mousePos - blockCenter;
 
-        // Calculate dynamic cost based on total blocks in game
-        int dynamicCost = GetDynamicCost(selectedType);
+            float halfSize = blockSize / 2f;
 
-        // Check if player can afford this block type (early check to save processing)
-        if (!Resources.Instance.CanAfford(dynamicCost))
-        {
-            // Not enough Food - silently fail
-            return;
-        }
-
-        GameObject newBlock = null;
-        Vector3 spawnPosition = Vector3.zero;
-        Vector3 moveDirection = Vector3.zero;
-        HumanClick childToMove = null;
-
-        if (Mathf.Abs(difference.x) > Mathf.Abs(difference.y))
-        {
-            if (difference.x > halfSize)
+            if (Mathf.Abs(difference.x) > halfSize * clickRangeMultiplier || Mathf.Abs(difference.y) > halfSize * clickDepthMultiplier)
             {
-                spawnPosition = blockCenter + new Vector3(blockSize, 0, 0);
-                moveDirection = new Vector3(blockSize, 0, 0);
-                childToMove = eastChild;
+                return;
+            }
 
-                // Validate placement rules
-                if (!IsValidPlacement(selectedType, childToMove))
+            // Get the selected block type from BlockTypeManager
+            BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
+            if (selectedType == null)
+            {
+                Debug.LogError("No block type selected!");
+                return;
+            }
+
+            // Calculate dynamic cost based on total blocks in game
+            int dynamicCost = GetDynamicCost(selectedType);
+
+            // Check if player can afford this block type (early check to save processing)
+            if (!Resources.Instance.CanAfford(dynamicCost))
+            {
+                // Not enough Food - silently fail
+                return;
+            }
+
+            GameObject newBlock = null;
+            Vector3 spawnPosition = Vector3.zero;
+            Vector3 moveDirection = Vector3.zero;
+            HumanClick childToMove = null;
+
+            if (Mathf.Abs(difference.x) > Mathf.Abs(difference.y))
+            {
+                if (difference.x > halfSize)
                 {
-                    return;
-                }
+                    spawnPosition = blockCenter + new Vector3(blockSize, 0, 0);
+                    moveDirection = new Vector3(blockSize, 0, 0);
+                    childToMove = eastChild;
 
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
-                {
-                    return;
-                }
-
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
-                {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
-                }
-
-                isSpawning = true;
-                StartWobble();
-
-                // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(dynamicCost))
-                {
-                    // This shouldn't happen since we checked earlier, but safety check
-                    isSpawning = false;
-                    return;
-                }
-
-                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
-                if (newBlock != null)
-                {
-                    HumanClick newChild = newBlock.GetComponent<HumanClick>();
-
-                    // ===== CONNECTION POINT 1 (EAST) =====
-                    eastChild = newChild;
-                    newChild.westParent = this;
-                    NotifyConnectionsChanged(); // Notify THIS block changed
-                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
-
-                    if (childToMove != null)
+                    // Validate placement rules
+                    if (!IsValidPlacement(selectedType, childToMove))
                     {
-                        // ===== CONNECTION POINT 2 (EAST INSERTION) =====
-                        newChild.eastChild = childToMove;
-                        childToMove.westParent = newChild;
-                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
-                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
+                        return;
                     }
 
-                    checkCollisions = true;
-                    CheckAndKillCollisions(childToMove);
-
-                    // Validate that pushed Leaf blocks are still within range of Wood
-                    if (childToMove != null)
+                    // If adding (no child) and position occupied, abort
+                    if (childToMove == null && IsPositionOccupied(spawnPosition))
                     {
-                        ValidateAndRemoveInvalidLeafs(childToMove);
+                        return;
                     }
 
+                    if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+
+                    isSpawning = true;
+                    StartWobble();
+
+                    // Spend the Food cost
+                    if (!Resources.Instance.TrySpendFood(dynamicCost))
+                    {
+                        // This shouldn't happen since we checked earlier, but safety check
+                        isSpawning = false;
+                        return;
+                    }
+
+                    newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
+                    if (newBlock != null)
+                    {
+                        HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                        // ===== CONNECTION POINT 1 (EAST) =====
+                        eastChild = newChild;
+                        newChild.westParent = this;
+                        NotifyConnectionsChanged(); // Notify THIS block changed
+                        newChild.NotifyConnectionsChanged(); // Notify new block initialized
+
+                        if (childToMove != null)
+                        {
+                            // ===== CONNECTION POINT 2 (EAST INSERTION) =====
+                            newChild.eastChild = childToMove;
+                            childToMove.westParent = newChild;
+                            newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                            childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
+                        }
+
+                        checkCollisions = true;
+                        CheckAndKillCollisions(childToMove);
+
+                        // Validate that pushed Leaf blocks are still within range of Wood
+                        if (childToMove != null)
+                        {
+                            ValidateAndRemoveInvalidLeafs(childToMove);
+                        }
+
+                    }
+                }
+                else if (difference.x < -halfSize)
+                {
+                    spawnPosition = blockCenter + new Vector3(-blockSize, 0, 0);
+                    moveDirection = new Vector3(-blockSize, 0, 0);
+                    childToMove = westChild;
+
+                    // Validate placement rules
+                    if (!IsValidPlacement(selectedType, childToMove))
+                    {
+                        return;
+                    }
+
+                    // If adding (no child) and position occupied, abort
+                    if (childToMove == null && IsPositionOccupied(spawnPosition))
+                    {
+                        return;
+                    }
+
+                    if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+
+                    isSpawning = true;
+                    StartWobble();
+
+                    // Spend the Food cost
+                    if (!Resources.Instance.TrySpendFood(dynamicCost))
+                    {
+                        // This shouldn't happen since we checked earlier, but safety check
+                        isSpawning = false;
+                        return;
+                    }
+
+                    newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
+                    if (newBlock != null)
+                    {
+                        HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                        // ===== CONNECTION POINT 3 (WEST) =====
+                        westChild = newChild;
+                        newChild.eastParent = this;
+                        NotifyConnectionsChanged(); // Notify THIS block changed
+                        newChild.NotifyConnectionsChanged(); // Notify new block initialized
+
+                        if (childToMove != null)
+                        {
+                            // ===== CONNECTION POINT 4 (WEST INSERTION) =====
+                            newChild.westChild = childToMove;
+                            childToMove.eastParent = newChild;
+                            newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                            childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
+                        }
+
+                        checkCollisions = true;
+                        CheckAndKillCollisions(childToMove);
+
+                        // Validate that pushed Leaf blocks are still within range of Wood
+                        if (childToMove != null)
+                        {
+                            ValidateAndRemoveInvalidLeafs(childToMove);
+                        }
+
+                    }
                 }
             }
-            else if (difference.x < -halfSize)
+            else
             {
-                spawnPosition = blockCenter + new Vector3(-blockSize, 0, 0);
-                moveDirection = new Vector3(-blockSize, 0, 0);
-                childToMove = westChild;
-
-                // Validate placement rules
-                if (!IsValidPlacement(selectedType, childToMove))
+                if (difference.y > halfSize)
                 {
-                    return;
-                }
+                    spawnPosition = blockCenter + new Vector3(0, blockSize, 0);
+                    moveDirection = new Vector3(0, blockSize, 0);
+                    childToMove = northChild;
 
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
-                {
-                    return;
-                }
-
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
-                {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
-                }
-
-                isSpawning = true;
-                StartWobble();
-
-                // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(dynamicCost))
-                {
-                    // This shouldn't happen since we checked earlier, but safety check
-                    isSpawning = false;
-                    return;
-                }
-
-                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
-                if (newBlock != null)
-                {
-                    HumanClick newChild = newBlock.GetComponent<HumanClick>();
-
-                    // ===== CONNECTION POINT 3 (WEST) =====
-                    westChild = newChild;
-                    newChild.eastParent = this;
-                    NotifyConnectionsChanged(); // Notify THIS block changed
-                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
-
-                    if (childToMove != null)
+                    // Validate placement rules
+                    if (!IsValidPlacement(selectedType, childToMove))
                     {
-                        // ===== CONNECTION POINT 4 (WEST INSERTION) =====
-                        newChild.westChild = childToMove;
-                        childToMove.eastParent = newChild;
-                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
-                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
+                        return;
                     }
 
-                    checkCollisions = true;
-                    CheckAndKillCollisions(childToMove);
-
-                    // Validate that pushed Leaf blocks are still within range of Wood
-                    if (childToMove != null)
+                    // If adding (no child) and position occupied, abort
+                    if (childToMove == null && IsPositionOccupied(spawnPosition))
                     {
-                        ValidateAndRemoveInvalidLeafs(childToMove);
+                        return;
                     }
 
+                    if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+
+                    isSpawning = true;
+                    StartWobble();
+
+                    // Spend the Food cost
+                    if (!Resources.Instance.TrySpendFood(dynamicCost))
+                    {
+                        // This shouldn't happen since we checked earlier, but safety check
+                        isSpawning = false;
+                        return;
+                    }
+
+                    newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
+                    if (newBlock != null)
+                    {
+                        HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                        // ===== CONNECTION POINT 5 (NORTH) =====
+                        northChild = newChild;
+                        newChild.southParent = this;
+                        NotifyConnectionsChanged(); // Notify THIS block changed
+                        newChild.NotifyConnectionsChanged(); // Notify new block initialized
+
+                        if (childToMove != null)
+                        {
+                            // ===== CONNECTION POINT 6 (NORTH INSERTION) =====
+                            newChild.northChild = childToMove;
+                            childToMove.southParent = newChild;
+                            newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                            childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
+                        }
+
+                        checkCollisions = true;
+                        CheckAndKillCollisions(childToMove);
+
+                        // Validate that pushed Leaf blocks are still within range of Wood
+                        if (childToMove != null)
+                        {
+                            ValidateAndRemoveInvalidLeafs(childToMove);
+                        }
+
+                    }
+                }
+                else if (difference.y < -halfSize)
+                {
+                    spawnPosition = blockCenter + new Vector3(0, -blockSize, 0);
+                    moveDirection = new Vector3(0, -blockSize, 0);
+                    childToMove = southChild;
+
+                    // Validate placement rules
+                    if (!IsValidPlacement(selectedType, childToMove))
+                    {
+                        return;
+                    }
+
+                    // If adding (no child) and position occupied, abort
+                    if (childToMove == null && IsPositionOccupied(spawnPosition))
+                    {
+                        return;
+                    }
+
+                    if (IsPositionOccupied(spawnPosition) && childToMove != null)
+                    {
+                        checkCollisions = false;
+                        childToMove.Move(moveDirection);
+                    }
+
+                    isSpawning = true;
+                    StartWobble();
+
+                    // Spend the Food cost
+                    if (!Resources.Instance.TrySpendFood(dynamicCost))
+                    {
+                        // This shouldn't happen since we checked earlier, but safety check
+                        isSpawning = false;
+                        return;
+                    }
+
+                    newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
+                    if (newBlock != null)
+                    {
+                        HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+                        // ===== CONNECTION POINT 7 (SOUTH) =====
+                        southChild = newChild;
+                        newChild.northParent = this;
+                        NotifyConnectionsChanged(); // Notify THIS block changed
+                        newChild.NotifyConnectionsChanged(); // Notify new block initialized
+
+                        if (childToMove != null)
+                        {
+                            // ===== CONNECTION POINT 8 (SOUTH INSERTION) =====
+                            newChild.southChild = childToMove;
+                            childToMove.northParent = newChild;
+                            newChild.NotifyConnectionsChanged(); // Notify new block gained child
+                            childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
+                        }
+
+                        checkCollisions = true;
+                        CheckAndKillCollisions(childToMove);
+
+                        // Validate that pushed Leaf blocks are still within range of Wood
+                        if (childToMove != null)
+                        {
+                            ValidateAndRemoveInvalidLeafs(childToMove);
+                        }
+
+                    }
                 }
             }
         }
-        else
-        {
-            if (difference.y > halfSize)
-            {
-                spawnPosition = blockCenter + new Vector3(0, blockSize, 0);
-                moveDirection = new Vector3(0, blockSize, 0);
-                childToMove = northChild;
-
-                // Validate placement rules
-                if (!IsValidPlacement(selectedType, childToMove))
-                {
-                    return;
-                }
-
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
-                {
-                    return;
-                }
-
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
-                {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
-                }
-
-                isSpawning = true;
-                StartWobble();
-
-                // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(dynamicCost))
-                {
-                    // This shouldn't happen since we checked earlier, but safety check
-                    isSpawning = false;
-                    return;
-                }
-
-                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
-                if (newBlock != null)
-                {
-                    HumanClick newChild = newBlock.GetComponent<HumanClick>();
-
-                    // ===== CONNECTION POINT 5 (NORTH) =====
-                    northChild = newChild;
-                    newChild.southParent = this;
-                    NotifyConnectionsChanged(); // Notify THIS block changed
-                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
-
-                    if (childToMove != null)
-                    {
-                        // ===== CONNECTION POINT 6 (NORTH INSERTION) =====
-                        newChild.northChild = childToMove;
-                        childToMove.southParent = newChild;
-                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
-                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
-                    }
-
-                    checkCollisions = true;
-                    CheckAndKillCollisions(childToMove);
-
-                    // Validate that pushed Leaf blocks are still within range of Wood
-                    if (childToMove != null)
-                    {
-                        ValidateAndRemoveInvalidLeafs(childToMove);
-                    }
-
-                }
-            }
-            else if (difference.y < -halfSize)
-            {
-                spawnPosition = blockCenter + new Vector3(0, -blockSize, 0);
-                moveDirection = new Vector3(0, -blockSize, 0);
-                childToMove = southChild;
-
-                // Validate placement rules
-                if (!IsValidPlacement(selectedType, childToMove))
-                {
-                    return;
-                }
-
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
-                {
-                    return;
-                }
-
-                if (IsPositionOccupied(spawnPosition) && childToMove != null)
-                {
-                    checkCollisions = false;
-                    childToMove.Move(moveDirection);
-                }
-
-                isSpawning = true;
-                StartWobble();
-
-                // Spend the Food cost
-                if (!Resources.Instance.TrySpendFood(dynamicCost))
-                {
-                    // This shouldn't happen since we checked earlier, but safety check
-                    isSpawning = false;
-                    return;
-                }
-
-                newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
-                if (newBlock != null)
-                {
-                    HumanClick newChild = newBlock.GetComponent<HumanClick>();
-
-                    // ===== CONNECTION POINT 7 (SOUTH) =====
-                    southChild = newChild;
-                    newChild.northParent = this;
-                    NotifyConnectionsChanged(); // Notify THIS block changed
-                    newChild.NotifyConnectionsChanged(); // Notify new block initialized
-
-                    if (childToMove != null)
-                    {
-                        // ===== CONNECTION POINT 8 (SOUTH INSERTION) =====
-                        newChild.southChild = childToMove;
-                        childToMove.northParent = newChild;
-                        newChild.NotifyConnectionsChanged(); // Notify new block gained child
-                        childToMove.NotifyConnectionsChanged(); // Notify moved block's parent changed
-                    }
-
-                    checkCollisions = true;
-                    CheckAndKillCollisions(childToMove);
-
-                    // Validate that pushed Leaf blocks are still within range of Wood
-                    if (childToMove != null)
-                    {
-                        ValidateAndRemoveInvalidLeafs(childToMove);
-                    }
-
-                }
-            }
-        }
-    }
 
     void CheckAndKillCollisions(HumanClick blockTree)
     {
         if (blockTree == null) return;
+
+        if (IsHazard(blockTree.transform.position))
+        {
+            blockTree.Die();
+            return; // No need to check children if this block is removed
+        }
 
         if (IsPositionOccupied(blockTree.transform.position))
         {
@@ -733,6 +760,10 @@ public class HumanClick : MonoBehaviour
             if (blockAtPosition != null)
             {
                 blockAtPosition.Die();
+            }
+            else
+            {
+                Die();
             }
         }
     }

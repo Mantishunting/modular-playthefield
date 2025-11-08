@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewBlockType", menuName = "Block System/Block Type")]
 public class BlockType : ScriptableObject
@@ -20,6 +20,9 @@ public class BlockType : ScriptableObject
 
     [Tooltip("Production interval in seconds (e.g., 5 = produce every 5 seconds)")]
     public float productionRate = 5f;
+
+    [Tooltip("How much food this block produces per cycle")]
+    public int productionAmount = 1; // 
 
     [Header("Lifespan")]
     [Tooltip("How long this block lives in seconds. Set to 0 for immortal (lives forever).")]

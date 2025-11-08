@@ -123,6 +123,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requireSunlight: 1
+  boxCastSize: {x: 0.6, y: 0.6}
+  originOffset: 1.5
   showDebugLogs: 1
 --- !u!61 &4709957717378282403
 BoxCollider2D:
@@ -183,7 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingState: {fileID: 11400000, guid: 96b024fb33ba98b42988e5817c96966e, type: 2}
   targetState: {fileID: 0}
-  transitionSpeed: 5
+  transitionSpeed: 20
   seedOverride: -1
 --- !u!114 &-7046886269897201575
 MonoBehaviour:
@@ -200,4 +202,4 @@ MonoBehaviour:
   idleState: {fileID: 11400000, guid: 96b024fb33ba98b42988e5817c96966e, type: 2}
   producingState: {fileID: 11400000, guid: 60d9bd46d2854dc4f981a5e02a5506a1, type: 2}
   completeState: {fileID: 11400000, guid: 58bd673a4eafb7446af032c79e559f97, type: 2}
-  completionDuration: 3
+  completionDuration: 1

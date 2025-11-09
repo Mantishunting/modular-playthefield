@@ -355,8 +355,8 @@ public class HumanClick : MonoBehaviour
                     return;
                 }
 
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                // If adding (no child) and position occupied or in hazard, abort
+                if (childToMove == null && (IsPositionOccupied(spawnPosition) || IsHazard(spawnPosition)))
                 {
                     return;
                 }
@@ -421,8 +421,8 @@ public class HumanClick : MonoBehaviour
                     return;
                 }
 
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                // If adding (no child) and position occupied or in hazard, abort
+                if (childToMove == null && (IsPositionOccupied(spawnPosition) || IsHazard(spawnPosition)))
                 {
                     return;
                 }
@@ -490,8 +490,8 @@ public class HumanClick : MonoBehaviour
                     return;
                 }
 
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                // If adding (no child) and position occupied or in hazard, abort
+                if (childToMove == null && (IsPositionOccupied(spawnPosition) || IsHazard(spawnPosition)))
                 {
                     return;
                 }
@@ -556,8 +556,8 @@ public class HumanClick : MonoBehaviour
                     return;
                 }
 
-                // If adding (no child) and position occupied, abort
-                if (childToMove == null && IsPositionOccupied(spawnPosition))
+                // If adding (no child) and position occupied or in hazard, abort
+                if (childToMove == null && (IsPositionOccupied(spawnPosition) || IsHazard(spawnPosition)))
                 {
                     return;
                 }
@@ -616,6 +616,13 @@ public class HumanClick : MonoBehaviour
     void CheckAndKillCollisions(HumanClick blockTree)
     {
         if (blockTree == null) return;
+
+        // Kill any block that overlaps a NoGrow collider
+        if (IsHazard(blockTree.transform.position))
+        {
+            blockTree.Die();
+            return;
+        }
 
         if (IsPositionOccupied(blockTree.transform.position))
         {
@@ -693,6 +700,21 @@ public class HumanClick : MonoBehaviour
         }
     }
 
+    // --- NoGrow hazard detection ---
+    private const string HazardTag = "NoGrow";
+
+    private bool IsHazard(Vector3 position)
+    {
+        Vector2 size = new Vector2(blockSize * 0.95f, blockSize * 0.95f);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(position, size, 0f);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (hits[i] != null && hits[i].CompareTag(HazardTag))
+                return true;
+        }
+        return false;
+    }
+
     bool IsPositionOccupied(Vector3 position)
     {
         HumanClick[] allBlocks = FindObjectsOfType<HumanClick>();
@@ -727,12 +749,23 @@ public class HumanClick : MonoBehaviour
             westChild.Move(direction);
         }
 
-        if (checkCollisions && IsPositionOccupied(transform.position))
+        if (checkCollisions)
         {
-            HumanClick blockAtPosition = GetBlockAtMyPosition();
-            if (blockAtPosition != null)
+            // If this block enters a NoGrow collider, kill it
+            if (IsHazard(transform.position))
             {
-                blockAtPosition.Die();
+                Die();
+                return;
+            }
+
+            // Normal block-vs-block kill behaviour
+            if (IsPositionOccupied(transform.position))
+            {
+                HumanClick blockAtPosition = GetBlockAtMyPosition();
+                if (blockAtPosition != null)
+                {
+                    blockAtPosition.Die();
+                }
             }
         }
     }

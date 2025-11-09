@@ -43,10 +43,16 @@ public class BlockTypeManager : MonoBehaviour
             SelectTypeByName("Leaf");
         }
 
-        // Press S for Wood (Stem)
-        if (Input.GetKeyDown(KeyCode.S))
+        // Press W for Wood (Stem)
+        if (Input.GetKeyDown(KeyCode.W))
         {
             SelectTypeByName("Wood");
+        }
+
+        // Press B for Flower
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            SelectTypeByName("Flower");
         }
     }
 

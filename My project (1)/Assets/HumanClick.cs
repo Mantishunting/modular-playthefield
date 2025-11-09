@@ -728,6 +728,8 @@ public class HumanClick : MonoBehaviour
         return false;
     }
 
+    
+
     public void Move(Vector3 direction)
     {
         transform.position += direction;
@@ -769,6 +771,8 @@ public class HumanClick : MonoBehaviour
             }
         }
     }
+
+
 
     public HumanClick GetBlockAtMyPosition()
     {
@@ -881,5 +885,57 @@ public class HumanClick : MonoBehaviour
     public HumanClick GetSouthChild() { return southChild; }
     public HumanClick GetEastChild() { return eastChild; }
     public HumanClick GetWestChild() { return westChild; }
+
+    // External placement hook used by growth scripts
+    public bool TryPlaceRelative(Direction dir, BlockType type, bool spendResources = true)
+    {
+        if (type == null || spawner == null) return false;
+
+        Vector3 step = Vector3.zero;
+        HumanClick childToMove = null;
+
+        switch (dir)
+        {
+            case Direction.East: step = new Vector3(blockSize, 0f, 0f); childToMove = eastChild; break;
+            case Direction.West: step = new Vector3(-blockSize, 0f, 0f); childToMove = westChild; break;
+            case Direction.North: step = new Vector3(0f, blockSize, 0f); childToMove = northChild; break;
+            case Direction.South: step = new Vector3(0f, -blockSize, 0f); childToMove = southChild; break;
+            default: return false;
+        }
+
+        Vector3 spawnPosition = transform.position + step;
+
+        if (!IsValidPlacement(type, childToMove)) return false;
+        if (childToMove == null && (IsPositionOccupied(spawnPosition) || IsHazard(spawnPosition))) return false;
+
+        int dynamicCost = GetDynamicCost(type);
+        if (spendResources && !Resources.Instance.CanAfford(dynamicCost)) return false;
+
+        if (IsPositionOccupied(spawnPosition) && childToMove != null)
+            childToMove.Move(step);
+
+        if (spendResources && !Resources.Instance.TrySpendFood(dynamicCost)) return false;
+
+        GameObject newBlock = spawner.SpawnBlockAt(spawnPosition, type);
+        if (newBlock == null) return false;
+
+        HumanClick newChild = newBlock.GetComponent<HumanClick>();
+        if (newChild == null) return false;
+        newChild.SetBlockType(type);
+
+        // Connect new block
+        if (dir == Direction.East) { eastChild = newChild; newChild.westParent = this; }
+        if (dir == Direction.West) { westChild = newChild; newChild.eastParent = this; }
+        if (dir == Direction.North) { northChild = newChild; newChild.southParent = this; }
+        if (dir == Direction.South) { southChild = newChild; newChild.northParent = this; }
+
+        NotifyConnectionsChanged();
+        newChild.NotifyConnectionsChanged();
+        CheckAndKillCollisions(childToMove);
+        if (childToMove != null) ValidateAndRemoveInvalidLeafs(childToMove);
+
+        return true;
+    }
+
 
 }

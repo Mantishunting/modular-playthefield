@@ -11,12 +11,11 @@ GameObject:
   - component: {fileID: 5271642053659760612}
   - component: {fileID: 6286400785320338356}
   - component: {fileID: -1379168262426883360}
-  - component: {fileID: 896641231359971637}
   - component: {fileID: 4709957717378282403}
   - component: {fileID: -762371774904009461}
-  - component: {fileID: -7046886269897201575}
+  - component: {fileID: 4256536930525964679}
   m_Layer: 0
-  m_Name: LeafBlock
+  m_Name: FlowerBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +56,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 91304a92b5e750f468c140cd86d2ada9, type: 2}
+  - {fileID: 2100000, guid: d4fd60728d391b74c9408588e11b061c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,22 +109,6 @@ MonoBehaviour:
   southChild: {fileID: 0}
   eastChild: {fileID: 0}
   westChild: {fileID: 0}
---- !u!114 &896641231359971637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9001448909574542960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87cc426fd2d364a40999fac02327ed15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  requireSunlight: 1
-  boxCastSize: {x: 0.6, y: 0.6}
-  originOffset: 1.5
-  showDebugLogs: 0
 --- !u!61 &4709957717378282403
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -183,11 +166,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cad3cebebd76fd4f9a446be61256fdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingState: {fileID: 11400000, guid: 96b024fb33ba98b42988e5817c96966e, type: 2}
+  startingState: {fileID: 11400000, guid: f5db36aabba385a42b6002331ed08508, type: 2}
   targetState: {fileID: 0}
   transitionSpeed: 20
   seedOverride: -1
---- !u!114 &-7046886269897201575
+--- !u!114 &4256536930525964679
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,10 +179,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 9001448909574542960}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32bbec03719171440894bd02d2f2573e, type: 3}
+  m_Script: {fileID: 11500000, guid: a3020bd6f8abd2841847ad601e9779d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleState: {fileID: 11400000, guid: 96b024fb33ba98b42988e5817c96966e, type: 2}
-  producingState: {fileID: 11400000, guid: 60d9bd46d2854dc4f981a5e02a5506a1, type: 2}
-  completeState: {fileID: 11400000, guid: 58bd673a4eafb7446af032c79e559f97, type: 2}
-  completionDuration: 1
+  direction: 3
+  intervalSeconds: 0.1
+  blockType: {fileID: 11400000, guid: bde8b6f500d3b9f49991cf50e247faf7, type: 2}

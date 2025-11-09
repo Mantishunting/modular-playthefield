@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Bracket Leaf
+  m_Name: Bracket Leaf 1
   m_Shader: {fileID: 4800000, guid: 3f240e92835a8dd4dbb7427733e3358c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0

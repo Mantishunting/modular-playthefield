@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -1379168262426883360}
   - component: {fileID: 4709957717378282403}
   - component: {fileID: -762371774904009461}
-  - component: {fileID: 4256536930525964679}
+  - component: {fileID: 729148903192243123}
   m_Layer: 0
   m_Name: FlowerBlock
   m_TagString: Untagged
@@ -170,7 +170,7 @@ MonoBehaviour:
   targetState: {fileID: 0}
   transitionSpeed: 20
   seedOverride: -1
---- !u!114 &4256536930525964679
+--- !u!114 &729148903192243123
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -179,9 +179,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 9001448909574542960}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3020bd6f8abd2841847ad601e9779d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 97b1bb1256e05a2468473627c09038b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  direction: 3
-  intervalSeconds: 0.1
+  pattern: {fileID: 11400000, guid: f43c824f2a5818c49be760f644f51f49, type: 2}
   blockType: {fileID: 11400000, guid: bde8b6f500d3b9f49991cf50e247faf7, type: 2}
+  overrideInterval: 0
+  intervalSeconds: 0.6
+  initialLabel: MainStem

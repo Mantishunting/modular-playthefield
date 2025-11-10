@@ -44,10 +44,10 @@ public class HumanClick : MonoBehaviour
     private BlockType myBlockType;
 
     // Parent tracking (mirrors child structure)
-    private HumanClick northParent;
-    private HumanClick southParent;
-    private HumanClick eastParent;
-    private HumanClick westParent;
+    public HumanClick northParent;
+    public HumanClick southParent;
+    public HumanClick eastParent;
+    public HumanClick westParent;
 
 
     // Child references
@@ -889,6 +889,7 @@ public class HumanClick : MonoBehaviour
     // External placement hook used by growth scripts
     public bool TryPlaceRelative(Direction dir, BlockType type, bool spendResources = true)
     {
+        if (spawner == null) spawner = FindObjectOfType<BlockSpawner>();
         if (type == null || spawner == null) return false;
 
         Vector3 step = Vector3.zero;

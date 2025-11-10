@@ -17,9 +17,9 @@ MonoBehaviour:
   bracketSize: 0.2
   gridCount: 20
   leftEdge: 0
-  rightEdge: 0.5
-  topEdge: 0.5
-  bottomEdge: 0
+  rightEdge: 0
+  topEdge: 0
+  bottomEdge: 0.45
   minScale: 1
   maxScale: 1.5
   localRotationRange: 0

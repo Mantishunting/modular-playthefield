@@ -174,6 +174,7 @@ MonoBehaviour:
   targetState: {fileID: 0}
   transitionSpeed: 5
   seedOverride: -1
+  extraRotationDeg: 0
 --- !u!114 &1944116896667604093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,10 +190,10 @@ MonoBehaviour:
   humanClick: {fileID: 0}
   stateController: {fileID: 0}
   straightVerticalState: {fileID: 11400000, guid: aa65ab9cdf3c8a444b1732d580720f2e, type: 2}
-  straightHorizontalState: {fileID: 11400000, guid: da3c359528a1d3448be1f0fa46e20696, type: 2}
+  straightHorizontalState: {fileID: 11400000, guid: aa65ab9cdf3c8a444b1732d580720f2e, type: 2}
   cornerNorthEastState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
-  cornerNorthWestState: {fileID: 11400000, guid: b8b9651300eb8a3479fb8e618b02eaae, type: 2}
-  cornerSouthEastState: {fileID: 11400000, guid: bff4d05e6b2353744845c03a22c226b5, type: 2}
-  cornerSouthWestState: {fileID: 11400000, guid: 1e5d30d39803fa14d8ececa8f36022a5, type: 2}
+  cornerNorthWestState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
+  cornerSouthEastState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
+  cornerSouthWestState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
   standardState: {fileID: 11400000, guid: b1fbea34c0a3b5146a15ef4ef6ccb517, type: 2}
-  showDebugLogs: 0
+  showDebugLogs: 1

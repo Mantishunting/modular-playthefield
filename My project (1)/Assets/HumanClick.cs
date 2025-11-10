@@ -27,6 +27,11 @@ public class HumanClick : MonoBehaviour
     [SerializeField] private float wobbleDuration = 0.3f;
     [SerializeField] private float wobbleAmount = 0.1f;
 
+    // === Global placement/destruction events (gameplay hooks) ===
+    public static event System.Action<BlockType> OnBlockPlaced;
+    public static event System.Action<BlockType> OnBlockDestroyed;
+
+
     private Camera mainCamera;
     private int blockId;
     private static int nextId = 0;
@@ -407,6 +412,9 @@ public class HumanClick : MonoBehaviour
                         ValidateAndRemoveInvalidLeafs(childToMove);
                     }
 
+                    newChild.SetBlockType(selectedType);
+                    OnBlockPlaced?.Invoke(selectedType);
+
                 }
             }
             else if (difference.x < -halfSize)
@@ -472,6 +480,9 @@ public class HumanClick : MonoBehaviour
                     {
                         ValidateAndRemoveInvalidLeafs(childToMove);
                     }
+
+                    newChild.SetBlockType(selectedType);
+                    OnBlockPlaced?.Invoke(selectedType);
 
                 }
             }
@@ -542,6 +553,9 @@ public class HumanClick : MonoBehaviour
                         ValidateAndRemoveInvalidLeafs(childToMove);
                     }
 
+                    newChild.SetBlockType(selectedType);
+                    OnBlockPlaced?.Invoke(selectedType);
+
                 }
             }
             else if (difference.y < -halfSize)
@@ -607,6 +621,9 @@ public class HumanClick : MonoBehaviour
                     {
                         ValidateAndRemoveInvalidLeafs(childToMove);
                     }
+
+                    newChild.SetBlockType(selectedType);
+                    OnBlockPlaced?.Invoke(selectedType);
 
                 }
             }
@@ -811,6 +828,8 @@ public class HumanClick : MonoBehaviour
             westChild.Die();
         }
 
+        if (myBlockType != null) OnBlockDestroyed?.Invoke(myBlockType);
+
         Destroy(gameObject);
     }
 
@@ -923,6 +942,7 @@ public class HumanClick : MonoBehaviour
         HumanClick newChild = newBlock.GetComponent<HumanClick>();
         if (newChild == null) return false;
         newChild.SetBlockType(type);
+        OnBlockPlaced?.Invoke(type);
 
         // Connect new block
         if (dir == Direction.East) { eastChild = newChild; newChild.westParent = this; }

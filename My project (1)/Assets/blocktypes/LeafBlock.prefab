@@ -106,6 +106,10 @@ MonoBehaviour:
   clickDepthMultiplier: 1.5
   wobbleDuration: 0.3
   wobbleAmount: 0.1
+  northParent: {fileID: 0}
+  southParent: {fileID: 0}
+  eastParent: {fileID: 0}
+  westParent: {fileID: 0}
   northChild: {fileID: 0}
   southChild: {fileID: 0}
   eastChild: {fileID: 0}
@@ -125,7 +129,7 @@ MonoBehaviour:
   requireSunlight: 1
   boxCastSize: {x: 0.6, y: 0.6}
   originOffset: 1.5
-  showDebugLogs: 0
+  showDebugLogs: 1
 --- !u!61 &4709957717378282403
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -187,6 +191,7 @@ MonoBehaviour:
   targetState: {fileID: 0}
   transitionSpeed: 20
   seedOverride: -1
+  extraRotationDeg: 0
 --- !u!114 &-7046886269897201575
 MonoBehaviour:
   m_ObjectHideFlags: 0

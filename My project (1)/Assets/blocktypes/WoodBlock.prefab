@@ -105,6 +105,10 @@ MonoBehaviour:
   clickDepthMultiplier: 1.5
   wobbleDuration: 0.3
   wobbleAmount: 0.1
+  northParent: {fileID: 0}
+  southParent: {fileID: 0}
+  eastParent: {fileID: 0}
+  westParent: {fileID: 0}
   northChild: {fileID: 0}
   southChild: {fileID: 0}
   eastChild: {fileID: 0}
@@ -186,9 +190,9 @@ MonoBehaviour:
   stateController: {fileID: 0}
   straightVerticalState: {fileID: 11400000, guid: aa65ab9cdf3c8a444b1732d580720f2e, type: 2}
   straightHorizontalState: {fileID: 11400000, guid: da3c359528a1d3448be1f0fa46e20696, type: 2}
-  cornerNorthEastState: {fileID: 11400000, guid: b8b9651300eb8a3479fb8e618b02eaae, type: 2}
-  cornerNorthWestState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
-  cornerSouthEastState: {fileID: 11400000, guid: 1e5d30d39803fa14d8ececa8f36022a5, type: 2}
-  cornerSouthWestState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
+  cornerNorthEastState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
+  cornerNorthWestState: {fileID: 11400000, guid: b8b9651300eb8a3479fb8e618b02eaae, type: 2}
+  cornerSouthEastState: {fileID: 11400000, guid: bff4d05e6b2353744845c03a22c226b5, type: 2}
+  cornerSouthWestState: {fileID: 11400000, guid: 1e5d30d39803fa14d8ececa8f36022a5, type: 2}
   standardState: {fileID: 11400000, guid: b1fbea34c0a3b5146a15ef4ef6ccb517, type: 2}
   showDebugLogs: 0

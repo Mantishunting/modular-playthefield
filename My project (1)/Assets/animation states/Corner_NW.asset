@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: Corner_NW
   m_EditorClassIdentifier: 
   stateDescription: left up
-  spacing: 0.15
+  spacing: 0.13
   bracketSize: 0.2
   gridCount: 20
-  leftEdge: 0.223
-  rightEdge: 0
-  topEdge: 0.386
+  leftEdge: 0
+  rightEdge: 0.35
+  topEdge: 0.35
   bottomEdge: 0
   minScale: 1
   maxScale: 1.5
   localRotationRange: 0
-  globalRotation: 45
+  globalRotation: 225
   staticJitter: 0.3
   wiggleAmount: 0.1
   wiggleSpeed: 2

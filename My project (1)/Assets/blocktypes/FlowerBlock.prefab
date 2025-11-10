@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4709957717378282403}
   - component: {fileID: -762371774904009461}
   - component: {fileID: 729148903192243123}
+  - component: {fileID: 3822827378654806399}
   m_Layer: 0
   m_Name: FlowerBlock
   m_TagString: Untagged
@@ -105,6 +106,10 @@ MonoBehaviour:
   clickDepthMultiplier: 1.5
   wobbleDuration: 0.3
   wobbleAmount: 0.1
+  northParent: {fileID: 0}
+  southParent: {fileID: 0}
+  eastParent: {fileID: 0}
+  westParent: {fileID: 0}
   northChild: {fileID: 0}
   southChild: {fileID: 0}
   eastChild: {fileID: 0}
@@ -186,4 +191,28 @@ MonoBehaviour:
   blockType: {fileID: 11400000, guid: bde8b6f500d3b9f49991cf50e247faf7, type: 2}
   overrideInterval: 0
   intervalSeconds: 0.6
+  autoStart: 1
+  suppressIfParentHasAgent: 1
   initialLabel: MainStem
+--- !u!114 &3822827378654806399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75c4b44d0aeb25641ac140a03eff679b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanClick: {fileID: 0}
+  stateController: {fileID: 0}
+  straightVerticalState: {fileID: 11400000, guid: 3e7cc3cabd3b3df4aa9f12bb4ba82fd3, type: 2}
+  straightHorizontalState: {fileID: 11400000, guid: a106ea481048b5d4c977e99a405c8325, type: 2}
+  cornerNorthEastState: {fileID: 0}
+  cornerNorthWestState: {fileID: 0}
+  cornerSouthEastState: {fileID: 0}
+  cornerSouthWestState: {fileID: 0}
+  standardState: {fileID: 0}
+  showDebugLogs: 0

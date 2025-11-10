@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37f37ecc2e94090479602586e45ef599, type: 3}
-  m_Name: Flower_Idle 3
+  m_Name: Flower_Corner NE
   m_EditorClassIdentifier: 
   stateDescription: 
   spacing: 0.15

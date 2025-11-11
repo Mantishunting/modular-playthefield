@@ -2282,8 +2282,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd51f97e4498ceb4bb26d48a62996ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentFood: 500
-  showDebugLogs: 0
+  currentFood: 300
+  enableStarvation: 1
+  blocksToKillPerCheck: 1
+  starvationCheckInterval: 60
+  showDebugLogs: 1
 --- !u!4 &1468730096
 Transform:
   m_ObjectHideFlags: 0

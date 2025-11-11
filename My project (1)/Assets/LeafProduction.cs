@@ -126,7 +126,7 @@ public class LeafProduction : MonoBehaviour
         if (!requireSunlight) return true;
         if (sun == null) return false;
 
-        Vector3 toSun = (sun.transform.position - transform.position).normalized;
+        Vector3 toSun = -sun.GetLightDirection();
         float rayDistance = Vector3.Distance(transform.position, Vector3.zero) + sun.GetOrbitRadius() + 100f;
 
         Vector3 rayOrigin = transform.position + (toSun * originOffset);

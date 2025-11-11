@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requireSunlight: 1
-  boxCastSize: {x: 0.6, y: 0.6}
+  boxCastSize: {x: 0.3, y: 0.3}
   originOffset: 1.5
   showDebugLogs: 1
 --- !u!61 &4709957717378282403

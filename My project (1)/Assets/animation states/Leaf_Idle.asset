@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Leaf_Idle
   m_EditorClassIdentifier: 
   stateDescription: 
-  spacing: 0.15
-  bracketSize: 0.2
+  spacing: 0.138
+  bracketSize: 0.119
   gridCount: 20
   leftEdge: 0
   rightEdge: 0
@@ -22,8 +22,8 @@ MonoBehaviour:
   bottomEdge: 0
   minScale: 1
   maxScale: 1.5
-  localRotationRange: 30
+  localRotationRange: 180
   globalRotation: 0
-  staticJitter: 0.3
+  staticJitter: 0
   wiggleAmount: 0.1
   wiggleSpeed: 2

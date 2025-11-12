@@ -22,7 +22,7 @@ MonoBehaviour:
   bottomEdge: 0
   minScale: 1
   maxScale: 1.5
-  localRotationRange: 30
+  localRotationRange: 0
   globalRotation: 0
   staticJitter: 0.9
   wiggleAmount: 0.9

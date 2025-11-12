@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockName: Wood
   blockColor: {r: 0.735849, g: 0.618936, b: 0, a: 1}
-  prefab: {fileID: 9001448909574542960, guid: 9ec804c6a4849b349b6cab732942fbac, type: 3}
+  prefab: {fileID: 9001448909574542960, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
   cost: 5
   producesResources: 0
   productionRate: 0
+  productionAmount: 1
+  lifespanSeconds: 0

@@ -18,7 +18,11 @@ public class BlockDailyCost : MonoBehaviour
     [SerializeField] private bool showDebugLogs = true;
     
     private float timer = 0f;
-    
+
+    private int lastFoodAmount = -1;
+    private float foodHoldTimer = 0f;
+    [SerializeField] private float foodHoldThresholdSeconds = 5f; // tweak in Inspector
+
     public enum UpkeepPenalty
     {
         None,           // Nothing happens, just can't pay
@@ -43,8 +47,37 @@ public class BlockDailyCost : MonoBehaviour
             ChargeUpkeep();
             timer = 0f;
         }
+
+        // --- Detect stagnant food levels and force a penalty if food won't drop ---
+        int currentFood = Resources.Instance.GetCurrentFood();
+
+        if (currentFood == lastFoodAmount)
+        {
+            foodHoldTimer += Time.deltaTime;
+
+            if (foodHoldTimer >= foodHoldThresholdSeconds)
+            {
+                if (showDebugLogs)
+                    Debug.LogWarning("⚠️ Food stagnant for 5s — forcing unpaid-upkeep penalty.");
+
+                // Reuse your penalty path; kill at least 1 block so something happens.
+                int blocksToKill = Mathf.Max(1, Mathf.CeilToInt(GetTotalBlockCount() * costPerBlock));
+                HandleUnpaidUpkeep(blocksToKill);
+
+                // reset so we don't cascade
+                foodHoldTimer = 0f;
+                lastFoodAmount = Resources.Instance.GetCurrentFood();
+            }
+        }
+        else
+        {
+            // food changed → reset timer and update the baseline
+            foodHoldTimer = 0f;
+            lastFoodAmount = currentFood;
+        }
+
     }
-    
+
     void ChargeUpkeep()
     {
         // Get total block count from HumanClick's static tracker

@@ -14,10 +14,34 @@ public class Resources : MonoBehaviour
     [Tooltip("Check for starvation every X frames")]
     [SerializeField] private int starvationCheckInterval = 10;
 
+    [Header("Refund Settings")]
+    [SerializeField] private bool enableDeathRefund = true;
+    [SerializeField, Range(0f, 2f)] private float deathRefundMultiplier = 0.25f; // adjustable in Inspector
+    [SerializeField] private bool showRefundLogs = false;
+
+    // **1️⃣ New Section — Destruction Rules**
+    [Header("Destruction Rules")]
+    [Tooltip("If unchecked, players cannot right-click to destroy Wood blocks.")]
+    [SerializeField] private bool allowPlayerDestroyWood = true;
+    [Tooltip("If unchecked, starvation and upkeep penalties will never target Wood blocks.")]
+    [SerializeField] private bool allowLowResourceDestroyWood = true;
+
+    // **2️⃣ Public Read-only Properties**
+    public bool AllowPlayerDestroyWood => allowPlayerDestroyWood;
+    public bool AllowLowResourceDestroyWood => allowLowResourceDestroyWood;
+
+    // Internal tracker
+    private int lastBlockCount = -1;
+
     private int frameCounter = 0;
+
+    private float lastFoodAmount = -1f;
+    private float foodHoldTimer = 0f;
+    [SerializeField] private float foodHoldThresholdSeconds = 5f; // how long food can stay unchanged before forcing a kill
 
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
+    public bool ShowDebugLogs => showDebugLogs;
 
     void Awake()
     {
@@ -30,6 +54,12 @@ public class Resources : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    void Start()
+    {
+        // Initialise baseline for death-refund tracking
+        lastBlockCount = FindObjectsOfType<HumanClick>().Length;
     }
 
     void Update()
@@ -51,15 +81,65 @@ public class Resources : MonoBehaviour
                 frameCounter = 0;
             }
         }
-        else
+
+        // --- Detect stagnant food levels (failsafe for runaway upkeep) ---
+        if (enableStarvation)
         {
-            frameCounter = 0; // Reset counter when we have food
+            // If food hasn't changed since last frame
+            if (Mathf.Approximately(currentFood, lastFoodAmount))
+            {
+                foodHoldTimer += Time.deltaTime;
+
+                if (foodHoldTimer >= foodHoldThresholdSeconds)
+                {
+                    if (showDebugLogs)
+                        Debug.LogWarning("⚠️ Food stagnant for 5 s — triggering starvation block kill.");
+
+                    CheckStarvation();   // Re-use existing kill routine
+                    foodHoldTimer = 0f;  // reset timer after a kill
+                }
+            }
+            else
+            {
+                // Food changed — reset timer
+                foodHoldTimer = 0f;
+                lastFoodAmount = currentFood;
+            }
+        }
+
+        // --- Refund on detected deaths (any cause) ---
+        if (enableDeathRefund)
+        {
+            int liveBlocks = FindObjectsOfType<HumanClick>().Length;
+
+            // First frame init safeguard
+            if (lastBlockCount < 0) lastBlockCount = liveBlocks;
+
+            // Positive delta = deaths since last frame
+            int deaths = lastBlockCount - liveBlocks;
+            if (deaths > 0)
+            {
+                // Choose whether to price “after” or “before” the deaths:
+                // After-death price (uses current count):
+                int woodPriceNow = GetCurrentWoodBuyCost();
+
+                // If you'd rather use price BEFORE the deaths, use lastBlockCount instead:
+                // int woodPriceBefore = 5 + lastBlockCount;
+
+                int refundPer = Mathf.Max(0, Mathf.RoundToInt(woodPriceNow * deathRefundMultiplier));
+                int totalRefund = refundPer * deaths;
+
+                AddFood(totalRefund);
+
+                if (showRefundLogs)
+                    Debug.Log($"Refund: {deaths} deaths × {refundPer} = +{totalRefund} Food (multiplier {deathRefundMultiplier:F2})");
+            }
+
+            // Update baseline
+            lastBlockCount = liveBlocks;
         }
     }
 
-    /// <summary>
-    /// Adds food to the total resource pool
-    /// </summary>
     public void AddFood(int amount)
     {
         if (amount <= 0)
@@ -76,17 +156,11 @@ public class Resources : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Gets the current total food count
-    /// </summary>
     public int GetCurrentFood()
     {
         return currentFood;
     }
 
-    /// <summary>
-    /// For future use: Subtracts food from the pool
-    /// </summary>
     public bool TrySpendFood(int amount)
     {
         if (amount <= 0)
@@ -117,33 +191,24 @@ public class Resources : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// For future use: Checks if we can afford an amount without spending it
-    /// </summary>
     public bool CanAfford(int amount)
     {
         return currentFood >= amount;
     }
 
-    /// <summary>
-    /// Kills childless blocks when food is at or below zero
-    /// </summary>
     void CheckStarvation()
     {
-        // Find all blocks with HumanClick component
         HumanClick[] allBlocks = FindObjectsOfType<HumanClick>();
 
         if (allBlocks.Length == 0)
         {
-            return; // No blocks to kill
+            return;
         }
 
-        // Find childless blocks (blocks with no children in HumanClick)
         System.Collections.Generic.List<HumanClick> childlessBlocks = new System.Collections.Generic.List<HumanClick>();
 
         foreach (HumanClick block in allBlocks)
         {
-            // Check if this block has any children using HumanClick's child tracking
             bool hasChildren = block.northChild != null ||
                               block.southChild != null ||
                               block.eastChild != null ||
@@ -164,7 +229,6 @@ public class Resources : MonoBehaviour
             return;
         }
 
-        // Kill blocks (up to the limit) and collect refunds
         int blocksKilled = 0;
         int totalRefund = 0;
 
@@ -172,7 +236,6 @@ public class Resources : MonoBehaviour
         {
             if (childlessBlocks[i] != null)
             {
-                // Get the block's cost for refund
                 BlockType blockType = childlessBlocks[i].GetBlockType();
                 if (blockType != null)
                 {
@@ -189,12 +252,9 @@ public class Resources : MonoBehaviour
             }
         }
 
-        // Add the refund after killing blocks
         if (totalRefund > 0)
         {
             AddFood(totalRefund);
-
-            // ALWAYS log this, even if showDebugLogs is false
             Debug.Log($"⚠️ STARVATION REFUND: +{totalRefund} food from {blocksKilled} blocks | New Total: {currentFood}");
         }
 
@@ -202,5 +262,11 @@ public class Resources : MonoBehaviour
         {
             Debug.Log($"Starvation check complete: Killed {blocksKilled} childless blocks. {childlessBlocks.Count - blocksKilled} childless blocks remain.");
         }
+    }
+
+    private int GetCurrentWoodBuyCost()
+    {
+        int liveBlocks = FindObjectsOfType<HumanClick>().Length;
+        return 5 + liveBlocks;
     }
 }

@@ -557,6 +557,7 @@ GameObject:
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
   - component: {fileID: 519420033}
+  - component: {fileID: 519420034}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -651,7 +652,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 11.267402
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -676,7 +677,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 10.5, y: 12.12, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -703,6 +704,28 @@ MonoBehaviour:
   edgePanSpeed: 10
   edgePanBorder: 20
   showDebugLogs: 0
+--- !u!114 &519420034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f7f088901ca8cf49a1610f0d4306a4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startPosition: {x: 10.5, y: 12.12, z: -10}
+  startZoom: 18
+  endPosition: {x: 0, y: 2.87, z: -10}
+  endZoom: 5
+  totalDuration: 5
+  easeInPercent: 0.1
+  easeOutPercent: 0
+  skipKey: 48
+  playOnStart: 1
+  cameraController: {fileID: 0}
 --- !u!1001 &534271196
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2282,10 +2305,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd51f97e4498ceb4bb26d48a62996ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentFood: 300
+  currentFood: 2000
   enableStarvation: 1
   blocksToKillPerCheck: 1
-  starvationCheckInterval: 60
+  starvationCheckInterval: 2
+  enableDeathRefund: 1
+  deathRefundMultiplier: 0.15
+  showRefundLogs: 0
+  allowPlayerDestroyWood: 1
+  allowLowResourceDestroyWood: 1
+  foodHoldThresholdSeconds: 2
   showDebugLogs: 1
 --- !u!4 &1468730096
 Transform:
@@ -3037,9 +3066,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   upkeepInterval: 0.1
-  costPerBlock: 0.2
+  costPerBlock: 0.18
   penaltyType: 0
   showDebugLogs: 1
+  foodHoldThresholdSeconds: 5
 --- !u!1 &2098850238
 GameObject:
   m_ObjectHideFlags: 0

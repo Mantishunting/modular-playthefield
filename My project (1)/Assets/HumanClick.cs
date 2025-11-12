@@ -65,6 +65,11 @@ public class HumanClick : MonoBehaviour
     private float wobbleTimer = 0f;
     private Vector3 originalScale;
 
+    // --- Click timing to separate short clicks (destroy) from panning ---
+    private float rightClickDownTime = 0f;
+    [SerializeField] private float clickThreshold = 0.25f; // seconds to count as a "click"
+
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -84,20 +89,44 @@ public class HumanClick : MonoBehaviour
             HandleClick();
         }
 
+        // --- Right-click press: mark time ---
         if (Input.GetMouseButtonDown(1))
         {
-            Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            mousePos.z = 0;
+            rightClickDownTime = Time.time;
+        }
 
-            Vector3 blockCenter = transform.position;
-            float halfSize = blockSize / 2f;
+        // --- Right-click release: decide if it's a quick tap (destroy) or long hold (camera pan) ---
+        if (Input.GetMouseButtonUp(1))
+        {
+            float heldTime = Time.time - rightClickDownTime;
 
-            if (Mathf.Abs(mousePos.x - blockCenter.x) < halfSize &&
-                Mathf.Abs(mousePos.y - blockCenter.y) < halfSize)
+            // Only treat as click if shorter than threshold
+            if (heldTime <= clickThreshold)
             {
-                Die();
+                Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                mousePos.z = 0;
+
+                Vector3 blockCenter = transform.position;
+                float halfSize = blockSize / 2f;
+
+                if (Mathf.Abs(mousePos.x - blockCenter.x) < halfSize &&
+                    Mathf.Abs(mousePos.y - blockCenter.y) < halfSize)
+                {
+                    BlockType bt = GetBlockType();
+                    if (!Resources.Instance.AllowPlayerDestroyWood && bt != null && bt.blockName == "Wood")
+                    {
+                        if (Resources.Instance.ShowDebugLogs)
+                            Debug.Log("Player attempted to destroy Wood, but policy disallows it.");
+                        return;
+                    }
+
+                    Die();
+                }
             }
         }
+
+
+
 
         // Handle hover preview (every frame while not spawning)
         if (!isSpawning)
@@ -259,22 +288,25 @@ public class HumanClick : MonoBehaviour
 
     bool IsValidPlacement(BlockType selectedType, HumanClick childToMove)
     {
-        // Rule 1: Wood cannot be child of Leaf
-        if (selectedType.blockName == "Wood" && myBlockType != null && myBlockType.blockName == "Leaf")
+        // Rule 1: Wood cannot be child of Leaf or Flower
+        if (selectedType.blockName == "Wood" && myBlockType != null &&
+            (myBlockType.blockName == "Leaf" || myBlockType.blockName == "Flower"))
         {
             return false;
         }
 
-        // Rule 2: Leaf cannot insert between Wood parent and Wood child
-        if (selectedType.blockName == "Leaf" && childToMove != null &&
+        // Rule 2: Leaf or Flower cannot insert between Wood parent and Wood child
+        if ((selectedType.blockName == "Leaf" || selectedType.blockName == "Flower") &&
+            childToMove != null &&
             myBlockType != null && myBlockType.blockName == "Wood" &&
             childToMove.GetBlockType() != null && childToMove.GetBlockType().blockName == "Wood")
         {
             return false;
         }
 
-        // Rule 3: Leaf cannot insert if it would push Wood (Wood can't be child of Leaf)
-        if (selectedType.blockName == "Leaf" && childToMove != null &&
+        // Rule 3: Leaf or Flower cannot insert if it would push Wood (Wood can't be child of Leaf/Flower)
+        if ((selectedType.blockName == "Leaf" || selectedType.blockName == "Flower") &&
+            childToMove != null &&
             childToMove.GetBlockType() != null && childToMove.GetBlockType().blockName == "Wood")
         {
             return false;
@@ -283,7 +315,6 @@ public class HumanClick : MonoBehaviour
         // Rule 4: Leaf blocks must be within 3 blocks of a Wood block
         if (selectedType.blockName == "Leaf")
         {
-            // Check if any Wood block exists within radius 3
             List<HumanClick> nearbyBlocks = TreeLooker.GetBlocksInRadius(transform.position, 3f);
             bool woodFound = false;
 
@@ -303,10 +334,11 @@ public class HumanClick : MonoBehaviour
             }
         }
 
-        // Future rules will go here
+        // Flowers have no TreeLooker distance restriction
 
         return true;
     }
+
 
     void HandleClick()
     {

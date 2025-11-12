@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 956702901779546586}
   - component: {fileID: 8176186985293310067}
   - component: {fileID: 1944116896667604093}
+  - component: {fileID: -812831409946005177}
   m_Layer: 0
   m_Name: WoodBlock
   m_TagString: Untagged
@@ -113,6 +114,7 @@ MonoBehaviour:
   southChild: {fileID: 0}
   eastChild: {fileID: 0}
   westChild: {fileID: 0}
+  clickThreshold: 0.25
 --- !u!61 &956702901779546586
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -197,3 +199,16 @@ MonoBehaviour:
   cornerSouthWestState: {fileID: 11400000, guid: 4910d150c92d72f4b8d148ae2000107a, type: 2}
   standardState: {fileID: 11400000, guid: b1fbea34c0a3b5146a15ef4ef6ccb517, type: 2}
   showDebugLogs: 1
+--- !u!114 &-812831409946005177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ab75105ecefd24ba1cb184a18359d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathEffectPrefab: {fileID: 9001448909574542960, guid: 9ec804c6a4849b349b6cab732942fbac, type: 3}

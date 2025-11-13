@@ -18,5 +18,5 @@ MonoBehaviour:
   cost: 1
   producesResources: 1
   productionRate: 1
-  productionAmount: 12
+  productionAmount: 30
   lifespanSeconds: 0

@@ -510,6 +510,64 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &290673730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290673721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!255 &290673731
+FixedJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290673721}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_BreakAction: 3
+  m_AutoConfigureConnectedAnchor: 1
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_DampingRatio: 1
+  m_Frequency: 25
+--- !u!50 &290673732
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290673721}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &351499494
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,6 +848,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 290673726}
+    - targetCorrespondingSourceObject: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 290673732}
+    - targetCorrespondingSourceObject: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 290673731}
+    - targetCorrespondingSourceObject: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 290673730}
   m_SourcePrefab: {fileID: 100100000, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
 --- !u!1 &577560155
 GameObject:
@@ -2310,7 +2377,7 @@ MonoBehaviour:
   blocksToKillPerCheck: 1
   starvationCheckInterval: 2
   enableDeathRefund: 1
-  deathRefundMultiplier: 0.15
+  deathRefundMultiplier: 0.9
   showRefundLogs: 0
   allowPlayerDestroyWood: 1
   allowLowResourceDestroyWood: 1

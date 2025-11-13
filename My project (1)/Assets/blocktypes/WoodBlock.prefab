@@ -16,8 +16,8 @@ GameObject:
   - component: {fileID: 1944116896667604093}
   - component: {fileID: -812831409946005177}
   - component: {fileID: -639064433553998507}
-  - component: {fileID: 613669791504167454}
   - component: {fileID: 2700722792869802137}
+  - component: {fileID: 4623208119085011070}
   m_Layer: 0
   m_Name: WoodBlock
   m_TagString: Untagged
@@ -227,7 +227,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.3
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -242,8 +242,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!233 &613669791504167454
-HingeJoint2D:
+--- !u!114 &2700722792869802137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!255 &4623208119085011070
+FixedJoint2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -259,23 +271,5 @@ HingeJoint2D:
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: 0, y: 0}
-  m_UseMotor: 0
-  m_Motor:
-    m_MotorSpeed: 0
-    m_MaximumMotorForce: 10000
-  m_UseLimits: 1
-  m_AngleLimits:
-    m_LowerAngle: -3
-    m_UpperAngle: 3
---- !u!114 &2700722792869802137
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9001448909574542960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_DampingRatio: 0.8
+  m_Frequency: 20

@@ -2485,7 +2485,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1176403288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2804,10 +2804,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentFood: 1000
   enableStarvation: 1
-  blocksToKillPerCheck: 1
-  starvationCheckInterval: 2
+  blocksToKillPerCheck: 5
+  starvationCheckInterval: 5
   enableDeathRefund: 1
-  deathRefundMultiplier: 0.9
+  deathRefundMultiplier: 1.1
   showRefundLogs: 0
   allowPlayerDestroyWood: 1
   allowLowResourceDestroyWood: 1
@@ -3155,8 +3155,8 @@ MonoBehaviour:
   - Each block has an upkeep cost.
   - Balance your resources as well as your branches.
   - You are beautiful, and you will grow far and wide.
-  fadeInDuration: 0.5
-  holdDuration: 5
+  fadeInDuration: 0.2
+  holdDuration: 4
   fadeOutDuration: 0.7
   delayBetweenMessages: 0.5
   playOnStart: 1
@@ -4062,9 +4062,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 877127418}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -381}
   m_SizeDelta: {x: 800, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2030375246
@@ -4114,8 +4114,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 58
-  m_fontSizeBase: 58
+  m_fontSize: 70
+  m_fontSizeBase: 70
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4557,7 +4557,7 @@ RectTransform:
   m_GameObject: {fileID: 2138198283}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1305914117}
@@ -6412,12 +6412,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 274770886413796072, guid: 2aec72025187d3e45891206e6193eece, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 274770886413796072, guid: 2aec72025187d3e45891206e6193eece, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 274770886413796072, guid: 2aec72025187d3e45891206e6193eece, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 274770886413796072, guid: 2aec72025187d3e45891206e6193eece, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 274770886413796072, guid: 2aec72025187d3e45891206e6193eece, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -457
+      value: 185
       objectReference: {fileID: 0}
     - target: {fileID: 274770886413796072, guid: 2aec72025187d3e45891206e6193eece, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 591
+      value: -96
       objectReference: {fileID: 0}
     - target: {fileID: 4172890537746279517, guid: 2aec72025187d3e45891206e6193eece, type: 3}
       propertyPath: m_Name

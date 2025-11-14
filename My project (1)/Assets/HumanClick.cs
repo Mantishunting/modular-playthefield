@@ -27,6 +27,9 @@ public class HumanClick : MonoBehaviour
     [SerializeField] private float wobbleDuration = 0.3f;
     [SerializeField] private float wobbleAmount = 0.1f;
 
+    [Header("Collision Settings")]
+    [SerializeField] private LayerMask occupancyLayer;
+
     // === Global placement/destruction events (gameplay hooks) ===
     public static event System.Action<BlockType> OnBlockPlaced;
     public static event System.Action<BlockType> OnBlockDestroyed;
@@ -673,6 +676,8 @@ public class HumanClick : MonoBehaviour
             return;
         }
 
+        // CHANGED: Commented out to stop killing blocks on overlap (except hazards)
+        /*
         if (IsPositionOccupied(blockTree.transform.position))
         {
             HumanClick blockAtPosition = blockTree.GetBlockAtMyPosition();
@@ -681,6 +686,7 @@ public class HumanClick : MonoBehaviour
                 blockAtPosition.Die();
             }
         }
+        */
 
         if (blockTree.northChild != null)
         {
@@ -766,18 +772,27 @@ public class HumanClick : MonoBehaviour
 
     bool IsPositionOccupied(Vector3 position)
     {
-        HumanClick[] allBlocks = FindObjectsOfType<HumanClick>();
-        foreach (HumanClick block in allBlocks)
+        // CHANGED: Replaced single overlap check with OverlapBoxAll to filter out self/ghosts
+        Vector2 checkSize = new Vector2(0.5f, 0.5f);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(position, checkSize, 0f, occupancyLayer);
+
+        foreach (Collider2D hit in hits)
         {
-            if (Vector3.Distance(block.transform.position, position) < 0.1f)
+            // If the collider belongs to ME (my own ghost child), ignore it.
+            // Also ignore if hit.transform is self (standard safety)
+            if (hit.transform.parent == transform || hit.transform == transform)
             {
-                return true;
+                continue;
             }
+
+            // If we hit someone else's ghost, the spot is occupied.
+            return true;
         }
+
         return false;
     }
 
-    
+
 
     public void Move(Vector3 direction)
     {
@@ -809,6 +824,8 @@ public class HumanClick : MonoBehaviour
                 return;
             }
 
+            // CHANGED: Commented out to stop killing blocks on overlap
+            /*
             // Normal block-vs-block kill behaviour
             if (IsPositionOccupied(transform.position))
             {
@@ -818,6 +835,7 @@ public class HumanClick : MonoBehaviour
                     blockAtPosition.Die();
                 }
             }
+            */
         }
     }
 

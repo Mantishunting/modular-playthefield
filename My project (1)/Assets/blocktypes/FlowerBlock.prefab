@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 4718547309244545745}
   - component: {fileID: -7725609859210917872}
   - component: {fileID: -6716128939172355784}
+  - component: {fileID: -8770443995571804785}
   m_Layer: 0
   m_Name: FlowerBlock
   m_TagString: Untagged
@@ -360,3 +361,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-8770443995571804785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11ab75105ecefd24ba1cb184a18359d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathEffectPrefab: {fileID: 9001448909574542960, guid: 5a459463911649e4dade1a161164fd16, type: 3}

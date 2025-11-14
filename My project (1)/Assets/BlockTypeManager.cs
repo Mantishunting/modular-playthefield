@@ -82,6 +82,31 @@ public class BlockTypeManager : MonoBehaviour
         return availableTypes[currentTypeIndex];
     }
 
+    /// <summary>
+    /// Sets the selected block type (called by UI buttons)
+    /// </summary>
+    public void SetSelectedType(BlockType blockType)
+    {
+        if (blockType == null)
+        {
+            Debug.LogWarning("Attempted to set null block type!");
+            return;
+        }
+
+        // Find the index of this block type in our array
+        for (int i = 0; i < availableTypes.Length; i++)
+        {
+            if (availableTypes[i] == blockType)
+            {
+                currentTypeIndex = i;
+                Debug.Log($"BlockTypeManager: Selected {blockType.blockName}");
+                return;
+            }
+        }
+
+        Debug.LogWarning($"Block type '{blockType.blockName}' not found in availableTypes array!");
+    }
+
     public string GetSelectedTypeName()
     {
         BlockType selected = GetSelectedType();

@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Manages preview "ghost" blocks that show where a block will be placed.
-/// Maintains separate previews for Wood and Leaf types.
+/// Maintains separate previews for Wood, Leaf, and Flower types.
 /// </summary>
 public class PreviewBlockManager : MonoBehaviour
 {
@@ -14,6 +14,9 @@ public class PreviewBlockManager : MonoBehaviour
 
     [Tooltip("Prefab for Leaf preview block (should have BracketStateController)")]
     [SerializeField] private GameObject leafPreviewPrefab;
+
+    [Tooltip("Prefab for Flower preview block (should have BracketStateController)")]
+    [SerializeField] private GameObject flowerPreviewPrefab;
 
     [Header("Visual States - Wood")]
     [Tooltip("Wood preview when player can afford")]
@@ -28,6 +31,13 @@ public class PreviewBlockManager : MonoBehaviour
 
     [Tooltip("Leaf preview when player cannot afford (gray)")]
     [SerializeField] private BracketAnimationState leafCantAffordState;
+
+    [Header("Visual States - Flower")]
+    [Tooltip("Flower preview when player can afford")]
+    [SerializeField] private BracketAnimationState flowerCanAffordState;
+
+    [Tooltip("Flower preview when player cannot afford (gray)")]
+    [SerializeField] private BracketAnimationState flowerCantAffordState;
 
     [Header("Settings")]
     [Tooltip("Vertical offset for cost text above preview block")]
@@ -49,8 +59,10 @@ public class PreviewBlockManager : MonoBehaviour
     // Pooled preview instances
     private GameObject woodPreviewInstance;
     private GameObject leafPreviewInstance;
+    private GameObject flowerPreviewInstance;
     private BracketStateController woodPreviewController;
     private BracketStateController leafPreviewController;
+    private BracketStateController flowerPreviewController;
 
     // Cost text display
     private GameObject costTextObject;
@@ -181,6 +193,40 @@ public class PreviewBlockManager : MonoBehaviour
         {
             Debug.LogWarning("PreviewBlockManager: No Leaf preview prefab assigned!");
         }
+
+        // Create Flower preview
+        if (flowerPreviewPrefab != null)
+        {
+            flowerPreviewInstance = Instantiate(flowerPreviewPrefab, Vector3.zero, Quaternion.identity);
+            flowerPreviewInstance.name = "FlowerPreview";
+            flowerPreviewController = flowerPreviewInstance.GetComponent<BracketStateController>();
+
+            if (flowerPreviewController == null)
+            {
+                Debug.LogError("PreviewBlockManager: Flower preview prefab missing BracketStateController!");
+            }
+
+            // Disable HumanClick if it exists (previews shouldn't be clickable)
+            HumanClick flowerClick = flowerPreviewInstance.GetComponent<HumanClick>();
+            if (flowerClick != null)
+            {
+                flowerClick.enabled = false;
+            }
+
+            // CRITICAL: Remove or disable collider to prevent blocking clicks
+            BoxCollider2D flowerCollider = flowerPreviewInstance.GetComponent<BoxCollider2D>();
+            if (flowerCollider != null)
+            {
+                Destroy(flowerCollider); // Remove completely
+                Debug.Log("PreviewBlockManager: Removed BoxCollider2D from Flower preview instance");
+            }
+
+            flowerPreviewInstance.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("PreviewBlockManager: No Flower preview prefab assigned!");
+        }
     }
 
     /// <summary>
@@ -214,6 +260,12 @@ public class PreviewBlockManager : MonoBehaviour
             previewToShow = leafPreviewInstance;
             controller = leafPreviewController;
             stateToApply = canAfford ? leafCanAffordState : leafCantAffordState;
+        }
+        else if (blockType.blockName == "Flower")
+        {
+            previewToShow = flowerPreviewInstance;
+            controller = flowerPreviewController;
+            stateToApply = canAfford ? flowerCanAffordState : flowerCantAffordState;
         }
 
         // Validation
@@ -301,6 +353,10 @@ public class PreviewBlockManager : MonoBehaviour
         if (leafPreviewInstance != null)
         {
             Destroy(leafPreviewInstance);
+        }
+        if (flowerPreviewInstance != null)
+        {
+            Destroy(flowerPreviewInstance);
         }
         if (costTextObject != null)
         {

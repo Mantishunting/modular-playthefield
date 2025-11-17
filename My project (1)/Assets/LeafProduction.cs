@@ -17,6 +17,7 @@ public class LeafProduction : MonoBehaviour
     private HumanClick humanClick;
     private BlockType myBlockType;
     private Sun sun;
+    private BlockAudioPlayer audioPlayer; // NEW: Reference to audio player
 
     private bool isProducing = false;
     private float lightCheckInterval = 0.25f;
@@ -45,6 +46,9 @@ public class LeafProduction : MonoBehaviour
         {
             Debug.LogWarning("LeafProduction: No Sun found in scene! Production will not work.");
         }
+
+        // NEW: Get the audio player component
+        audioPlayer = GetComponent<BlockAudioPlayer>();
 
         if (myBlockType.producesResources)
         {
@@ -194,6 +198,12 @@ public class LeafProduction : MonoBehaviour
         }
 
         Resources.Instance.AddFood(myBlockType.productionAmount);
+
+        // NEW: Play production sound if audio player is available
+        if (audioPlayer != null)
+        {
+            audioPlayer.PlayProductionSound();
+        }
 
         if (showDebugLogs)
         {

@@ -792,6 +792,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4657605984253019446, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5271642053659760612, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1158,6 +1162,56 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &654320311
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 654320313}
+  - component: {fileID: 654320312}
+  m_Layer: 0
+  m_Name: MusicLooper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &654320312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 654320311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c874d30875b8644f97d49fed949bf2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicSource: {fileID: 0}
+  musicTrack: {fileID: 8300000, guid: 02ab6010d9f6a7e43afb844b9cd0cec8, type: 3}
+  delayBeforeMusic: 60
+  delayAfterMusic: 0
+  startOnAwake: 0
+  showDebugLogs: 0
+--- !u!4 &654320313
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 654320311}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.2078931, y: 11.187071, z: 8.764438}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &659583560
 GameObject:
   m_ObjectHideFlags: 0
@@ -1493,9 +1547,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88c351ea51662d048a844b9c076cc429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodDisplayBar: {fileID: 978805679}
-  rotationSpeed: 5
+  resourcesScript: {fileID: 1468730095}
+  rotationSpeed: 10
   normalOrientation: 1
+  trackingPeriod: 10
+  sampleInterval: 5
 --- !u!1 &707406895
 GameObject:
   m_ObjectHideFlags: 0
@@ -2811,7 +2867,7 @@ MonoBehaviour:
   showRefundLogs: 0
   allowPlayerDestroyWood: 1
   allowLowResourceDestroyWood: 1
-  foodHoldThresholdSeconds: 2
+  foodHoldThresholdSeconds: 8
   showDebugLogs: 1
 --- !u!4 &1468730096
 Transform:
@@ -2823,6 +2879,72 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.8187868, y: -6.757316, z: -0.14942294}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1512748306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1512748308}
+  - component: {fileID: 1512748307}
+  m_Layer: 0
+  m_Name: VoiceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1512748307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512748306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44a41fba217028e458acde1411e985bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allVoiceClips:
+  - {fileID: 8300000, guid: 50352d8f561389f49a276217f9557156, type: 3}
+  - {fileID: 8300000, guid: 8c96e6d0ca1621d4ebaa6810e138c144, type: 3}
+  - {fileID: 8300000, guid: e11ce7b8f7808ed4a87e77cd2e9819b0, type: 3}
+  - {fileID: 8300000, guid: 2e57e567ee57df845babcda3e6b05cb0, type: 3}
+  - {fileID: 8300000, guid: f20bf08c8c42f9c469f20cfd4aeadf66, type: 3}
+  voiceVolumes:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  masterVolume: 1
+  musicDuckingAmount: 0.3
+  duckingFadeTime: 0.5
+  minPoolSize: 1
+  maxPoolSize: 5
+  blocksPerVoice: 10
+  poolUpdateInterval: 1
+  minPitch: 0.85
+  maxPitch: 1.15
+  showDebugLogs: 0
+--- !u!4 &1512748308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512748306}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 627.5, y: 624, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3155,10 +3277,10 @@ MonoBehaviour:
   - Each block has an upkeep cost.
   - Balance your resources as well as your branches.
   - You are beautiful, and you will grow far and wide.
-  fadeInDuration: 0.2
+  fadeInDuration: 0.6
   holdDuration: 4
-  fadeOutDuration: 0.7
-  delayBetweenMessages: 0.5
+  fadeOutDuration: 0.2
+  delayBetweenMessages: 0.2
   playOnStart: 1
   showDebugLogs: 0
 --- !u!1 &1795647075
@@ -4340,8 +4462,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de0fcdfce80fd344a9de1e52ad42df1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upkeepInterval: 0.1
-  costPerBlock: 0.18
+  upkeepInterval: 1
+  costPerBlock: 1.8
   penaltyType: 0
   showDebugLogs: 1
   foodHoldThresholdSeconds: 5
@@ -6592,3 +6714,5 @@ SceneRoots:
   - {fileID: 351499496}
   - {fileID: 1543231305}
   - {fileID: 2126728146}
+  - {fileID: 1512748308}
+  - {fileID: 654320313}

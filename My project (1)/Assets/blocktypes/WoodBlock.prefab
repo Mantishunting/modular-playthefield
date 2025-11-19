@@ -497,8 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxFlexibleGeneration: 10
-  maxFrequency: 20
-  minFrequency: 5
-  maxDamping: 1
-  minDamping: 0.5
+  frequency: 30
+  dampingRatio: 0.5
+  youngFrequency: 20
+  oldFrequency: 100

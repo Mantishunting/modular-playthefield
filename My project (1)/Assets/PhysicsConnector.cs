@@ -3,45 +3,32 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(FixedJoint2D))]
 [RequireComponent(typeof(HumanClick))]
-[RequireComponent(typeof(BlockGeneration))] // Added dependency
 public class PhysicsConnector : MonoBehaviour
 {
     private Rigidbody2D rb;
     private FixedJoint2D joint;
     private HumanClick humanClick;
-    private BlockGeneration blockGeneration;
 
-    // We track this to know if we actually need to refresh
+    // We track this so we don't refresh unnecessarily
     private HumanClick currentParent;
 
-    [Header("Stiffness Settings")]
-    [Tooltip("The generation number where the tree reaches maximum flexibility.")]
-    [SerializeField] private float maxFlexibleGeneration = 10f;
+    [Header("Joint Settings")]
+    [Tooltip("Strength of the joint. Higher = Stiffer. Try 20.")]
+    [SerializeField] private float frequency = 20f;
 
-    [Tooltip("Stiffness (Frequency) at the root (Generation 0).")]
-    [SerializeField] private float maxFrequency = 20f;
-
-    [Tooltip("Stiffness (Frequency) at the tips (Generation >= MaxFlexibleGeneration).")]
-    [SerializeField] private float minFrequency = 5f;
-
-    [Tooltip("Damping at the root (Generation 0).")]
-    [SerializeField] private float maxDamping = 1.0f;
-
-    [Tooltip("Damping at the tips (Generation >= MaxFlexibleGeneration).")]
-    [SerializeField] private float minDamping = 0.5f;
-
+    [Tooltip("Shock absorption. 0 = Bouncy, 1 = No Bounce. Try 0.5.")]
+    [SerializeField] private float dampingRatio = 0.5f;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         joint = GetComponent<FixedJoint2D>();
         humanClick = GetComponent<HumanClick>();
-        blockGeneration = GetComponent<BlockGeneration>();
     }
 
     void Start()
     {
-        // Initial setup
+        // Connect as soon as we spawn
         RefreshConnection();
     }
 
@@ -61,13 +48,10 @@ public class PhysicsConnector : MonoBehaviour
         }
     }
 
-    // This runs automatically whenever HumanClick changes connections
     private void OnConnectionsChanged()
     {
-        // Check if our parent has actually changed
-        HumanClick newParent = humanClick.GetParent();
-
-        if (newParent != currentParent)
+        // Only refresh if the parent actually changed (e.g. insertion)
+        if (humanClick.GetParent() != currentParent)
         {
             RefreshConnection();
         }
@@ -75,53 +59,49 @@ public class PhysicsConnector : MonoBehaviour
 
     private void RefreshConnection()
     {
-        // 1. Disconnect immediately
+        // 1. Reset
         joint.connectedBody = null;
+        joint.enabled = false;
 
-        // 2. Get the new parent info
+        // 2. Get Parent
         currentParent = humanClick.GetParent();
 
         if (currentParent != null)
         {
-            // === WE ARE A CHILD ===
+            // === CHILD MODE ===
+            // We need physics to move/wobble
             rb.bodyType = RigidbodyType2D.Dynamic;
 
             Rigidbody2D parentRb = currentParent.GetComponent<Rigidbody2D>();
             if (parentRb != null)
             {
-                // --- DYNAMIC STIFFNESS CALCULATION ---
-                int currentGeneration = blockGeneration.GetGeneration();
-
-                // Calculate normalized factor: 0.0 at Root, 1.0 at Tip
-                float normalizedGen = Mathf.InverseLerp(0f, maxFlexibleGeneration, currentGeneration);
-
-                // Invert it for stiffness: 1.0 at Root (Stiff), 0.0 at Tip (Flexible)
-                float stiffnessFactor = 1.0f - normalizedGen;
-
-                // Lerp values based on stiffness factor
-                float dynamicFrequency = Mathf.Lerp(minFrequency, maxFrequency, stiffnessFactor);
-                float dynamicDamping = Mathf.Lerp(minDamping, maxDamping, stiffnessFactor);
-
-                // 3. Apply the dynamic settings
-                joint.frequency = dynamicFrequency;
-                joint.dampingRatio = dynamicDamping;
-
-                // 4. Connect to the new parent
                 joint.connectedBody = parentRb;
+                joint.autoConfigureConnectedAnchor = true; // Lock to relative position
+                joint.frequency = frequency;
+                joint.dampingRatio = dampingRatio;
                 joint.enabled = true;
             }
         }
         else
         {
-            // === WE ARE A ROOT ===
-            // Anchor to world
+            // === ROOT MODE ===
+            // We have no parent, so we are the anchor.
+            // Kinematic means "I do not move, but others can attach to me."
             rb.bodyType = RigidbodyType2D.Kinematic;
 
-            // Disable joint since we have nothing to hold onto
-            if (joint != null)
-            {
-                joint.enabled = false;
-            }
+            // Stop any momentum
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
+
+    // Helper to update settings in Play Mode without restarting
+    void OnValidate()
+    {
+        if (joint != null && joint.enabled)
+        {
+            joint.frequency = frequency;
+            joint.dampingRatio = dampingRatio;
         }
     }
 }

@@ -221,8 +221,9 @@ GameObject:
   - component: {fileID: 1944116896667604093}
   - component: {fileID: -812831409946005177}
   - component: {fileID: -639064433553998507}
-  - component: {fileID: 2700722792869802137}
   - component: {fileID: 4623208119085011070}
+  - component: {fileID: -2814459409276947144}
+  - component: {fileID: 3138143877857865719}
   m_Layer: 0
   m_Name: WoodBlock
   m_TagString: Untagged
@@ -371,7 +372,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.8, y: 0.8}
+  m_Size: {x: 0.98, y: 0.98}
   m_EdgeRadius: 0
 --- !u!114 &8176186985293310067
 MonoBehaviour:
@@ -437,9 +438,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.2
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_Mass: 25
+  m_LinearDrag: 1
+  m_AngularDrag: 3.22
   m_GravityScale: 1
   m_Material: {fileID: 6200000, guid: 45dbe211cb071a545b36e86e58ea9790, type: 2}
   m_IncludeLayers:
@@ -452,18 +453,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2700722792869802137
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9001448909574542960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!255 &4623208119085011070
 FixedJoint2D:
   m_ObjectHideFlags: 0
@@ -481,5 +470,35 @@ FixedJoint2D:
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: 0, y: 0}
-  m_DampingRatio: 0.01
-  m_Frequency: 25
+  m_DampingRatio: 0.5
+  m_Frequency: 0.5
+--- !u!114 &-2814459409276947144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9949c966e579e2942a4f5d98d784a5d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generation: 0
+--- !u!114 &3138143877857865719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxFlexibleGeneration: 10
+  maxFrequency: 20
+  minFrequency: 5
+  maxDamping: 1
+  minDamping: 0.5

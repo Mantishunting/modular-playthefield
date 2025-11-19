@@ -606,6 +606,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxFlexibleGeneration: 10
+  maxFrequency: 20
+  minFrequency: 5
+  maxDamping: 1
+  minDamping: 0.5
 --- !u!255 &290673731
 FixedJoint2D:
   m_ObjectHideFlags: 0
@@ -652,6 +657,40 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!231 &290673737
+SpringJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290673721}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_BreakAction: 3
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_AutoConfigureDistance: 1
+  m_Distance: 0.005
+  m_DampingRatio: 0
+  m_Frequency: 1
+--- !u!114 &290673738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290673721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9949c966e579e2942a4f5d98d784a5d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generation: 0
 --- !u!1 &351499494
 GameObject:
   m_ObjectHideFlags: 0
@@ -1197,6 +1236,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 290673730}
+    - targetCorrespondingSourceObject: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 290673737}
+    - targetCorrespondingSourceObject: {fileID: 9001448909574542960, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 290673738}
   m_SourcePrefab: {fileID: 100100000, guid: 0511f12c0f51b064388f291d8b227cfb, type: 3}
 --- !u!1 &577560155
 GameObject:
@@ -3278,7 +3323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd51f97e4498ceb4bb26d48a62996ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentFood: 1000
+  currentFood: 10000
   enableStarvation: 1
   blocksToKillPerCheck: 5
   starvationCheckInterval: 5

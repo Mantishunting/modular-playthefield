@@ -1,8 +1,33 @@
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(HumanClick))]
 public class BlockGeneration : MonoBehaviour
 {
+    // ============================================================
+    // --- GLOBAL TRACKING SYSTEM (THIS WAS MISSING) ---
+    // ============================================================
+    /// <summary>
+    /// Tracks the highest generation/depth reached by any block in the scene.
+    /// Used by PhysicsConnector to calculate distance from the tip.
+    /// </summary>
+    public static int GlobalMaxGeneration { get; private set; } = 0;
+
+    /// <summary>
+    /// Event triggered when GlobalMaxGeneration increases (The "tree grew" shout).
+    /// </summary>
+    public static event Action OnTreeGrew;
+
+    /// <summary>
+    /// Helper to reset the global state (Call this when restarting the level!).
+    /// </summary>
+    public static void ResetGlobalState()
+    {
+        GlobalMaxGeneration = 0;
+    }
+    // ============================================================
+
+
     [Tooltip("The generation depth of this block. 0 = Root. Editable for debug.")]
     [SerializeField] private int generation = 0;
 
@@ -16,32 +41,21 @@ public class BlockGeneration : MonoBehaviour
 
     void OnEnable()
     {
-        if (humanClick != null)
-        {
-            humanClick.OnConnectionsChanged += OnConnectionsChanged;
-        }
+        if (humanClick != null) humanClick.OnConnectionsChanged += CalculateGeneration;
     }
 
     void OnDisable()
     {
-        if (humanClick != null)
-        {
-            humanClick.OnConnectionsChanged -= OnConnectionsChanged;
-        }
+        if (humanClick != null) humanClick.OnConnectionsChanged -= CalculateGeneration;
     }
 
     void Start()
     {
-        // Ensure generation is calculated at start if it hasn't been accessed yet
-        if (!isInitialized)
-        {
-            CalculateGeneration();
-        }
+        if (!isInitialized) CalculateGeneration();
     }
 
     private void OnConnectionsChanged()
     {
-        // Recalculate whenever parents might have changed
         CalculateGeneration();
     }
 
@@ -51,43 +65,40 @@ public class BlockGeneration : MonoBehaviour
 
         if (parent != null)
         {
-            // We have a parent, try to get its generation
             BlockGeneration parentGenScript = parent.GetComponent<BlockGeneration>();
-            if (parentGenScript != null)
-            {
-                // Use the getter to ensure parent is also initialized
-                generation = parentGenScript.GetGeneration() + 1;
-            }
-            else
-            {
-                // Fallback: Parent exists but has no script (shouldn't happen)
-                generation = 1;
-            }
+            // If parent has a script, we are parent + 1. Otherwise default to 1.
+            generation = (parentGenScript != null) ? parentGenScript.GetGeneration() + 1 : 1;
         }
         else
         {
-            // No parent = Root
-            generation = 0;
+            generation = 0; // Root
         }
 
         isInitialized = true;
+
+        // --- CHECK IF WE ARE THE LEADER ---
+        if (generation > GlobalMaxGeneration)
+        {
+            GlobalMaxGeneration = generation;
+            OnTreeGrew?.Invoke(); // Shout to the physics connectors!
+        }
     }
 
     public int GetGeneration()
     {
-        // Lazy initialization: if we are asked for generation before we've calculated it
-        // (e.g. by PhysicsConnector running immediately after spawn), calculate it now.
-        if (!isInitialized)
-        {
-            CalculateGeneration();
-        }
+        if (!isInitialized) CalculateGeneration();
         return generation;
     }
 
-    // Debug helper if you want to manually force it from another script
     public void SetGeneration(int gen)
     {
         generation = gen;
         isInitialized = true;
+
+        if (generation > GlobalMaxGeneration)
+        {
+            GlobalMaxGeneration = generation;
+            OnTreeGrew?.Invoke();
+        }
     }
 }

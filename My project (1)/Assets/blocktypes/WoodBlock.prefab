@@ -499,5 +499,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frequency: 30
   dampingRatio: 0.5
-  youngFrequency: 20
-  oldFrequency: 100

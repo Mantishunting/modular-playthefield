@@ -741,7 +741,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &478558740
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3620,9 +3620,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodText: {fileID: 2142251018}
   flowerText: {fileID: 600508162}
-  nextLevelButton: {fileID: 0}
+  nextLevelButton: {fileID: 478558739}
   winText: {fileID: 707406896}
-  winThreshold: 12
+  winThreshold: 2
   winMessage: CALAFORNICATION
   winFadeInSeconds: 10
 --- !u!4 &1717453934
@@ -4730,7 +4730,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 58465053234949845, guid: b324e991ea114c3479453001913a7359, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3132006034446543897, guid: b324e991ea114c3479453001913a7359, type: 3}
       propertyPath: m_Color.a

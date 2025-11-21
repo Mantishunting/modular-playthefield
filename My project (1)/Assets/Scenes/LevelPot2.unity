@@ -3475,7 +3475,7 @@ MonoBehaviour:
   flowerText: {fileID: 600508162}
   nextLevelButton: {fileID: 2107030825}
   winText: {fileID: 707406896}
-  winThreshold: 12
+  winThreshold: 6
   winMessage: CALAFORNICATION
   winFadeInSeconds: 10
 --- !u!4 &1717453934

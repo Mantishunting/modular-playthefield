@@ -34,6 +34,14 @@ public class HumanClick : MonoBehaviour
     public static event System.Action<BlockType> OnBlockPlaced;
     public static event System.Action<BlockType> OnBlockDestroyed;
 
+    public static void ResetStaticData()
+    {
+        nextId = 0;
+        totalBlockCount = 0; // Crucial: Resets the price calculation
+        isSpawning = false;
+        checkCollisions = true;
+        anyBlockShowedPreviewThisFrame = false;
+    }
 
     private Camera mainCamera;
     private int blockId;

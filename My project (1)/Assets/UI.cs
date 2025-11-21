@@ -8,7 +8,10 @@ public class UI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI foodText;
     [SerializeField] private TextMeshProUGUI flowerText;
 
-    [Header("Win Popup")]
+    [Header("Win Popup & Level")]
+    [Tooltip("The Button that loads the next level")]
+    [SerializeField] private GameObject nextLevelButton; // <--- NEW BUTTON SLOT
+
     [Tooltip("TMP text object that will pop up when you reach the threshold")]
     [SerializeField] private TextMeshProUGUI winText;
     [Tooltip("How many flowers to win")]
@@ -45,6 +48,12 @@ public class UI : MonoBehaviour
             winText.gameObject.SetActive(false);
         }
 
+        // Ensure button starts hidden
+        if (nextLevelButton != null)
+        {
+            nextLevelButton.SetActive(false); // <--- HIDE BUTTON ON START
+        }
+
         UpdateFlowerUI();
     }
 
@@ -74,14 +83,22 @@ public class UI : MonoBehaviour
             flowerCount = Mathf.Max(0, flowerCount - 1);
             UpdateFlowerUI();
 
-            // Optional: if you want the popup to hide again if you drop below threshold
-            if (flowerCount < winThreshold && winShown && winText != null)
+            // Hide popup AND button if they drop below threshold
+            if (flowerCount < winThreshold && winShown)
             {
-                // Hide instantly (cleaner UX than re-fading out, but you can add it)
-                var c = winText.color;
-                c.a = 0f;
-                winText.color = c;
-                winText.gameObject.SetActive(false);
+                if (winText != null)
+                {
+                    var c = winText.color;
+                    c.a = 0f;
+                    winText.color = c;
+                    winText.gameObject.SetActive(false);
+                }
+
+                if (nextLevelButton != null)
+                {
+                    nextLevelButton.SetActive(false); // <--- HIDE BUTTON
+                }
+
                 winShown = false;
             }
         }
@@ -97,16 +114,26 @@ public class UI : MonoBehaviour
 
     private void TryShowWin()
     {
-        if (winShown || winText == null) return;
+        if (winShown) return; // Already won
         if (flowerCount < winThreshold) return;
 
         winShown = true;
-        winText.text = winMessage;
-        winText.gameObject.SetActive(true);
 
-        // reset alpha and fade in
-        if (winFadeRoutine != null) StopCoroutine(winFadeRoutine);
-        winFadeRoutine = StartCoroutine(FadeInWinText());
+        // 1. Show Button
+        if (nextLevelButton != null)
+        {
+            nextLevelButton.SetActive(true); // <--- SHOW BUTTON
+        }
+
+        // 2. Show Text (Keep existing visual flair)
+        if (winText != null)
+        {
+            winText.text = winMessage;
+            winText.gameObject.SetActive(true);
+
+            if (winFadeRoutine != null) StopCoroutine(winFadeRoutine);
+            winFadeRoutine = StartCoroutine(FadeInWinText());
+        }
     }
 
     private IEnumerator FadeInWinText()
@@ -125,7 +152,6 @@ public class UI : MonoBehaviour
             yield return null;
         }
 
-        // lock to fully visible
         c.a = 1f;
         winText.color = c;
         winFadeRoutine = null;

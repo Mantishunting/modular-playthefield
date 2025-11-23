@@ -14,4 +14,13 @@ public class NextLevelLoader : MonoBehaviour
         // 2. Load the scene
         SceneManager.LoadScene(sceneToLoad);
     }
+
+    public void RestartLevel()
+    {
+        // Reset static data for a fresh start
+        HumanClick.ResetStaticData();
+
+        // Reload the current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }

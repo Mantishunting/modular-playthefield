@@ -224,6 +224,7 @@ GameObject:
   - component: {fileID: 4623208119085011070}
   - component: {fileID: -2814459409276947144}
   - component: {fileID: 3138143877857865719}
+  - component: {fileID: -8731480738251454355}
   m_Layer: 0
   m_Name: WoodBlock
   m_TagString: Untagged
@@ -330,9 +331,6 @@ MonoBehaviour:
   eastChild: {fileID: 0}
   westChild: {fileID: 0}
   clickThreshold: 0.25
-  dangerState: {fileID: 11400000, guid: 1c67a4b91bf8cb341ad8dd642eda493e, type: 2}
-  deletePreviewTimeout: 2
-  cascadeDelay: 0.05
 --- !u!61 &956702901779546586
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -503,3 +501,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frequency: 20
   dampingRatio: 0.5
+--- !u!114 &-8731480738251454355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993f52ac8010f784780abe5d2e991d2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dangerWobbleState: {fileID: 11400000, guid: 1c67a4b91bf8cb341ad8dd642eda493e, type: 2}
+  dangerTimeout: 0.5
+  cascadeDelay: 0.05

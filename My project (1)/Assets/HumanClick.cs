@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class HumanClick : MonoBehaviour
@@ -44,6 +45,7 @@ public class HumanClick : MonoBehaviour
         isSpawning = false;
         checkCollisions = true;
         anyBlockShowedPreviewThisFrame = false;
+        DeletePreviewSystem.ResetStaticData(); // Reset the new preview system
     }
 
     private Camera mainCamera;
@@ -87,6 +89,8 @@ public class HumanClick : MonoBehaviour
     private float rightClickDownTime = 0f;
     [SerializeField] private float clickThreshold = 0.25f; // seconds to count as a "click"
 
+    // Delete preview is now handled by DeletePreviewSystem component
+
 
     void Start()
     {
@@ -125,13 +129,20 @@ public class HumanClick : MonoBehaviour
             }
         }
 
+        // Cancel delete preview if left-click anywhere
+        if (Input.GetMouseButtonDown(0) && DeletePreviewSystem.HasPendingPreview())
+        {
+            DeletePreviewSystem.CancelPreview();
+            // Each block in danger state will auto-restore via its own timeout
+        }
+
         // --- Right-click press: mark time ---
         if (Input.GetMouseButtonDown(1))
         {
             rightClickDownTime = Time.time;
         }
 
-        // --- Right-click release: decide if it's a quick tap (destroy) or long hold (camera pan) ---
+        // --- Right-click release: two-stage delete system ---
         if (Input.GetMouseButtonUp(1))
         {
             float heldTime = Time.time - rightClickDownTime;
@@ -156,7 +167,22 @@ public class HumanClick : MonoBehaviour
                         return;
                     }
 
-                    Die();
+                    // Delegate to DeletePreviewSystem for two-stage delete
+                    DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
+                    if (previewSystem != null)
+                    {
+                        bool shouldDelete = previewSystem.HandleRightClick();
+                        if (shouldDelete)
+                        {
+                            Die();
+                        }
+                    }
+                    else
+                    {
+                        // Fallback: no preview system, just delete immediately
+                        Debug.LogWarning($"HumanClick on {gameObject.name}: No DeletePreviewSystem found, deleting immediately.");
+                        Die();
+                    }
                 }
             }
         }
@@ -891,6 +917,13 @@ public class HumanClick : MonoBehaviour
 
     public void Die()
     {
+        // Clean up delete preview system (handled by its OnDestroy, but force restore first)
+        DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
+        if (previewSystem != null)
+        {
+            previewSystem.ForceRestore();
+        }
+
         // Decrement total block count
         totalBlockCount--;
 
@@ -1039,6 +1072,23 @@ public class HumanClick : MonoBehaviour
         if (childToMove != null) ValidateAndRemoveInvalidLeafs(childToMove);
 
         return true;
+    }
+
+    // DELETE PREVIEW SYSTEM is now handled by the DeletePreviewSystem component
+
+    /// <summary>
+    /// Recursively collects this block and all its children into the list
+    /// </summary>
+    private void CollectAllChildren(HumanClick block, List<HumanClick> collection)
+    {
+        if (block == null) return;
+
+        collection.Add(block);
+
+        CollectAllChildren(block.northChild, collection);
+        CollectAllChildren(block.southChild, collection);
+        CollectAllChildren(block.eastChild, collection);
+        CollectAllChildren(block.westChild, collection);
     }
 
 

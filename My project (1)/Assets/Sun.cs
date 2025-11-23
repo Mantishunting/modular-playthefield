@@ -9,13 +9,13 @@ public class Sun : MonoBehaviour
 
     [Header("Rotation Settings")]
     [Tooltip("Starting angle in degrees (0 = right, 90 = up, 180 = left, 270 = down)")]
-    [SerializeField] private float startAngle = 90f; // Start at right
+    public float startAngle = 90f; // Start at right
 
     [Tooltip("Ending angle in degrees")]
-    [SerializeField] private float stopAngle = 270f; // End at left
+    public float stopAngle = 270f; // End at left
 
     [Tooltip("Time in seconds to complete rotation from start to stop")]
-    [SerializeField] private float rotationDuration = 10f;
+    public float rotationDuration = 10f;
 
     [Tooltip("Time in seconds to wait at stop before looping back to start")]
     [SerializeField] private float loopDelay = 5f;

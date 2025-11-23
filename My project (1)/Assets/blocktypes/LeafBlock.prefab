@@ -160,7 +160,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -7
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -189,6 +189,7 @@ MonoBehaviour:
   clickDepthMultiplier: 1.5
   wobbleDuration: 0.3
   wobbleAmount: 0.1
+  continuousPlacementDelay: 0.1
   occupancyLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -324,7 +325,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 45dbe211cb071a545b36e86e58ea9790, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -347,6 +348,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  frequency: 20
+  dampingRatio: 0.5
 --- !u!255 &4623208119085011070
 FixedJoint2D:
   m_ObjectHideFlags: 0
@@ -379,5 +382,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 0}
-  volume: 1
+  baseVolume: 1
   showDebugLogs: 1

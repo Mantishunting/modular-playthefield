@@ -22,10 +22,13 @@ public class HumanClick : MonoBehaviour
 
     private BlockSpawner spawner;
     [SerializeField] private float blockSize = 1f;
-    [SerializeField] private float clickRangeMultiplier = 1.5f;
-    [SerializeField] private float clickDepthMultiplier = 1.5f;
+    [SerializeField] private float clickRangeMultiplier = 2.5f; // Increased for larger click area
+    [SerializeField] private float clickDepthMultiplier = 2.5f; // Increased for larger click area
     [SerializeField] private float wobbleDuration = 0.3f;
     [SerializeField] private float wobbleAmount = 0.1f;
+
+    [Header("Continuous Placement")]
+    [SerializeField] private float continuousPlacementDelay = 0.1f; // Time between auto-placements
 
     [Header("Collision Settings")]
     [SerializeField] private LayerMask occupancyLayer;
@@ -76,6 +79,10 @@ public class HumanClick : MonoBehaviour
     private float wobbleTimer = 0f;
     private Vector3 originalScale;
 
+    // Continuous placement tracking
+    private float lastPlacementTime = 0f;
+    private bool isHoldingLeftClick = false;
+
     // --- Click timing to separate short clicks (destroy) from panning ---
     private float rightClickDownTime = 0f;
     [SerializeField] private float clickThreshold = 0.25f; // seconds to count as a "click"
@@ -95,9 +102,27 @@ public class HumanClick : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !isSpawning)
+        // Track left mouse button state
+        if (Input.GetMouseButtonDown(0))
         {
-            HandleClick();
+            isHoldingLeftClick = true;
+            lastPlacementTime = 0f; // Reset timer to allow immediate placement
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isHoldingLeftClick = false;
+        }
+
+        // Handle continuous placement while holding left click
+        if (isHoldingLeftClick && !isSpawning)
+        {
+            // Check if enough time has passed since last placement
+            if (Time.time - lastPlacementTime >= continuousPlacementDelay)
+            {
+                HandleClick();
+                lastPlacementTime = Time.time;
+            }
         }
 
         // --- Right-click press: mark time ---

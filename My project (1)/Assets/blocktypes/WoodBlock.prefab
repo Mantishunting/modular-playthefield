@@ -313,10 +313,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockSize: 1
-  clickRangeMultiplier: 1.5
-  clickDepthMultiplier: 1.5
+  clickRangeMultiplier: 2.5
+  clickDepthMultiplier: 2.5
   wobbleDuration: 0.3
   wobbleAmount: 0.1
+  continuousPlacementDelay: 0.2
   occupancyLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -329,6 +330,9 @@ MonoBehaviour:
   eastChild: {fileID: 0}
   westChild: {fileID: 0}
   clickThreshold: 0.25
+  dangerState: {fileID: 11400000, guid: 1c67a4b91bf8cb341ad8dd642eda493e, type: 2}
+  deletePreviewTimeout: 2
+  cascadeDelay: 0.05
 --- !u!61 &956702901779546586
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -497,7 +501,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90b4e53e34714744abf1cf9e876fa03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hardeningCheckInterval: 1
-  hardeningThreshold: 15
-  flexibleFrequency: 10
-  flexibleDamping: 0.5
+  frequency: 20
+  dampingRatio: 0.5

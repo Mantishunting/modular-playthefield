@@ -10,7 +10,7 @@ public class UI : MonoBehaviour
 
     [Header("Win Popup & Level")]
     [Tooltip("The Button that loads the next level")]
-    [SerializeField] private GameObject nextLevelButton; // <--- NEW BUTTON SLOT
+    [SerializeField] private GameObject nextLevelButton;
 
     [Tooltip("TMP text object that will pop up when you reach the threshold")]
     [SerializeField] private TextMeshProUGUI winText;
@@ -51,7 +51,7 @@ public class UI : MonoBehaviour
         // Ensure button starts hidden
         if (nextLevelButton != null)
         {
-            nextLevelButton.SetActive(false); // <--- HIDE BUTTON ON START
+            nextLevelButton.SetActive(false);
         }
 
         UpdateFlowerUI();
@@ -59,7 +59,7 @@ public class UI : MonoBehaviour
 
     void Update()
     {
-        // Food display (kept as-is)
+        // Food display
         if (foodText != null && Resources.Instance != null)
         {
             foodText.text = Resources.Instance.GetCurrentFood().ToString();
@@ -96,7 +96,7 @@ public class UI : MonoBehaviour
 
                 if (nextLevelButton != null)
                 {
-                    nextLevelButton.SetActive(false); // <--- HIDE BUTTON
+                    nextLevelButton.SetActive(false); // HIDE BUTTON
                 }
 
                 winShown = false;
@@ -108,7 +108,8 @@ public class UI : MonoBehaviour
     {
         if (flowerText != null)
         {
-            flowerText.text = $"Flowers: {flowerCount}";
+            // *** MODIFIED LINE: Displays Current / Threshold ***
+            flowerText.text = $"Flowers: {flowerCount} / {winThreshold}";
         }
     }
 
@@ -122,10 +123,10 @@ public class UI : MonoBehaviour
         // 1. Show Button
         if (nextLevelButton != null)
         {
-            nextLevelButton.SetActive(true); // <--- SHOW BUTTON
+            nextLevelButton.SetActive(true); // SHOW BUTTON
         }
 
-        // 2. Show Text (Keep existing visual flair)
+        // 2. Show Text
         if (winText != null)
         {
             winText.text = winMessage;

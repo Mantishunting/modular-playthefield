@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wood
   m_EditorClassIdentifier: 
   blockName: Wood
-  blockColor: {r: 0.735849, g: 0.618936, b: 0, a: 1}
+  blockColor: {r: 0.9607844, g: 0.9450981, b: 0, a: 1}
   prefab: {fileID: 9001448909574542960, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
   cost: 5
   producesResources: 0

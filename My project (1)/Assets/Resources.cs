@@ -71,6 +71,14 @@ public class Resources : MonoBehaviour
             Debug.Log($"[DEBUG] Manual food added. Current Food: {currentFood}");
         }
 
+        // 🆕 NEW DEBUG HOTKEY: Press 0 to add 2000 food
+        if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
+        {
+            const int debugAmount = 2000;
+            AddFood(debugAmount);
+            Debug.Log($"[DEBUG] CHEAT: Added {debugAmount} Food via hotkey. Total Food: {currentFood}");
+        }
+
         // Check for starvation every X frames
         if (enableStarvation && currentFood < 5)
         {

@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8667282397545441918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4381766864548233107}
+  - component: {fileID: 6012524032677835786}
+  - component: {fileID: 5081669018404933032}
+  - component: {fileID: 3580855565502878130}
+  m_Layer: 0
+  m_Name: UI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4381766864548233107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667282397545441918}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.9701538, y: 9.2854, z: -0.9340502}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6012524032677835786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667282397545441918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0736b24d82d7d4c40a3ce31f8df184a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  foodText: {fileID: 0}
+  flowerText: {fileID: 0}
+  nextLevelButton: {fileID: 0}
+  winText: {fileID: 0}
+  winThreshold: 0
+  winMessage: FERTILISATION
+  winFadeInSeconds: 10
+--- !u!114 &5081669018404933032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667282397545441918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62882c5bf57b17e4395d089f7269c076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  woodButton: {fileID: 0}
+  leafButton: {fileID: 0}
+  flowerButton: {fileID: 0}
+  woodBlockType: {fileID: 11400000, guid: 931806cc593073d48a708bedad98feb3, type: 2}
+  leafBlockType: {fileID: 11400000, guid: ef0f4459e681a224d87f47ac114e9f31, type: 2}
+  flowerBlockType: {fileID: 11400000, guid: bde8b6f500d3b9f49991cf50e247faf7, type: 2}
+  woodAffordableColor: {r: 1, g: 0.9, b: 0.2, a: 1}
+  leafAffordableColor: {r: 0.2, g: 1, b: 0.2, a: 1}
+  flowerAffordableColor: {r: 1, g: 0.4, b: 0.8, a: 1}
+  unaffordableColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  selectedBorderColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedBrightness: 1.2
+  resourcesScript: {fileID: 0}
+  showDebugLogs: 0
+--- !u!114 &3580855565502878130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667282397545441918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 071c69adc5475894dbb674dd6b01e489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialText: {fileID: 0}
+  messages:
+  - You're a bean!
+  - Click the Wood button to grow your stem. Try it now!
+  - Click Leaf to add leaves to your body.
+  - You're not ready to flower... yet.
+  - Reach for the light!
+  - Leaves only produce food when they're in sunlight.
+  - "Be careful \u2014 light comes and goes, so spread out your leaves."
+  - When the bar spins and turns red, you'll start losing branches.
+  - Each block has an upkeep cost.
+  - Balance your resources as well as your branches.
+  - You are beautiful, and you will grow far and wide.
+  fadeInDuration: 0.6
+  holdDuration: 4
+  fadeOutDuration: 0.2
+  delayBetweenMessages: 0.2
+  playOnStart: 1
+  showDebugLogs: 0

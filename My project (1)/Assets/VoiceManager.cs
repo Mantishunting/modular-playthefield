@@ -38,6 +38,13 @@ public class VoiceManager : MonoBehaviour
     [SerializeField] private float minPitch = 0.85f;
     [SerializeField] private float maxPitch = 1.15f;
 
+    [Header("Flower Voice Clips")]
+    [SerializeField] private AudioClip[] flowerVoiceClips;
+
+    //  Wood Clips Field
+    [Header("Wood Voice Clips")]
+    [SerializeField] private AudioClip[] woodVoiceClips;
+
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
 
@@ -138,7 +145,7 @@ public class VoiceManager : MonoBehaviour
 
     /// <summary>
     /// Assigns a permanent voice + pitch to a block.
-    /// Call this once when the block spawns.
+    /// Call this once when the block spawns. (Used for Leaves/Stems that use the dynamic pool)
     /// </summary>
     public void AssignVoiceToBlock(GameObject block, out AudioClip assignedClip, out float assignedPitch, out float assignedVolume)
     {
@@ -178,6 +185,55 @@ public class VoiceManager : MonoBehaviour
         {
             Debug.Log($"VoiceManager: Assigned voice '{selectedClip.name}' at pitch {selectedPitch:F2}, volume {selectedVolume:F2} to block (pool size: {currentPoolSize})");
         }
+    }
+
+    /// <summary>
+    /// Assigns a random flower chime from the dedicated pool.
+    /// Used by Flower.cs.
+    /// </summary>
+    public void AssignFlowerVoice(GameObject block, out AudioClip clip, out float pitch, out float volume)
+    {
+        if (flowerVoiceClips == null || flowerVoiceClips.Length == 0)
+        {
+            clip = null;
+            pitch = 1f;
+            volume = 1f;
+            return;
+        }
+
+        // Pick a random flower clip and pitch
+        int idx = Random.Range(0, flowerVoiceClips.Length);
+        clip = flowerVoiceClips[idx];
+        pitch = Random.Range(minPitch, maxPitch);
+
+        // Volume is based on master and ducking (no per-voice multiplier used here)
+        volume = masterVolume * currentDuckingMultiplier;
+    }
+
+    //  Wood Voice Assignment Method
+    /// <summary>
+    /// Assigns a random wood sound from the dedicated pool.
+    /// Used by WoodSound.cs.
+    /// </summary>
+    public void AssignWoodVoice(GameObject block, out AudioClip clip, out float pitch, out float volume)
+    {
+        if (woodVoiceClips == null || woodVoiceClips.Length == 0)
+        {
+            clip = null;
+            pitch = 1f;
+            volume = 1f;
+            return;
+        }
+
+        // Pick random clip
+        int idx = Random.Range(0, woodVoiceClips.Length);
+        clip = woodVoiceClips[idx];
+
+        // Random pitch
+        pitch = Random.Range(minPitch, maxPitch);
+
+        // Use master volume logic (same as flowers)
+        volume = masterVolume * currentDuckingMultiplier;
     }
 
     /// <summary>
@@ -269,6 +325,7 @@ public class VoiceManager : MonoBehaviour
     /// </summary>
     private int GetActiveBlockCount()
     {
+        // Note: Assuming HumanClick is present on all blocks that use the VoiceManager's pool.
         HumanClick[] allBlocks = FindObjectsOfType<HumanClick>();
         return allBlocks.Length;
     }

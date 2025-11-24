@@ -42,7 +42,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c07735cdc5114a94297b0131046ec05c, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 0.867
   m_Pitch: 1
@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 3138143877857865719}
   - component: {fileID: -8731480738251454355}
   - component: {fileID: 5615314745241299981}
+  - component: {fileID: -9003852712806904563}
   m_Layer: 0
   m_Name: WoodBlock
   m_TagString: Untagged
@@ -534,3 +535,17 @@ MonoBehaviour:
   scalePerGeneration: 0.02
   maxScale: 8
   generationsAtTipUnchanged: 4
+--- !u!114 &-9003852712806904563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 577d4c325d326434d8cdcffa7fcabb9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chanceToPlay: 1
+  usesTrigger: 0

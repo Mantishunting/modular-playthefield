@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8702027099561476019
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4256791610871446618}
+  - component: {fileID: 5657586922080941456}
+  m_Layer: 0
+  m_Name: VoiceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4256791610871446618
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8702027099561476019}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 627.5, y: 624, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5657586922080941456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8702027099561476019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44a41fba217028e458acde1411e985bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allVoiceClips:
+  - {fileID: 8300000, guid: 8c96e6d0ca1621d4ebaa6810e138c144, type: 3}
+  - {fileID: 8300000, guid: a28c08079488eba4896ea3d668781e79, type: 3}
+  - {fileID: 8300000, guid: 2e57e567ee57df845babcda3e6b05cb0, type: 3}
+  - {fileID: 8300000, guid: bcce2e47d8e384d4abdfbaa08a26915a, type: 3}
+  - {fileID: 8300000, guid: 50352d8f561389f49a276217f9557156, type: 3}
+  - {fileID: 8300000, guid: 53bffd2e866b8904aa826dae80bb7208, type: 3}
+  - {fileID: 8300000, guid: f20bf08c8c42f9c469f20cfd4aeadf66, type: 3}
+  voiceVolumes:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  masterVolume: 4.2
+  musicDuckingAmount: 0.5
+  duckingFadeTime: 4
+  minPoolSize: 1
+  maxPoolSize: 6
+  blocksPerVoice: 10
+  poolUpdateInterval: 1
+  minPitch: 0.85
+  maxPitch: 1.15
+  flowerVoiceClips:
+  - {fileID: 8300000, guid: 08de5d0a3c60ead4bb841f55dac94a20, type: 3}
+  - {fileID: 8300000, guid: 7c4db0dcd0409a74fba81eb39b3e0cee, type: 3}
+  - {fileID: 8300000, guid: 3792b1abb52a083439fa6f3cd34294ba, type: 3}
+  - {fileID: 8300000, guid: 2d814ead8d8a19f4f9d8fa621459d9a9, type: 3}
+  - {fileID: 8300000, guid: 9319adca21c1ed74b9061a0f8328928e, type: 3}
+  - {fileID: 8300000, guid: 7794ab137076dcd4a87336f61418cce9, type: 3}
+  - {fileID: 8300000, guid: 4ee3771abf262624d837495236b261e4, type: 3}
+  - {fileID: 8300000, guid: ee76fda368adee949b32ea1725467817, type: 3}
+  woodVoiceClips:
+  - {fileID: 8300000, guid: c8a0018ea17f3d94d950e6acf42ef635, type: 3}
+  - {fileID: 8300000, guid: 23943a90b5944344b83ebe93fea62fce, type: 3}
+  - {fileID: 8300000, guid: a604f19b11741294aa39c69a0f6c8d13, type: 3}
+  - {fileID: 8300000, guid: b1c3b309eaeb31749849adf6b98177c8, type: 3}
+  - {fileID: 8300000, guid: 01a54a15703a0144d8bddfba2ae17cf8, type: 3}
+  - {fileID: 8300000, guid: 2f1cea63d55e2594caee9a979159c2be, type: 3}
+  - {fileID: 8300000, guid: 4773c26cec61668459f700fe8e7ae35a, type: 3}
+  - {fileID: 8300000, guid: faf41f1c90413204fbec31e5055c533f, type: 3}
+  - {fileID: 8300000, guid: 1bba55301b6d7094e82ae8e997839621, type: 3}
+  - {fileID: 8300000, guid: 61b096d55f1b48147824d75d372d6e04, type: 3}
+  - {fileID: 8300000, guid: c2d1ce2f712470f46bf2e63e9226ae4b, type: 3}
+  - {fileID: 8300000, guid: 80bd46bb14ab6c74abd268d5bf6824af, type: 3}
+  - {fileID: 8300000, guid: e28ab4ea877d0924a8f1c0b15dd0e986, type: 3}
+  - {fileID: 8300000, guid: 19f5cdb16e6115845a5a5910b205dfda, type: 3}
+  - {fileID: 8300000, guid: 8bdbaacb8e5de9644b96c8ba16ef1feb, type: 3}
+  - {fileID: 8300000, guid: 9cff09445dbfa1a4b9be4aa22c39e67d, type: 3}
+  - {fileID: 8300000, guid: 0020bdf0ad99ada44a86a9d33c7898d4, type: 3}
+  - {fileID: 8300000, guid: 02bf37e300c41b44a8c92faa477e2fae, type: 3}
+  - {fileID: 8300000, guid: 4b4c6b3a85320fe49aba8c77e7c36185, type: 3}
+  showDebugLogs: 0

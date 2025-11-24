@@ -96,4 +96,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 0020bdf0ad99ada44a86a9d33c7898d4, type: 3}
   - {fileID: 8300000, guid: 02bf37e300c41b44a8c92faa477e2fae, type: 3}
   - {fileID: 8300000, guid: 4b4c6b3a85320fe49aba8c77e7c36185, type: 3}
+  woodClipsVolume: 1
+  primaryWoodVoiceClip: {fileID: 8300000, guid: c07735cdc5114a94297b0131046ec05c, type: 3}
+  primaryVoicePlayChance: 0.8
   showDebugLogs: 0

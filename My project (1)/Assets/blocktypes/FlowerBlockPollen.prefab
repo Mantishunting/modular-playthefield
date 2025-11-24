@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 956702901779546586}
   - component: {fileID: 8176186985293310067}
   - component: {fileID: 7031650899208900278}
+  - component: {fileID: 3066957370210825258}
   m_Layer: 0
   m_Name: FlowerBlockPollen
   m_TagString: Untagged
@@ -176,3 +177,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &3066957370210825258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859e4715ebad9ff4c9e5d538fcd7504f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyDelay: 10

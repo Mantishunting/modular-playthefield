@@ -41,9 +41,16 @@ public class VoiceManager : MonoBehaviour
     [Header("Flower Voice Clips")]
     [SerializeField] private AudioClip[] flowerVoiceClips;
 
-    //  Wood Clips Field
+    // --- WOOD VOICE CONTROLS MODIFIED HERE ---
     [Header("Wood Voice Clips")]
     [SerializeField] private AudioClip[] woodVoiceClips;
+    [Tooltip("Volume multiplier for all wood voice clips.")]
+    [SerializeField] private float woodClipsVolume = 1.0f; // New volume control
+    [Tooltip("The main wood sound that plays most of the time.")]
+    [SerializeField] private AudioClip primaryWoodVoiceClip; // New primary clip
+    [Tooltip("The chance (0.0 to 1.0) that the primary voice clip will be chosen.")]
+    [SerializeField] private float primaryVoicePlayChance = 0.8f; // New chance setting
+    // -------------------------------
 
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
@@ -210,14 +217,27 @@ public class VoiceManager : MonoBehaviour
         volume = masterVolume * currentDuckingMultiplier;
     }
 
-    //  Wood Voice Assignment Method
     /// <summary>
-    /// Assigns a random wood sound from the dedicated pool.
+    /// Assigns a random wood sound from the dedicated pool, favoring a primary clip.
     /// Used by WoodSound.cs.
     /// </summary>
     public void AssignWoodVoice(GameObject block, out AudioClip clip, out float pitch, out float volume)
     {
-        if (woodVoiceClips == null || woodVoiceClips.Length == 0)
+        // --- VOLUME MODIFICATION IS AFTER CLIP SELECTION ---
+
+        // 1. Roll the dice to see if the Primary Clip should be used (the "normal sound")
+        if (primaryWoodVoiceClip != null && Random.value < primaryVoicePlayChance)
+        {
+            clip = primaryWoodVoiceClip;
+        }
+        // 2. Otherwise, select a random clip from the array (the "strange one")
+        else if (woodVoiceClips != null && woodVoiceClips.Length > 0)
+        {
+            int idx = Random.Range(0, woodVoiceClips.Length);
+            clip = woodVoiceClips[idx];
+        }
+        // 3. Fallback if no clips are set
+        else
         {
             clip = null;
             pitch = 1f;
@@ -225,15 +245,12 @@ public class VoiceManager : MonoBehaviour
             return;
         }
 
-        // Pick random clip
-        int idx = Random.Range(0, woodVoiceClips.Length);
-        clip = woodVoiceClips[idx];
-
         // Random pitch
         pitch = Random.Range(minPitch, maxPitch);
 
-        // Use master volume logic (same as flowers)
-        volume = masterVolume * currentDuckingMultiplier;
+        // Combine: woodClipsVolume × master × ducking
+        volume = woodClipsVolume * masterVolume * currentDuckingMultiplier;
+        // --------------------------------
     }
 
     /// <summary>

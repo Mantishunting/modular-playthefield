@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 
 [RequireComponent(typeof(HumanClick))]
@@ -7,6 +8,20 @@ public class BlockGeneration : MonoBehaviour
     // ============================================================
     // --- GLOBAL TRACKING SYSTEM (THIS WAS MISSING) ---
     // ============================================================
+
+    /// <summary>
+    /// Static constructor - automatically resets global state when scenes load
+    /// </summary>
+    static BlockGeneration()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ResetGlobalState();
+    }
+
     /// <summary>
     /// Tracks the highest generation/depth reached by any block in the scene.
     /// Used by PhysicsConnector to calculate distance from the tip.

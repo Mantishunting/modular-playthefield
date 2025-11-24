@@ -13,7 +13,7 @@ public class Flower : MonoBehaviour
 
     public int TimesVisited => timesVisited;
 
-    //  ADDITION A: Audio fields
+    //  Audio fields
     private AudioSource audioSource;
     private AudioClip flowerClip;
     private float flowerPitch;
@@ -27,7 +27,7 @@ public class Flower : MonoBehaviour
             collider.isTrigger = usesTrigger;
         }
 
-        //  ADDITION B: Audio Setup
+        //  Audio Setup
         if (VoiceManager.Instance != null)
         {
             // 1. Add AudioSource automatically
@@ -77,17 +77,16 @@ public class Flower : MonoBehaviour
 
         if (BeeVisitTracker.Instance != null)
         {
-            // Assuming BeeVisitTracker exists elsewhere
-            // BeeVisitTracker.Instance.RegisterVisit();
+            //  CRITICAL FIX: UNCOMMENTED this line to register the global visit count!
+            BeeVisitTracker.Instance.RegisterVisit();
         }
 
         OnFlowerVisited?.Invoke(this);
 
-        //  ADDITION C: Playback
+        //  Playback
         if (flowerClip != null && audioSource != null)
         {
-            // The volume passed here is the calculated final volume (master * ducking)
-            audioSource.volume = flowerVolume;
+            // Use PlayOneShot with the volume multiplier
             audioSource.PlayOneShot(flowerClip, flowerVolume);
         }
 

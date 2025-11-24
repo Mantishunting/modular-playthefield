@@ -69,11 +69,19 @@ public class BlockScaler : MonoBehaviour
     void OnEnable()
     {
         BlockGeneration.OnTreeGrew += RecalculateScale;
+        if (blockGeneration != null)
+        {
+            blockGeneration.OnGenerationChanged += RecalculateScale; // NEW: Listen to local generation changes
+        }
     }
 
     void OnDisable()
     {
         BlockGeneration.OnTreeGrew -= RecalculateScale;
+        if (blockGeneration != null)
+        {
+            blockGeneration.OnGenerationChanged -= RecalculateScale; // NEW: Unsubscribe from local changes
+        }
     }
 
     void Start()

@@ -27,6 +27,10 @@ public class BlockGeneration : MonoBehaviour
     }
     // ============================================================
 
+    /// <summary>
+    /// Event triggered when THIS block's generation changes
+    /// </summary>
+    public event Action OnGenerationChanged;
 
     [Tooltip("The generation depth of this block. 0 = Root. Editable for debug.")]
     [SerializeField] private int generation = 0;
@@ -63,6 +67,8 @@ public class BlockGeneration : MonoBehaviour
     {
         HumanClick parent = humanClick.GetParent();
 
+        int oldGeneration = generation;
+
         if (parent != null)
         {
             BlockGeneration parentGenScript = parent.GetComponent<BlockGeneration>();
@@ -82,6 +88,40 @@ public class BlockGeneration : MonoBehaviour
             GlobalMaxGeneration = generation;
             OnTreeGrew?.Invoke(); // Shout to the physics connectors!
         }
+
+        // --- IF OUR GENERATION CHANGED, NOTIFY LISTENERS AND CASCADE TO CHILDREN ---
+        if (oldGeneration != generation)
+        {
+            OnGenerationChanged?.Invoke();
+            PropagateToChildren();
+        }
+    }
+
+    /// <summary>
+    /// Tell all children to recalculate (cascade effect for insertions)
+    /// </summary>
+    private void PropagateToChildren()
+    {
+        // Check all four child directions
+        HumanClick[] children = new HumanClick[]
+        {
+            humanClick.GetNorthChild(),
+            humanClick.GetSouthChild(),
+            humanClick.GetEastChild(),
+            humanClick.GetWestChild()
+        };
+
+        foreach (var child in children)
+        {
+            if (child != null)
+            {
+                BlockGeneration childGenScript = child.GetComponent<BlockGeneration>();
+                if (childGenScript != null)
+                {
+                    childGenScript.CalculateGeneration();
+                }
+            }
+        }
     }
 
     public int GetGeneration()
@@ -92,6 +132,8 @@ public class BlockGeneration : MonoBehaviour
 
     public void SetGeneration(int gen)
     {
+        int oldGeneration = generation;
+
         generation = gen;
         isInitialized = true;
 
@@ -99,6 +141,12 @@ public class BlockGeneration : MonoBehaviour
         {
             GlobalMaxGeneration = generation;
             OnTreeGrew?.Invoke();
+        }
+
+        if (oldGeneration != generation)
+        {
+            OnGenerationChanged?.Invoke();
+            PropagateToChildren();
         }
     }
 }

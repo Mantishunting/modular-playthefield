@@ -537,7 +537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodText: {fileID: 899920156}
-  visitText: {fileID: 0}
+  visitText: {fileID: 1128903318}
   nextLevelButton: {fileID: 225043083}
   winText: {fileID: 1299840616}
   winMessage: FERTILISATION
@@ -2102,6 +2102,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+--- !u!114 &1128903318 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8959933708668019954, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+  m_PrefabInstance: {fileID: 1128903317}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1138686009
 GameObject:
   m_ObjectHideFlags: 0
@@ -3695,7 +3706,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8721800243711638645, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: visitsToWin
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

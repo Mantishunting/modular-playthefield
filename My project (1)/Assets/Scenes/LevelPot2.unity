@@ -537,10 +537,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodText: {fileID: 899920156}
-  flowerText: {fileID: 1188370205}
+  visitText: {fileID: 0}
   nextLevelButton: {fileID: 225043083}
   winText: {fileID: 1299840616}
-  winThreshold: 24
   winMessage: FERTILISATION
   winFadeInSeconds: 10
 --- !u!4 &247558402
@@ -714,7 +713,7 @@ SpringJoint2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 290673721}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_EnableCollision: 0
   m_ConnectedRigidBody: {fileID: 0}
@@ -2422,17 +2421,6 @@ Transform:
   - {fileID: 2098850239}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1188370205 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8959933708668019954, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
-  m_PrefabInstance: {fileID: 1128903317}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1299840616 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 577335089848770769, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
@@ -2444,55 +2432,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1358363081
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1358363083}
-  - component: {fileID: 1358363082}
-  m_Layer: 0
-  m_Name: BeeSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1358363082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1358363081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3974b571d149c546ae6604f6c2ddeea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  beePrefab: {fileID: 2597140396672380845, guid: ef9646b0b69dc844e934810dfd7e68ce, type: 3}
-  beesPerSecond: 0.5
-  sun: {fileID: 1106439076}
-  emissionDuration: 50
-  emissionOffset: -30
---- !u!4 &1358363083
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1358363081}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.894107, y: 28.17614, z: -0.72833174}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1418880231
 GameObject:
   m_ObjectHideFlags: 0
@@ -3698,10 +3637,77 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d271f557ffcea0e42b8570dba1197bf2, type: 3}
+--- !u!1001 &9059497007028590326
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.894107
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 28.17614
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.72833174
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818005337681379087, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: sun
+      value: 
+      objectReference: {fileID: 1106439076}
+    - target: {fileID: 8004193277229458961, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_Name
+      value: BeeSpawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 8721800243711638645, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: visitsToWin
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 9059497007028590326}
+  - {fileID: 1757062552}
   - {fileID: 519420032}
   - {fileID: 619394802}
   - {fileID: 2046838584}
@@ -3732,5 +3738,3 @@ SceneRoots:
   - {fileID: 8180572807063345414}
   - {fileID: 247558402}
   - {fileID: 1128903317}
-  - {fileID: 1757062552}
-  - {fileID: 1358363083}

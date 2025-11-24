@@ -225,6 +225,7 @@ GameObject:
   - component: {fileID: -2814459409276947144}
   - component: {fileID: 3138143877857865719}
   - component: {fileID: -8731480738251454355}
+  - component: {fileID: 5615314745241299981}
   m_Layer: 0
   m_Name: WoodBlock
   m_TagString: Untagged
@@ -314,8 +315,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockSize: 1
-  clickRangeMultiplier: 2.5
-  clickDepthMultiplier: 2.5
+  clickRangeMultiplier: 2
+  clickDepthMultiplier: 2
   wobbleDuration: 0.3
   wobbleAmount: 0.1
   continuousPlacementDelay: 0.2
@@ -436,7 +437,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9001448909574542960}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -516,3 +517,19 @@ MonoBehaviour:
   dangerWobbleState: {fileID: 11400000, guid: 1c67a4b91bf8cb341ad8dd642eda493e, type: 2}
   dangerTimeout: 0.5
   cascadeDelay: 0.05
+  minTimeBetweenClicks: 0.3
+--- !u!114 &5615314745241299981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08365884694804b41a580adfd24ca6ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseScale: 1
+  scalePerGeneration: 0.1
+  maxScale: 10

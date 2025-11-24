@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Flower : MonoBehaviour
 {
+    public static event System.Action<Flower> OnFlowerVisited;
+
     [Header("Detection Mode")]
     [Tooltip("If true, bees pass through. If false, bees bounce off.")]
     [SerializeField] private bool usesTrigger = true;
@@ -48,6 +50,8 @@ public class Flower : MonoBehaviour
         {
             BeeVisitTracker.Instance.RegisterVisit();
         }
+
+        OnFlowerVisited?.Invoke(this);
 
         Debug.Log($"Flower visited! {gameObject.name} - Local: {timesVisited}");
     }

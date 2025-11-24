@@ -42,9 +42,14 @@ public class BracketStateController : MonoBehaviour
 
         if (startingState != null)
         {
-            targetState = startingState;
+            // NEW: Save the target state BEFORE overwriting it
+            BracketAnimationState savedTarget = targetState;
+
             current = new CurrentValues(startingState);
             ApplyCurrentValues();
+
+            // NEW: Restore the target state (or use starting state if no target was set)
+            targetState = (savedTarget != null) ? savedTarget : startingState;
         }
         else
         {

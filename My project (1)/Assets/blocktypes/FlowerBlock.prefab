@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: -6716128939172355784}
   - component: {fileID: -8770443995571804785}
   - component: {fileID: -2445863768924948539}
+  - component: {fileID: 8263941042332115457}
   m_Layer: 0
   m_Name: FlowerBlock
   m_TagString: Untagged
@@ -392,3 +393,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   usesTrigger: 0
   timesVisited: 0
+--- !u!114 &8263941042332115457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9001448909574542960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c663fb31a7301e4d8598a9665d244fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pollenEffectPrefab: {fileID: 9001448909574542960, guid: 7dbd488dbb8935e419471e49823358a2, type: 3}
+  pollenCount: 6
+  spreadRadius: 0.5
+  upwardForce: 0
+  horizontalForce: 0.2

@@ -207,6 +207,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &64500565 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7917702613745054204, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+  m_PrefabInstance: {fileID: 1150882045}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &158421144
 GameObject:
   m_ObjectHideFlags: 0
@@ -1881,6 +1892,14 @@ PrefabInstance:
       propertyPath: resourcesScript
       value: 
       objectReference: {fileID: 1468730095}
+    - target: {fileID: 1385991144660735187, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_margin.z
+      value: -1017.662
+      objectReference: {fileID: 0}
+    - target: {fileID: 3180577141776022267, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3809042059481617917, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1980,6 +1999,10 @@ PrefabInstance:
     - target: {fileID: 7772035918372006005, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 73.000114
+      objectReference: {fileID: 0}
+    - target: {fileID: 7917702613745054204, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_margin.z
+      value: -1097.3811
       objectReference: {fileID: 0}
     - target: {fileID: 8885432828401652777, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2538,11 +2561,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4623208119085011070, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.019796908
+      value: -0.005
       objectReference: {fileID: 0}
     - target: {fileID: 4623208119085011070, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
       propertyPath: m_ConnectedAnchor.y
-      value: 0.8209586
+      value: -0.001
       objectReference: {fileID: 0}
     - target: {fileID: 5271642053659760612, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2678,6 +2701,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodText: {fileID: 1150882049}
   visitText: {fileID: 698691997}
+  upkeepCostText: {fileID: 64500565}
+  leafBlockName: Leaf
+  foodGainPerTick: 100
+  foodGainFrequency: 4
+  upkeepCostPerTick: 5
+  upkeepFrequency: 3
   nextLevelButton: {fileID: 1150882046}
   winText: {fileID: 1150882047}
   winMessage: FERTILISATION
@@ -3576,7 +3605,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8721800243711638645, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: visitsToWin
-      value: 50
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -316,7 +316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockSize: 1
-  clickRangeMultiplier: 2
+  clickRangeMultiplier: 4
   clickDepthMultiplier: 2
   wobbleDuration: 0.3
   wobbleAmount: 0.1
@@ -548,4 +548,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chanceToPlay: 1
-  usesTrigger: 0

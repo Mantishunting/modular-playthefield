@@ -149,19 +149,16 @@ Shader "Custom/BracketShader_v2"
             // Get static jitter offset for a grid point
             float2 getStaticJitter(float2 pointSeed)
             {
-                // Random offset from perfect grid position
-                float2 randomOffset = (hash2(pointSeed + 10.0) - 0.5) * 2.0; // Range: -1 to 1
+                float2 randomOffset = (hash2(pointSeed + 10.0) - 0.5) * 2.0;
                 return randomOffset * _StaticJitter * _Spacing * 0.5;
             }
             
             // Get animated wiggle offset
             float2 getWiggleOffset(float2 pointSeed, float time)
             {
-                // Create unique phase and frequency for this bracket
-                float2 phase = hash2(pointSeed + 20.0) * 6.28318; // Random phase
-                float2 freq = 1.0 + hash2(pointSeed + 30.0) * 0.5; // Slight frequency variation
+                float2 phase = hash2(pointSeed + 20.0) * 6.28318;
+                float2 freq = 1.0 + hash2(pointSeed + 30.0) * 0.5;
                 
-                // Calculate oscillating offset
                 float2 wiggle = float2(
                     sin(time * _WiggleSpeed * freq.x + phase.x),
                     sin(time * _WiggleSpeed * freq.y + phase.y)
@@ -170,44 +167,20 @@ Shader "Custom/BracketShader_v2"
                 return wiggle * _WiggleAmount * _Spacing * 0.5;
             }
             
-            // Get UV coordinates for bracket in atlas
-            // Atlas layout: 3x2 grid
-            // Row 0 (top): ( ) [
-            // Row 1 (bottom): { } ]
             float2 getBracketUV(int bracketType, float2 localUV)
             {
                 float2 atlasUV = float2(0, 0);
                 
-                // Each bracket occupies 1/3 width, 1/2 height
                 float cellWidth = 1.0 / 3.0;
                 float cellHeight = 1.0 / 2.0;
                 
-                if (bracketType == 0) // (
-                {
-                    atlasUV = float2(0, 0.5);
-                }
-                else if (bracketType == 1) // )
-                {
-                    atlasUV = float2(cellWidth, 0.5);
-                }
-                else if (bracketType == 2) // {
-                {
-                    atlasUV = float2(0, 0);
-                }
-                else if (bracketType == 3) // }
-                {
-                    atlasUV = float2(cellWidth, 0);
-                }
-                else if (bracketType == 4) // [
-                {
-                    atlasUV = float2(cellWidth * 2, 0.5);
-                }
-                else if (bracketType == 5) // ]
-                {
-                    atlasUV = float2(cellWidth * 2, 0);
-                }
+                if (bracketType == 0) { atlasUV = float2(0, 0.5); }
+                else if (bracketType == 1) { atlasUV = float2(cellWidth, 0.5); }
+                else if (bracketType == 2) { atlasUV = float2(0, 0); }
+                else if (bracketType == 3) { atlasUV = float2(cellWidth, 0); }
+                else if (bracketType == 4) { atlasUV = float2(cellWidth * 2, 0.5); }
+                else if (bracketType == 5) { atlasUV = float2(cellWidth * 2, 0); }
                 
-                // Add local UV within the cell
                 atlasUV += localUV * float2(cellWidth, cellHeight);
                 
                 return atlasUV;
@@ -218,76 +191,52 @@ Shader "Custom/BracketShader_v2"
                 float4 finalColor = _BackgroundColor;
                 float time = _Time.y;
                 
-                // Center of the texture
                 float2 center = float2(0.5, 0.5);
-                
-                // Calculate grid size
                 int gridSize = (int)_GridCount;
-                
-                // Convert global rotation to radians
                 float globalRotRad = _GlobalRotation * 0.0174533;
                 
-                // Loop through grid points
                 for (int x = -gridSize; x <= gridSize; x++)
                 {
                     for (int y = -gridSize; y <= gridSize; y++)
                     {
-                        // Calculate perfect grid point position (centered)
                         float2 perfectGridPoint = center + float2(x, y) * _Spacing;
                         
-                        // Check if this grid point is within spawn boundaries
                         if (!isWithinSpawnBounds(perfectGridPoint))
                         {
-                            continue; // Skip this bracket entirely
+                            continue;
                         }
                         
-                        // Create unique seed for this grid point
                         float2 pointSeed = float2(x, y) + float2(100, 200);
                         
-                        // Apply static jitter (permanent offset from grid)
                         float2 staticOffset = getStaticJitter(pointSeed);
                         float2 jitteredPoint = perfectGridPoint + staticOffset;
                         
-                        // Apply animated wiggle (oscillates around jittered point)
                         float2 wiggleOffset = getWiggleOffset(pointSeed, time);
                         float2 finalGridPoint = jitteredPoint + wiggleOffset;
                         
-                        // Randomly choose bracket type
                         int bracketType = (int)(hash(pointSeed) * 5.99);
                         
-                        // Skip if this bracket type is disabled
                         if (!isEnabled(bracketType)) continue;
                         
-                        // Random scale for this bracket
                         float randomScale = lerp(_MinScale, _MaxScale, hash(pointSeed + 1.1));
                         float finalSize = _BracketSize * randomScale;
                         
-                        // Random local rotation for this bracket
-                        float localRotation = (hash(pointSeed + 2.2) - 0.5) * _LocalRotationRange * 0.0174533; // Convert to radians
+                        float localRotation = (hash(pointSeed + 2.2) - 0.5) * _LocalRotationRange * 0.0174533;
                         float totalRotation = globalRotRad + localRotation;
                         
-                        // Calculate offset from current pixel to bracket position
                         float2 offset = i.uv - finalGridPoint;
-                        
-                        // Rotate the offset (inverse rotation for sampling)
                         offset = rotate(offset, -totalRotation);
                         
-                        // Check if we're within the bracket's bounding box
                         if (abs(offset.x) < finalSize * 0.5 && abs(offset.y) < finalSize * 0.5)
                         {
-                            // Convert offset to local UV coordinates (0-1 range)
                             float2 localUV = (offset / finalSize) + 0.5;
                             
-                            // Get atlas UV for this bracket type
                             float2 atlasUV = getBracketUV(bracketType, localUV);
                             
-                            // Sample the bracket atlas
                             float4 bracketSample = tex2D(_BracketAtlas, atlasUV);
                             
-                            // Use alpha to blend
                             if (bracketSample.a > 0.1)
                             {
-                                // Recolor the bracket
                                 float4 coloredBracket = float4(_BracketColor.rgb, bracketSample.a);
                                 finalColor = lerp(finalColor, coloredBracket, bracketSample.a);
                             }

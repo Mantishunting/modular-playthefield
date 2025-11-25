@@ -240,18 +240,26 @@ public class HumanClick : MonoBehaviour
         Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
 
+        // --- START STEP 2 REPLACEMENT ---
         Vector3 blockCenter = transform.position;
         Vector3 difference = mousePos - blockCenter;
-        float halfSize = blockSize / 2f;
 
-        // Check if mouse is within clickable range
-        if (Mathf.Abs(difference.x) > halfSize * clickRangeMultiplier ||
-            Mathf.Abs(difference.y) > halfSize * clickDepthMultiplier)
+        // NEW: Get the current scale from the transform (set by BlockScaler)
+        float currentScale = transform.localScale.x;
+
+        // NEW: Calculate half size based on the current scale
+        float scaledHalfSize = (blockSize / 2f) * currentScale;
+
+        // Check if mouse is within clickable range (using scaledHalfSize)
+        if (Mathf.Abs(difference.x) > scaledHalfSize * clickRangeMultiplier ||
+            Mathf.Abs(difference.y) > scaledHalfSize * clickDepthMultiplier)
         {
             // Don't call HidePreview here - let other blocks handle it
             // Only the block that shows a preview should manage hiding it
             return;
         }
+        // --- END STEP 2 REPLACEMENT ---
+
 
         // Get selected block type
         BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
@@ -273,14 +281,16 @@ public class HumanClick : MonoBehaviour
         if (Mathf.Abs(difference.x) > Mathf.Abs(difference.y))
         {
             // Horizontal zones
-            if (difference.x > halfSize)
+            // --- START STEP 2 ADJUSTMENT ---
+            if (difference.x > scaledHalfSize) // Changed from halfSize
             {
+                // --- END STEP 2 ADJUSTMENT ---
                 // East
                 spawnPosition = blockCenter + new Vector3(blockSize, 0, 0);
                 childToMove = eastChild;
                 isValidZone = true;
             }
-            else if (difference.x < -halfSize)
+            else if (difference.x < -scaledHalfSize) // Changed from -halfSize
             {
                 // West
                 spawnPosition = blockCenter + new Vector3(-blockSize, 0, 0);
@@ -291,14 +301,16 @@ public class HumanClick : MonoBehaviour
         else
         {
             // Vertical zones
-            if (difference.y > halfSize)
+            // --- START STEP 2 ADJUSTMENT ---
+            if (difference.y > scaledHalfSize) // Changed from halfSize
             {
+                // --- END STEP 2 ADJUSTMENT ---
                 // North
                 spawnPosition = blockCenter + new Vector3(0, blockSize, 0);
                 childToMove = northChild;
                 isValidZone = true;
             }
-            else if (difference.y < -halfSize)
+            else if (difference.y < -scaledHalfSize) // Changed from -halfSize
             {
                 // South
                 spawnPosition = blockCenter + new Vector3(0, -blockSize, 0);
@@ -407,15 +419,23 @@ public class HumanClick : MonoBehaviour
         Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
 
+        // --- START STEP 3 REPLACEMENT ---
         Vector3 blockCenter = transform.position;
         Vector3 difference = mousePos - blockCenter;
 
-        float halfSize = blockSize / 2f;
+        // NEW: Get the current scale from the transform (set by BlockScaler)
+        float currentScale = transform.localScale.x;
 
-        if (Mathf.Abs(difference.x) > halfSize * clickRangeMultiplier || Mathf.Abs(difference.y) > halfSize * clickDepthMultiplier)
+        // NEW: Calculate half size based on the current scale
+        float scaledHalfSize = (blockSize / 2f) * currentScale;
+
+        // Check if mouse is within clickable range (using scaledHalfSize)
+        if (Mathf.Abs(difference.x) > scaledHalfSize * clickRangeMultiplier || Mathf.Abs(difference.y) > scaledHalfSize * clickDepthMultiplier)
         {
             return;
         }
+        // --- END STEP 3 REPLACEMENT ---
+
 
         // Get the selected block type from BlockTypeManager
         BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
@@ -442,8 +462,10 @@ public class HumanClick : MonoBehaviour
 
         if (Mathf.Abs(difference.x) > Mathf.Abs(difference.y))
         {
-            if (difference.x > halfSize)
+            // --- START STEP 3 ADJUSTMENT ---
+            if (difference.x > scaledHalfSize) // Changed from halfSize
             {
+                // --- END STEP 3 ADJUSTMENT ---
                 spawnPosition = blockCenter + new Vector3(blockSize, 0, 0);
                 moveDirection = new Vector3(blockSize, 0, 0);
                 childToMove = eastChild;
@@ -511,7 +533,7 @@ public class HumanClick : MonoBehaviour
 
                 }
             }
-            else if (difference.x < -halfSize)
+            else if (difference.x < -scaledHalfSize) // Changed from -halfSize
             {
                 spawnPosition = blockCenter + new Vector3(-blockSize, 0, 0);
                 moveDirection = new Vector3(-blockSize, 0, 0);
@@ -583,8 +605,10 @@ public class HumanClick : MonoBehaviour
         }
         else
         {
-            if (difference.y > halfSize)
+            // --- START STEP 3 ADJUSTMENT ---
+            if (difference.y > scaledHalfSize) // Changed from halfSize
             {
+                // --- END STEP 3 ADJUSTMENT ---
                 spawnPosition = blockCenter + new Vector3(0, blockSize, 0);
                 moveDirection = new Vector3(0, blockSize, 0);
                 childToMove = northChild;
@@ -652,7 +676,7 @@ public class HumanClick : MonoBehaviour
 
                 }
             }
-            else if (difference.y < -halfSize)
+            else if (difference.y < -scaledHalfSize) // Changed from -halfSize
             {
                 spawnPosition = blockCenter + new Vector3(0, -blockSize, 0);
                 moveDirection = new Vector3(0, -blockSize, 0);

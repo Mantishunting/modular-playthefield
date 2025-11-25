@@ -10,10 +10,17 @@ public class Flower : MonoBehaviour
 
     [Header("State")]
     [SerializeField] private int timesVisited = 0;
-
     public int TimesVisited => timesVisited;
 
-    //  Audio fields
+    // **[1] Cooldown settings**
+    [Header("Cooldown Settings")]
+    [Tooltip("Seconds before this flower can be visited again.")]
+    [SerializeField] private float visitCooldown = 2f;
+
+    // **[2] Cooldown lock**
+    private bool onCooldown = false;
+
+    // Audio fields
     private AudioSource audioSource;
     private AudioClip flowerClip;
     private float flowerPitch;
@@ -27,13 +34,11 @@ public class Flower : MonoBehaviour
             collider.isTrigger = usesTrigger;
         }
 
-        //  Audio Setup
+        // Audio Setup
         if (VoiceManager.Instance != null)
         {
-            // 1. Add AudioSource automatically
             audioSource = gameObject.AddComponent<AudioSource>();
 
-            // 2. Assign unique voice
             VoiceManager.Instance.AssignFlowerVoice(
                 gameObject,
                 out flowerClip,
@@ -41,7 +46,6 @@ public class Flower : MonoBehaviour
                 out flowerVolume
             );
 
-            // 3. Configure AudioSource
             audioSource.pitch = flowerPitch;
             audioSource.playOnAwake = false;
         }
@@ -54,7 +58,6 @@ public class Flower : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (usesTrigger) return;
-
         if (collision.gameObject.GetComponent<Bee>() != null)
         {
             RegisterVisit();
@@ -64,7 +67,6 @@ public class Flower : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (!usesTrigger) return;
-
         if (other.GetComponent<Bee>() != null)
         {
             RegisterVisit();
@@ -73,23 +75,33 @@ public class Flower : MonoBehaviour
 
     void RegisterVisit()
     {
+        // **[3] Block repeated hits during cooldown**
+        if (onCooldown) return;
+
+        // **[4] Enter cooldown**
+        onCooldown = true;
+        Invoke(nameof(ResetCooldown), visitCooldown);
+
         timesVisited++;
 
         if (BeeVisitTracker.Instance != null)
         {
-            //  CRITICAL FIX: UNCOMMENTED this line to register the global visit count!
             BeeVisitTracker.Instance.RegisterVisit();
         }
 
         OnFlowerVisited?.Invoke(this);
 
-        //  Playback
         if (flowerClip != null && audioSource != null)
         {
-            // Use PlayOneShot with the volume multiplier
             audioSource.PlayOneShot(flowerClip, flowerVolume);
         }
 
         Debug.Log($"Flower visited! {gameObject.name} - Local: {timesVisited}");
+    }
+
+    // **[5] Cooldown reset function**
+    void ResetCooldown()
+    {
+        onCooldown = false;
     }
 }

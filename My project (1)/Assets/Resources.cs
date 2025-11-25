@@ -28,7 +28,7 @@ public class Resources : MonoBehaviour
 
     // **2️⃣ Public Read-only Properties**
     public bool AllowPlayerDestroyWood => allowPlayerDestroyWood;
-    public bool AllowLowResourceDestroyWood => allowLowResourceDestroyWood;
+    public bool AllowLowResourceDestroyWood => allowPlayerDestroyWood;
 
     // Internal tracker
     private int lastBlockCount = -1;
@@ -163,6 +163,27 @@ public class Resources : MonoBehaviour
             Debug.Log($"Food added: +{amount} | Total Food: {currentFood}");
         }
     }
+
+    // --- NEW METHOD TO BE CALLED BY UI.CS ---
+    public void SubtractFood(int amount)
+    {
+        if (amount <= 0)
+        {
+            Debug.LogWarning($"Tried to subtract non-positive food amount: {amount}");
+            return;
+        }
+
+        currentFood -= amount;
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"Food spent (Upkeep): -{amount} | Total Food: {currentFood}");
+        }
+
+        // Let the starvation check handle negative food/game over, but you could 
+        // add an immediate check here if needed.
+    }
+    // ----------------------------------------
 
     public int GetCurrentFood()
     {

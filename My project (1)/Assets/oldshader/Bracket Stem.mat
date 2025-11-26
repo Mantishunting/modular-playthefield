@@ -48,7 +48,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BottomEdge: 0
-    - _BracketSize: 0.3
+    - _BracketSize: 0.1277
     - _Density: 44.9
     - _EdgeMargin: 0.5
     - _EdgePaddingBottom: 0.2
@@ -56,8 +56,8 @@ Material:
     - _EdgePaddingRight: 0.2
     - _EdgePaddingTop: 0.2
     - _EnableExternalAlpha: 0
-    - _GlobalRotation: 0
-    - _GridCount: 2.44
+    - _GlobalRotation: 126
+    - _GridCount: 3.73
     - _GridSize: 0.248
     - _LeftEdge: 0
     - _LocalRotationRange: 30
@@ -67,8 +67,8 @@ Material:
     - _RandomRotation: 0
     - _RightEdge: 0
     - _Seed: 52
-    - _Spacing: 0.101
-    - _StaticJitter: 0.3
+    - _Spacing: 0.11
+    - _StaticJitter: 0.46
     - _TopEdge: 0
     - _UseCurlyClose: 0
     - _UseCurlyOpen: 0
@@ -76,10 +76,10 @@ Material:
     - _UseRoundOpen: 1
     - _UseSquareClose: 0
     - _UseSquareOpen: 1
-    - _WiggleAmount: 0.1
+    - _WiggleAmount: 0.975
     - _WiggleRotation: 15
     - _WiggleScale: 0.1
-    - _WiggleSpeed: 2
+    - _WiggleSpeed: 8.39
     m_Colors:
     - _BackgroundColor: {r: 1, g: 1, b: 1, a: 0}
     - _BracketColor: {r: 1, g: 0.983191, b: 0, a: 1}

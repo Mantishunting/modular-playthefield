@@ -2535,6 +2535,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodText: {fileID: 2137470649}
   visitText: {fileID: 1095291264}
+  upkeepCostText: {fileID: 0}
+  leafBlockName: Leaf
+  foodGainPerTick: 100
+  foodGainFrequency: 4
+  upkeepCostPerTick: 5
+  upkeepFrequency: 3
   nextLevelButton: {fileID: 142813087}
   winText: {fileID: 1026897643}
   winMessage: FERTILISATION
@@ -2847,7 +2853,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: beesPerSecond
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: emissionOffset
@@ -2859,7 +2865,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8721800243711638645, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: visitsToWin
-      value: 400
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3632,8 +3638,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de0fcdfce80fd344a9de1e52ad42df1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upkeepInterval: 1
-  costPerBlock: 1.8
+  upkeepInterval: 1.5
+  costPerBlock: 1.1
   penaltyType: 0
   showDebugLogs: 1
   foodHoldThresholdSeconds: 5

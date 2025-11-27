@@ -2339,8 +2339,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentFood: 400
   enableStarvation: 1
-  blocksToKillPerCheck: 5
-  starvationCheckInterval: 5
+  blocksToKillPerCheck: 8
+  starvationCheckInterval: 8
   enableDeathRefund: 1
   deathRefundMultiplier: 1.1
   showRefundLogs: 0
@@ -3599,6 +3599,10 @@ PrefabInstance:
       propertyPath: sun
       value: 
       objectReference: {fileID: 1106439076}
+    - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: emissionDuration
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 8004193277229458961, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: m_Name
       value: BeeSpawner

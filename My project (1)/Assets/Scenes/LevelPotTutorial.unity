@@ -831,7 +831,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Teaches insertion mechanic
-  - messageText: Click and hold to add lots of blocks
+  - messageText: Click and hold to add lots of blocks, grow barnchs as well as shoots.
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -886,7 +886,7 @@ MonoBehaviour:
     arrowShouldBounce: 1
     triggerType: 3
     designerNotes: Arrow should point to Leaf UI button
-  - messageText: Leaves like fresh wood blocks to grow
+  - messageText: Leaves like fresh wood blocks to grow from
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -908,7 +908,8 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Wait for 2 leaves - may need special handling for sequential arrows
-  - messageText: Add some leaves along the stem. They produce food
+  - messageText: Add some leaves along the stem. They produce food. when you run
+      out of food bocks start to fall of the plant
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -930,7 +931,8 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info dump
-  - messageText: Each block has an upkeep cost
+  - messageText: Each block has an upkeep cost. you can see it effecting your food
+      in the top left
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -963,7 +965,8 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Should trigger transparency animation - see TutorialManager.HandleSpecialStepSetup
-  - messageText: If a leaf is in the shade it can't produce food
+  - messageText: a leaf must be in the sun to produce food, it will make a noise
+      each time it produces
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -3094,8 +3097,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentFood: 10000
   enableStarvation: 1
-  blocksToKillPerCheck: 5
-  starvationCheckInterval: 5
+  blocksToKillPerCheck: 1
+  starvationCheckInterval: 8
   enableDeathRefund: 1
   deathRefundMultiplier: 1.1
   showRefundLogs: 1
@@ -3980,7 +3983,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 58465053234949845, guid: b324e991ea114c3479453001913a7359, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3132006034446543897, guid: b324e991ea114c3479453001913a7359, type: 3}
       propertyPath: m_Color.a

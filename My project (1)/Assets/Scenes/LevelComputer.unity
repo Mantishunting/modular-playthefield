@@ -731,7 +731,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: beesPerSecond
-      value: 0.3
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: emissionDuration
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8004193277229458961, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: m_Name
@@ -2529,6 +2533,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodText: {fileID: 8074107490328524885}
   visitText: {fileID: 1589167855}
+  upkeepCostText: {fileID: 0}
+  leafBlockName: Leaf
+  foodGainPerTick: 100
+  foodGainFrequency: 4
+  upkeepCostPerTick: 5
+  upkeepFrequency: 3
   nextLevelButton: {fileID: 737481795}
   winText: {fileID: 1822570794}
   winMessage: FERTILISATION
@@ -3385,8 +3395,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentFood: 3000
   enableStarvation: 1
-  blocksToKillPerCheck: 5
-  starvationCheckInterval: 5
+  blocksToKillPerCheck: 8
+  starvationCheckInterval: 8
   enableDeathRefund: 1
   deathRefundMultiplier: 1.1
   showRefundLogs: 0

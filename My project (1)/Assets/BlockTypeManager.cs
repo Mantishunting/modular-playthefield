@@ -9,6 +9,7 @@ public class BlockTypeManager : MonoBehaviour
     public BlockType[] availableTypes;
 
     private int currentTypeIndex = 0;
+    public static event System.Action<BlockType> OnBlockTypeSelected;
 
     void Awake()
     {
@@ -100,6 +101,7 @@ public class BlockTypeManager : MonoBehaviour
             {
                 currentTypeIndex = i;
                 Debug.Log($"BlockTypeManager: Selected {blockType.blockName}");
+                OnBlockTypeSelected?.Invoke(blockType);
                 return;
             }
         }

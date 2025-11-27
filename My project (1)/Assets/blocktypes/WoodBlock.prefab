@@ -316,8 +316,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockSize: 1
-  clickRangeMultiplier: 4
-  clickDepthMultiplier: 2
+  clickRangeMultiplier: 1.8
+  clickDepthMultiplier: 1.8
   wobbleDuration: 0.3
   wobbleAmount: 0.1
   continuousPlacementDelay: 0.2

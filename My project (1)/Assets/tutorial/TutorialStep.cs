@@ -25,24 +25,31 @@ public class TutorialStep
     [Header("Message")]
     [TextArea(2, 4)]
     public string messageText = "Tutorial message here";
-    
+    public int requiredBlockCount = -1;
+
     [Header("UI Elements")]
     public bool showNextButton = true;
     public bool showArrow = false;
-    
+
     [Header("Arrow Settings")]
+    [Tooltip("Is this arrow in world space (pointing at blocks) or UI space (pointing at buttons)?")]
+    public bool arrowInWorldSpace = true; // Default to world space for blocks
+
     [Tooltip("Rotation in degrees: 0=right, 90=up, 180=left, 270=down")]
     public float arrowRotation = 0f;
-    
-    [Tooltip("World position where arrow should point (only used if showArrow is true)")]
+
+    [Tooltip("World position where arrow should point (used if arrowInWorldSpace = true)")]
     public Vector3 arrowTargetPosition = Vector3.zero;
-    
+
+    [Tooltip("UI position where arrow should point (used if arrowInWorldSpace = false)")]
+    public Vector2 arrowUIPosition = Vector2.zero;
+
     [Tooltip("Should the arrow bounce/animate?")]
     public bool arrowShouldBounce = false;
-    
+
     [Header("Advancement")]
     public TriggerType triggerType = TriggerType.NextButtonOnly;
-    
+
     [Header("Notes (not used by code)")]
     [TextArea(1, 3)]
     public string designerNotes = "Add notes about this step here for reference";

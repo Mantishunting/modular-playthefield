@@ -655,7 +655,7 @@ GameObject:
   - component: {fileID: 219498050}
   - component: {fileID: 219498049}
   m_Layer: 5
-  m_Name: Pointer
+  m_Name: UIArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -727,9 +727,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 113588410}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -41.907433}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -101.7, y: 132.2}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &223026092
@@ -743,7 +743,7 @@ GameObject:
   - component: {fileID: 223026096}
   - component: {fileID: 223026095}
   - component: {fileID: 223026094}
-  - component: {fileID: 223026093}
+  - component: {fileID: 223026097}
   m_Layer: 0
   m_Name: TutorialManager
   m_TagString: Untagged
@@ -751,21 +751,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &223026093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 223026092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 280b38cc702601d429f8c1dfedd1023a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  instructions: This script will auto-generate all 22 tutorial steps with the correct
-    settings from your tutorial design document. Click 'Generate Steps' button below
-    in the Inspector, then you can remove this component.
 --- !u!114 &223026094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -781,10 +766,13 @@ MonoBehaviour:
   tutorialPanel: {fileID: 113588409}
   messageText: {fileID: 558189978}
   nextButton: {fileID: 1954987733}
-  arrow: {fileID: 219498048}
+  uiArrow: {fileID: 219498048}
+  worldArrow: {fileID: 1503636382}
   tutorialManager: {fileID: 223026095}
   bounceHeight: 0.2
   bounceSpeed: 2
+  infoStepDelay: 2
+  actionStepDelay: 5
 --- !u!114 &223026095
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,181 +787,278 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialSteps:
   - messageText: You're a BEAN
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 1
-    arrowRotation: 0
-    arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowInWorldSpace: 1
+    arrowRotation: 180
+    arrowTargetPosition: {x: 0.005, y: 1.297, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Introduction
   - messageText: Click here to place wood blocks
+    requiredBlockCount: 2
     showNextButton: 0
     showArrow: 1
-    arrowRotation: 90
-    arrowTargetPosition: {x: 0, y: 1, z: 0}
+    arrowInWorldSpace: 1
+    arrowRotation: 5
+    arrowTargetPosition: {x: 0, y: 1.297, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 1
     triggerType: 1
     designerNotes: First stem placement - arrow needs positioning. Player can also
       click Next to skip.
-  - messageText: Add another stem block
-    showNextButton: 1
+  - messageText: Add a couple wood block
+    requiredBlockCount: -1
+    showNextButton: 0
     showArrow: 1
-    arrowRotation: 0
-    arrowTargetPosition: {x: -1, y: 2, z: 0}
-    arrowShouldBounce: 0
+    arrowInWorldSpace: 1
+    arrowRotation: 180
+    arrowTargetPosition: {x: 0.005, y: 1.297, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
+    arrowShouldBounce: 1
     triggerType: 1
     designerNotes: Wait for stem count to increase
-  - messageText: Try clicking here to insert a stem
+  - messageText: Try clicking inbetween two blocks to insert
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 1
+    arrowInWorldSpace: 1
     arrowRotation: 90
-    arrowTargetPosition: {x: 0, y: 1.5, z: 0}
+    arrowTargetPosition: {x: 1, y: 1.5, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Teaches insertion mechanic
   - messageText: Click and hold to add lots of blocks
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Wait for 3 blocks to be added
-  - messageText: You can cut off a branch with triple right click. A single click
-      will show what's going to be deleted. Deleting works for flowers and leaves
-      too
+  - messageText: You can cut off a branch with triple right click.
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 1
+    arrowInWorldSpace: 1
     arrowRotation: 270
     arrowTargetPosition: {x: 0, y: 3, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 2
     designerNotes: Must delete a block to advance
-  - messageText: Good. Now try switching to Leaf
+  - messageText: A single right click will show targeted wood
+    requiredBlockCount: -1
     showNextButton: 1
-    showArrow: 1
+    showArrow: 0
+    arrowInWorldSpace: 1
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
+    arrowShouldBounce: 0
+    triggerType: 0
+    designerNotes: Camera controls - moved to end so arrows stay in correct position
+  - messageText: Deleting works for flowers and leaves too
+    requiredBlockCount: -1
+    showNextButton: 1
+    showArrow: 0
+    arrowInWorldSpace: 1
+    arrowRotation: 0
+    arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
+    arrowShouldBounce: 0
+    triggerType: 0
+    designerNotes: Camera controls - moved to end so arrows stay in correct position
+  - messageText: Good. Now try switching to Leaf
+    requiredBlockCount: -1
+    showNextButton: 1
+    showArrow: 0
+    arrowInWorldSpace: 0
+    arrowRotation: 0
+    arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 1
     triggerType: 3
     designerNotes: Arrow should point to Leaf UI button
-  - messageText: Leaves need wood blocks to grow
+  - messageText: Leaves need fresh wood blocks to grow
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info about leaf requirements
-  - messageText: Add some leaf blocks on both sides of your stem
+  - messageText: Add some leaf blocks along both sides of your stem
+    requiredBlockCount: -1
     showNextButton: 1
-    showArrow: 1
+    showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 1, y: 2, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Wait for 2 leaves - may need special handling for sequential arrows
   - messageText: Leaves produce food
+    requiredBlockCount: -1
     showNextButton: 1
-    showArrow: 1
+    showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 180
     arrowTargetPosition: {x: -5, y: 4, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Arrow should point to food counter
   - messageText: A leaf can support about 5 blocks
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info dump
   - messageText: Each block has an upkeep cost
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info dump
-  - messageText: This is your food. It tells you if your food's going up or down
+  - messageText: Keep an eye on your Food Is it going up or down?
+    requiredBlockCount: -1
     showNextButton: 1
-    showArrow: 1
+    showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 180
     arrowTargetPosition: {x: -5, y: 4, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Point to food indicator
-  - messageText: Leaves need light
+  - messageText: Leaves need light. They are inactive in shade
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Should trigger transparency animation - see TutorialManager.HandleSpecialStepSetup
-  - messageText: If a leaf is in the shade it can't photosynthesise
+  - messageText: If a leaf is in the shade it can't produce food
+    requiredBlockCount: -1
     showNextButton: 1
-    showArrow: 1
+    showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 270
     arrowTargetPosition: {x: 0, y: 1, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Should spawn shaded leaf - see TutorialManager.HandleSpecialStepSetup
-  - messageText: Remove this one now
+  - messageText: Try Removing the inactive leaf blocks
+    requiredBlockCount: -1
     showNextButton: 1
-    showArrow: 1
+    showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 270
     arrowTargetPosition: {x: 0, y: 1, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 2
     designerNotes: Must delete the shaded leaf
-  - messageText: Flowers are very expensive
+  - messageText: Flowers are very expensive but lets make one
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 1
+    arrowInWorldSpace: 1
     arrowRotation: 0
     arrowTargetPosition: {x: 5, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Arrow should point to Flower UI button
-  - messageText: Place a flower now
+  - messageText: To win you need bees to vist them
+    requiredBlockCount: -1
     showNextButton: 1
-    showArrow: 1
+    showArrow: 0
+    arrowInWorldSpace: 1
+    arrowRotation: 0
+    arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
+    arrowShouldBounce: 0
+    triggerType: 0
+    designerNotes: Camera controls - moved to end so arrows stay in correct position
+  - messageText: Flowers Grow on there own
+    requiredBlockCount: -1
+    showNextButton: 1
+    showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 5, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Wait for flower placement
-  - messageText: Bees will visit your flowers
+  - messageText: Brace for the cost
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info about bees - can increase spawn rate here
-  - messageText: When a bee visits your flower, you'll progress to the next level
+  - messageText: Resources are more genrous in the tuorial.
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 0
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 5
     designerNotes: Tutorial ends when bee visits - loads next level
   - messageText: Hold right click and drag to move the camera
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 1
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Camera controls - moved to end so arrows stay in correct position
   - messageText: Middle mouse wheel to zoom in and out
+    requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
+    arrowInWorldSpace: 1
     arrowRotation: 0
     arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Camera controls - moved to end so arrows stay in correct position
@@ -994,6 +1079,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &223026097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223026092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7b4f6ed46bf45241bc33f7520627a8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  instructions: '1. Play the game
+
+    2. Advance to the step you want to position
+
+    3.
+    PAUSE the game (not stop!)
+
+    4. Move WorldArrow in scene to desired position
+
+    5.
+    Rotate WorldArrow to desired angle
+
+    6. Click ''Save Current Arrow Position''
+    button below
+
+    7. Continue to next step and repeat'
+  currentStepIndex: -1
+  currentStepText: Not running
 --- !u!224 &292867233 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5841688680862564169, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
@@ -1318,7 +1433,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f7f088901ca8cf49a1610f0d4306a4e, type: 3}
   m_Name: 
@@ -2991,6 +3106,90 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1503636382
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1503636384}
+  - component: {fileID: 1503636383}
+  m_Layer: 0
+  m_Name: WordArrow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &1503636383
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503636382}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+  m_Color: {r: 0.98232526, g: 1, b: 0.3537736, a: 0.79607844}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!4 &1503636384
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503636382}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
+  m_LocalPosition: {x: 0.005, y: 1.788, z: 0}
+  m_LocalScale: {x: 0.5, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!1 &1543231303
 GameObject:
   m_ObjectHideFlags: 0
@@ -3539,7 +3738,6 @@ GameObject:
   - component: {fileID: 1954987732}
   - component: {fileID: 1954987731}
   - component: {fileID: 1954987733}
-  - component: {fileID: 1954987730}
   m_Layer: 5
   m_Name: NextMessage
   m_TagString: Untagged
@@ -3567,19 +3765,6 @@ RectTransform:
   m_AnchoredPosition: {x: 77.83836, y: 45.3}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1954987730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1954987728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c32bbdc986e9c704eaee74fa15bee206, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneToLoad: LevelPot2
 --- !u!114 &1954987731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4105,6 +4290,14 @@ PrefabInstance:
       propertyPath: sun
       value: 
       objectReference: {fileID: 1106439076}
+    - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: emissionOffset
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: emissionDuration
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 8004193277229458961, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: m_Name
       value: BeeSpawner
@@ -4402,4 +4595,5 @@ SceneRoots:
   - {fileID: 8180572807063345414}
   - {fileID: 1717453934}
   - {fileID: 223026096}
+  - {fileID: 1503636384}
   - {fileID: 1150882045}

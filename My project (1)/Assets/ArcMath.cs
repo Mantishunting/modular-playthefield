@@ -76,10 +76,10 @@ public static class ArcMath
         // 4. Build arc ranges
         bool inForward = (angle > -40f && angle < 40f);
 
-        // FIX: Swapped logic. Positive angles (40 to 140) are LEFT in Unity.
+        // Positive angles (40 to 140) are LEFT in Unity.
         bool inLeft = (angle >= 40f && angle <= 140f);
 
-        // FIX: Negative angles (-140 to -40) are RIGHT in Unity.
+        // Negative angles (-140 to -40) are RIGHT in Unity.
         bool inRight = (angle <= -40f && angle >= -140f);
 
         bool inBottom = (!inForward && !inRight && !inLeft);

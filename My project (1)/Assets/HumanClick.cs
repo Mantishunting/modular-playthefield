@@ -73,7 +73,7 @@ public class HumanClick : MonoBehaviour
         spawner = FindObjectOfType<BlockSpawner>();
         blockId = nextId;
         nextId++;
-        originalScale = transform.localScale; // NOTE: BlockScaler might override this later
+        originalScale = transform.localScale;
         totalBlockCount++;
     }
 
@@ -135,12 +135,11 @@ public class HumanClick : MonoBehaviour
         mousePos.z = 0;
 
         Vector3 blockCenter = transform.position;
-        // Check click against CURRENT scale
         float currentScale = transform.localScale.x;
-        float scaledHalfSize = (blockSize / 2f) * currentScale;
+        float radius = (blockSize / 2f) * currentScale;
 
-        if (Mathf.Abs(mousePos.x - blockCenter.x) < scaledHalfSize &&
-            Mathf.Abs(mousePos.y - blockCenter.y) < scaledHalfSize)
+        // CIRCLE COLLIDER CHECK: Simple distance comparison
+        if (Vector3.Distance(mousePos, blockCenter) < radius)
         {
             BlockType bt = GetBlockType();
             if (!Resources.Instance.AllowPlayerDestroyWood && bt != null && bt.blockName == "Wood")
@@ -188,8 +187,7 @@ public class HumanClick : MonoBehaviour
         {
             if (block != null)
             {
-                // FIX: Get the ACTUAL scale of the neighbor. 
-                // BlockScaler might have made it huge or tiny.
+                // Fetch ACTUAL scale of neighbor (set by BlockScaler)
                 float neighborScale = block.transform.localScale.x;
                 float neighborRadius = (blockSize / 2f) * neighborScale;
 
@@ -256,7 +254,6 @@ public class HumanClick : MonoBehaviour
         mousePos.z = 0;
 
         Vector3 blockCenter = transform.position;
-        // FIX: Use current visual scale for Self
         float currentScale = transform.localScale.x;
         float scaledHalfSize = (blockSize / 2f) * currentScale;
 
@@ -267,7 +264,7 @@ public class HumanClick : MonoBehaviour
         }
 
         Vector2 forward = GetForwardVector();
-        List<BlockGeom> neighbors = GetNeighbors(); // Uses neighbors' real scales now
+        List<BlockGeom> neighbors = GetNeighbors();
 
         PlacementResult result = ArcMath.SolvePlacement(
             blockCenter,
@@ -282,12 +279,7 @@ public class HumanClick : MonoBehaviour
         Vector3 spawnDirection = GetDirectionFromArc(forward, result.arc);
         if (spawnDirection == Vector3.zero) return;
 
-        Vector3 spawnPosition = blockCenter + (spawnDirection * blockSize); // Spacing remains standard 1 unit for grid
-
-        // OPTIONAL: If you want spawn spacing to scale with block size, change line above to:
-        // Vector3 spawnPosition = blockCenter + (spawnDirection * blockSize * currentScale);
-        // BUT: Grid systems usually keep spacing fixed even if visual size grows. 
-        // Keeping it fixed for now to maintain grid alignment.
+        Vector3 spawnPosition = blockCenter + (spawnDirection * blockSize);
 
         HumanClick childToMove = GetChildInDirection(spawnDirection);
 
@@ -529,8 +521,10 @@ public class HumanClick : MonoBehaviour
     private const string HazardTag = "NoGrow";
     private bool IsHazard(Vector3 position)
     {
-        Vector2 size = new Vector2(blockSize * 0.95f, blockSize * 0.95f);
-        Collider2D[] hits = Physics2D.OverlapBoxAll(position, size, 0f);
+        // CIRCLE COLLIDER CHECK
+        float radius = (blockSize / 2f) * 0.95f;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(position, radius);
         for (int i = 0; i < hits.Length; i++)
         {
             if (hits[i] != null && hits[i].CompareTag(HazardTag))
@@ -541,8 +535,10 @@ public class HumanClick : MonoBehaviour
 
     bool IsPositionOccupied(Vector3 position)
     {
-        Vector2 checkSize = new Vector2(0.5f, 0.5f);
-        Collider2D[] hits = Physics2D.OverlapBoxAll(position, checkSize, 0f, occupancyLayer);
+        // CIRCLE COLLIDER CHECK
+        float checkRadius = 0.45f * blockSize;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(position, checkRadius, occupancyLayer);
         foreach (Collider2D hit in hits)
         {
             if (hit.transform.parent == transform || hit.transform == transform) continue;
@@ -611,10 +607,6 @@ public class HumanClick : MonoBehaviour
         if (wobbleTimer < wobbleDuration)
         {
             float wobble = Mathf.Sin(wobbleTimer * Mathf.PI * 2 / wobbleDuration) * wobbleAmount;
-
-            // NOTE: BlockScaler might fight this. 
-            // Ideally, wobble should be additive to current scale, not multiplicative to original.
-            // But for now, keeping original logic to avoid breaking wobble effect entirely.
             transform.localScale = originalScale * (1f + wobble);
         }
         else

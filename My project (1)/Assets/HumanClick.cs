@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +66,7 @@ public class HumanClick : MonoBehaviour
 
     private float rightClickDownTime = 0f;
     [SerializeField] private float clickThreshold = 0.25f;
+
 
     void Start()
     {
@@ -166,17 +167,12 @@ public class HumanClick : MonoBehaviour
     }
 
     // ==========================================================
-    // ARC MATH HELPERS
+    // ARC MATH HELPERS, now updating this to change with orientation. this is good now
     // ==========================================================
 
-    private Vector2 GetForwardVector()
+    public Vector2 GetForwardVector()
     {
-        if (southParent != null) return Vector2.up;
-        if (northParent != null) return Vector2.down;
-        if (westParent != null) return Vector2.right;
-        if (eastParent != null) return Vector2.left;
-
-        return Vector2.up;
+        return transform.up; // rotates with the block
     }
 
     private List<BlockGeom> GetNeighbors()
@@ -298,14 +294,72 @@ public class HumanClick : MonoBehaviour
 
         if (isPlacementValid)
         {
-            PreviewBlockManager.Instance.ShowPreview(spawnPosition, selectedType, canAfford, dynamicCost);
+            // Pass 'this' as the parent block so PreviewBlockManager can highlight it
+            PreviewBlockManager.Instance.ShowPreview(spawnPosition, selectedType, canAfford, dynamicCost, this);
             anyBlockShowedPreviewThisFrame = true;
         }
     }
 
+
     // ==========================================================
     // CLICK/SPAWN LOGIC
     // ==========================================================
+
+    private HumanClick DetectInsertTarget(Vector3 mousePos)
+    {
+        float radius = (blockSize / 2f) * transform.localScale.x * 1.1f;
+
+        if (northChild != null && Vector3.Distance(mousePos, northChild.transform.position) < radius)
+            return northChild;
+
+        if (southChild != null && Vector3.Distance(mousePos, southChild.transform.position) < radius)
+            return southChild;
+
+        if (eastChild != null && Vector3.Distance(mousePos, eastChild.transform.position) < radius)
+            return eastChild;
+
+        if (westChild != null && Vector3.Distance(mousePos, westChild.transform.position) < radius)
+            return westChild;
+
+        return null;
+    }
+
+    // ==========================================================
+    // INSERT HANDLER (NEW)
+    // ==========================================================
+    private void DoInsert(HumanClick childToShift)
+    {
+        Vector3 dir = (childToShift.transform.position - transform.position).normalized;
+
+        Vector3 newPos = transform.position + dir * blockSize;
+        Vector3 moveStep = dir * blockSize;
+
+        BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
+        if (selectedType == null) return;
+
+        int dynamicCost = GetDynamicCost(selectedType);
+        if (!Resources.Instance.CanAfford(dynamicCost)) return;
+
+        if (!Resources.Instance.TrySpendFood(dynamicCost)) return;
+
+        // Move the existing child (and its entire subtree) out of the way first
+        childToShift.Move(moveStep);
+
+        GameObject newBlock = spawner.SpawnBlockAt(newPos, selectedType);
+        if (newBlock == null) return;
+
+        HumanClick newChild = newBlock.GetComponent<HumanClick>();
+
+        LinkChild(dir, newChild);
+        newChild.LinkChild(dir, childToShift);
+
+        newChild.SetBlockType(selectedType);
+        OnBlockPlaced?.Invoke(selectedType);
+
+        // Check for collisions after the move
+        CheckAndKillCollisions(childToShift);
+        ValidateAndRemoveInvalidLeafs(childToShift);
+    }
 
     void HandleClick()
     {
@@ -317,10 +371,17 @@ public class HumanClick : MonoBehaviour
         float scaledHalfSize = (blockSize / 2f) * currentScale;
 
         if (Vector3.Distance(mousePos, blockCenter) > scaledHalfSize * clickRangeMultiplier)
+            return;
+
+        // NEW INSERT CHECK — ADD THIS BLOCK 
+        HumanClick insertTarget = DetectInsertTarget(mousePos);
+        if (insertTarget != null)
         {
+            DoInsert(insertTarget);
             return;
         }
 
+        // (existing ADD / arc logic follows)
         Vector2 forward = GetForwardVector();
         List<BlockGeom> neighbors = GetNeighbors();
 
@@ -393,38 +454,109 @@ public class HumanClick : MonoBehaviour
 
     private HumanClick GetChildInDirection(Vector3 dir)
     {
-        if (Mathf.Approximately(dir.x, 1)) return eastChild;
-        if (Mathf.Approximately(dir.x, -1)) return westChild;
-        if (Mathf.Approximately(dir.y, 1)) return northChild;
-        if (Mathf.Approximately(dir.y, -1)) return southChild;
+        Vector2 d = dir.normalized;
+
+        float eastDot = Vector2.Dot(d, Vector2.right);
+        float westDot = Vector2.Dot(d, Vector2.left);
+        float northDot = Vector2.Dot(d, Vector2.up);
+        float southDot = Vector2.Dot(d, Vector2.down);
+
+        float max = Mathf.Max(eastDot, westDot, northDot, southDot);
+
+        if (Mathf.Approximately(max, eastDot)) return eastChild;
+        if (Mathf.Approximately(max, westDot)) return westChild;
+        if (Mathf.Approximately(max, northDot)) return northChild;
+        if (Mathf.Approximately(max, southDot)) return southChild;
+
         return null;
     }
-
     private void LinkChild(Vector3 dir, HumanClick child)
     {
-        if (Mathf.Approximately(dir.x, 1)) // East
+        Vector2 d = dir.normalized;
+
+        float eastDot = Vector2.Dot(d, Vector2.right);
+        float westDot = Vector2.Dot(d, Vector2.left);
+        float northDot = Vector2.Dot(d, Vector2.up);
+        float southDot = Vector2.Dot(d, Vector2.down);
+
+        float max = Mathf.Max(eastDot, westDot, northDot, southDot);
+
+        // First, clear the child's old parent reference (a child can only have one parent)
+        child.ClearAllParents();
+
+        if (Mathf.Approximately(max, eastDot))
         {
+            // Clear any existing child in this slot
+            if (eastChild != null && eastChild != child)
+            {
+                eastChild.westParent = null;
+                eastChild.NotifyConnectionsChanged();
+            }
             eastChild = child;
             child.westParent = this;
         }
-        else if (Mathf.Approximately(dir.x, -1)) // West
+        else if (Mathf.Approximately(max, westDot))
         {
+            if (westChild != null && westChild != child)
+            {
+                westChild.eastParent = null;
+                westChild.NotifyConnectionsChanged();
+            }
             westChild = child;
             child.eastParent = this;
         }
-        else if (Mathf.Approximately(dir.y, 1)) // North
+        else if (Mathf.Approximately(max, northDot))
         {
+            if (northChild != null && northChild != child)
+            {
+                northChild.southParent = null;
+                northChild.NotifyConnectionsChanged();
+            }
             northChild = child;
             child.southParent = this;
         }
-        else if (Mathf.Approximately(dir.y, -1)) // South
+        else if (Mathf.Approximately(max, southDot))
         {
+            if (southChild != null && southChild != child)
+            {
+                southChild.northParent = null;
+                southChild.NotifyConnectionsChanged();
+            }
             southChild = child;
             child.northParent = this;
         }
 
         NotifyConnectionsChanged();
         child.NotifyConnectionsChanged();
+    }
+
+    // Clears all parent references - used before assigning a new parent
+    private void ClearAllParents()
+    {
+        if (northParent != null)
+        {
+            northParent.southChild = null;
+            northParent.NotifyConnectionsChanged();
+            northParent = null;
+        }
+        if (southParent != null)
+        {
+            southParent.northChild = null;
+            southParent.NotifyConnectionsChanged();
+            southParent = null;
+        }
+        if (eastParent != null)
+        {
+            eastParent.westChild = null;
+            eastParent.NotifyConnectionsChanged();
+            eastParent = null;
+        }
+        if (westParent != null)
+        {
+            westParent.eastChild = null;
+            westParent.NotifyConnectionsChanged();
+            westParent = null;
+        }
     }
 
     // ==========================================================

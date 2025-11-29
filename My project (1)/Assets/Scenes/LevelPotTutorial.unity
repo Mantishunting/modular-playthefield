@@ -2058,6 +2058,7 @@ MonoBehaviour:
   leafCantAffordState: {fileID: 11400000, guid: f4a9b3c8043127f4ab9fb6f04e8ddb15, type: 2}
   flowerCanAffordState: {fileID: 11400000, guid: 72514e1b4d35c0c499b9a5f7d1fd7740, type: 2}
   flowerCantAffordState: {fileID: 11400000, guid: d689aaaa75739974a99711145ec37a63, type: 2}
+  parentHighlightState: {fileID: 0}
   costTextOffset: 0.7
   costTextSize: 0.05
   affordableColor: {r: 1, g: 1, b: 1, a: 1}
@@ -3097,7 +3098,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentFood: 10000
   enableStarvation: 1
-  blocksToKillPerCheck: 1
+  blocksToKillPerCheck: 0
   starvationCheckInterval: 8
   enableDeathRefund: 1
   deathRefundMultiplier: 1.1
@@ -3400,6 +3401,10 @@ PrefabInstance:
     - target: {fileID: -9003852712806904563, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
       propertyPath: chanceToPlay
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -639064433553998507, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
+      propertyPath: m_BodyType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4623208119085011070, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
       propertyPath: m_ConnectedAnchor.x

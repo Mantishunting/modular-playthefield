@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Manages preview "ghost" blocks that show where a block will be placed.
 /// Maintains separate previews for Wood, Leaf, and Flower types.
+/// Also highlights the parent block being added to.
 /// </summary>
 public class PreviewBlockManager : MonoBehaviour
 {
@@ -39,6 +40,10 @@ public class PreviewBlockManager : MonoBehaviour
     [Tooltip("Flower preview when player cannot afford (gray)")]
     [SerializeField] private BracketAnimationState flowerCantAffordState;
 
+    [Header("Parent Highlight")]
+    [Tooltip("Animation state to apply to the parent block being added to (uses same style as delete preview wobble)")]
+    [SerializeField] private BracketAnimationState parentHighlightState;
+
     [Header("Settings")]
     [Tooltip("Vertical offset for cost text above preview block")]
     [SerializeField] private float costTextOffset = 0.7f;
@@ -72,7 +77,12 @@ public class PreviewBlockManager : MonoBehaviour
     private GameObject activePreview;
     private BlockType activeBlockType;
 
-    // Cost display (TODO: Implement UI text when ready)
+    // Parent highlight tracking
+    private HumanClick highlightedParent;
+    private BracketStateController highlightedParentController;
+    private BracketAnimationState savedParentState;
+
+    // Cost display
     private int displayedCost = 0;
 
     void Awake()
@@ -230,13 +240,22 @@ public class PreviewBlockManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Show a preview block at the specified position
+    /// Show a preview block at the specified position (backwards compatible - no parent highlight)
+    /// </summary>
+    public void ShowPreview(Vector3 position, BlockType blockType, bool canAfford, int cost)
+    {
+        ShowPreview(position, blockType, canAfford, cost, null);
+    }
+
+    /// <summary>
+    /// Show a preview block at the specified position, with optional parent highlight
     /// </summary>
     /// <param name="position">World position where block would be placed</param>
     /// <param name="blockType">Type of block being previewed</param>
     /// <param name="canAfford">Can the player afford this block?</param>
     /// <param name="cost">Cost to display above the preview</param>
-    public void ShowPreview(Vector3 position, BlockType blockType, bool canAfford, int cost)
+    /// <param name="parentBlock">The parent block that will receive the new child (can be null)</param>
+    public void ShowPreview(Vector3 position, BlockType blockType, bool canAfford, int cost, HumanClick parentBlock)
     {
         if (blockType == null)
         {
@@ -296,13 +315,88 @@ public class PreviewBlockManager : MonoBehaviour
         activeBlockType = blockType;
         displayedCost = cost;
 
+        // Handle parent highlight
+        UpdateParentHighlight(parentBlock);
+
         if (showDebugLogs)
         {
-            Debug.Log($"PreviewBlockManager: Showing {blockType.blockName} preview at {position}, cost: {cost}, canAfford: {canAfford}");
+            Debug.Log($"PreviewBlockManager: Showing {blockType.blockName} preview at {position}, cost: {cost}, canAfford: {canAfford}, parent: {(parentBlock != null ? parentBlock.gameObject.name : "none")}");
         }
 
         // Update cost text display
         UpdateCostDisplay(position + Vector3.up * costTextOffset, cost, canAfford);
+    }
+
+    /// <summary>
+    /// Updates the parent block highlight state
+    /// </summary>
+    private void UpdateParentHighlight(HumanClick newParent)
+    {
+        // If parent hasn't changed, nothing to do
+        if (highlightedParent == newParent)
+        {
+            return;
+        }
+
+        // Restore previous parent's state if there was one
+        RestoreParentState();
+
+        // If no new parent or no highlight state configured, we're done
+        if (newParent == null || parentHighlightState == null)
+        {
+            highlightedParent = null;
+            highlightedParentController = null;
+            savedParentState = null;
+            return;
+        }
+
+        // Get the new parent's bracket controller
+        BracketStateController newParentController = newParent.GetComponent<BracketStateController>();
+        if (newParentController == null)
+        {
+            if (showDebugLogs)
+            {
+                Debug.LogWarning($"PreviewBlockManager: Parent block {newParent.gameObject.name} has no BracketStateController");
+            }
+            return;
+        }
+
+        // Save the parent's current state before applying highlight
+        savedParentState = newParentController.GetCurrentState();
+        highlightedParent = newParent;
+        highlightedParentController = newParentController;
+
+        // Apply the highlight state
+        newParentController.SetState(parentHighlightState);
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"PreviewBlockManager: Highlighted parent block {newParent.gameObject.name}");
+        }
+    }
+
+    /// <summary>
+    /// Restores the previously highlighted parent to its original state
+    /// </summary>
+    private void RestoreParentState()
+    {
+        if (highlightedParent != null && highlightedParentController != null && savedParentState != null)
+        {
+            // Check if the parent still exists (might have been destroyed)
+            if (highlightedParent.gameObject != null)
+            {
+                highlightedParentController.SetState(savedParentState);
+
+                if (showDebugLogs)
+                {
+                    Debug.Log($"PreviewBlockManager: Restored parent block {highlightedParent.gameObject.name} to original state");
+                }
+            }
+        }
+
+        highlightedParent = null;
+        highlightedParentController = null;
+        savedParentState = null;
     }
 
     /// <summary>
@@ -322,6 +416,9 @@ public class PreviewBlockManager : MonoBehaviour
                 Debug.Log("PreviewBlockManager: Preview hidden");
             }
         }
+
+        // Restore parent's original state
+        RestoreParentState();
 
         // Hide cost text display
         HideCostDisplay();
@@ -343,8 +440,19 @@ public class PreviewBlockManager : MonoBehaviour
         return displayedCost;
     }
 
+    /// <summary>
+    /// Get the currently highlighted parent block (if any)
+    /// </summary>
+    public HumanClick GetHighlightedParent()
+    {
+        return highlightedParent;
+    }
+
     void OnDestroy()
     {
+        // Restore parent state before cleanup
+        RestoreParentState();
+
         // Clean up preview instances
         if (woodPreviewInstance != null)
         {

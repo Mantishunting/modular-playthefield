@@ -6,12 +6,9 @@ using System;
 public class BlockGeneration : MonoBehaviour
 {
     // ============================================================
-    // --- GLOBAL TRACKING SYSTEM (THIS WAS MISSING) ---
+    // --- GLOBAL TRACKING SYSTEM ---
     // ============================================================
 
-    /// <summary>
-    /// Static constructor - automatically resets global state when scenes load
-    /// </summary>
     static BlockGeneration()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -22,29 +19,17 @@ public class BlockGeneration : MonoBehaviour
         ResetGlobalState();
     }
 
-    /// <summary>
-    /// Tracks the highest generation/depth reached by any block in the scene.
-    /// Used by PhysicsConnector to calculate distance from the tip.
-    /// </summary>
     public static int GlobalMaxGeneration { get; private set; } = 0;
 
-    /// <summary>
-    /// Event triggered when GlobalMaxGeneration increases (The "tree grew" shout).
-    /// </summary>
     public static event Action OnTreeGrew;
 
-    /// <summary>
-    /// Helper to reset the global state (Call this when restarting the level!).
-    /// </summary>
     public static void ResetGlobalState()
     {
         GlobalMaxGeneration = 0;
     }
+
     // ============================================================
 
-    /// <summary>
-    /// Event triggered when THIS block's generation changes
-    /// </summary>
     public event Action OnGenerationChanged;
 
     [Tooltip("The generation depth of this block. 0 = Root. Editable for debug.")]
@@ -82,42 +67,41 @@ public class BlockGeneration : MonoBehaviour
     {
         HumanClick parent = humanClick.GetParent();
 
+        Debug.Log($"[{gameObject.name}] CalculateGeneration called. Parent: {(parent != null ? parent.gameObject.name : "null")}");
+
         int oldGeneration = generation;
 
         if (parent != null)
         {
             BlockGeneration parentGenScript = parent.GetComponent<BlockGeneration>();
-            // If parent has a script, we are parent + 1. Otherwise default to 1.
             generation = (parentGenScript != null) ? parentGenScript.GetGeneration() + 1 : 1;
         }
         else
         {
-            generation = 0; // Root
+            generation = 0;
         }
+
+        Debug.Log($"[{gameObject.name}] Gen: {oldGeneration} -> {generation}");
 
         isInitialized = true;
 
-        // --- CHECK IF WE ARE THE LEADER ---
         if (generation > GlobalMaxGeneration)
         {
             GlobalMaxGeneration = generation;
-            OnTreeGrew?.Invoke(); // Shout to the physics connectors!
+            Debug.Log($"[{gameObject.name}] New GlobalMaxGeneration: {GlobalMaxGeneration}");
+            OnTreeGrew?.Invoke();
         }
 
-        // --- IF OUR GENERATION CHANGED, NOTIFY LISTENERS AND CASCADE TO CHILDREN ---
         if (oldGeneration != generation)
         {
+            Debug.Log($"[{gameObject.name}] Generation changed, propagating to children...");
             OnGenerationChanged?.Invoke();
             PropagateToChildren();
         }
     }
 
-    /// <summary>
-    /// Tell all children to recalculate (cascade effect for insertions)
-    /// </summary>
     private void PropagateToChildren()
     {
-        // Check all four child directions
         HumanClick[] children = new HumanClick[]
         {
             humanClick.GetNorthChild(),
@@ -130,6 +114,7 @@ public class BlockGeneration : MonoBehaviour
         {
             if (child != null)
             {
+                Debug.Log($"[{gameObject.name}] Propagating to child: {child.gameObject.name}");
                 BlockGeneration childGenScript = child.GetComponent<BlockGeneration>();
                 if (childGenScript != null)
                 {

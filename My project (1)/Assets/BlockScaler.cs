@@ -23,6 +23,10 @@ public class BlockScaler : MonoBehaviour
     [Tooltip("The youngest N generations stay at base scale (no growth)")]
     public int generationsAtTipUnchanged = 10;
 
+    [Header("Timing")]
+    [Tooltip("How often to check for scale updates (seconds)")]
+    public float checkInterval = 1f;
+
     // Track the largest this block has ever been (never shrink below this)
     private float personalMaxScaleReached;
 
@@ -35,6 +39,9 @@ public class BlockScaler : MonoBehaviour
     private float originalSpacing;
     private bool hasCachedOriginals = false;
 
+    // Timer
+    private float timer;
+
     void Awake()
     {
         blockGeneration = GetComponent<BlockGeneration>();
@@ -42,15 +49,16 @@ public class BlockScaler : MonoBehaviour
 
         personalMaxScaleReached = baseScale;
 
-        // Create instanced material and cache original spacing
         CacheOriginalShaderValues();
+
+        // Randomize start time so all blocks don't check at once
+        timer = Random.Range(0f, checkInterval);
     }
 
     private void CacheOriginalShaderValues()
     {
         if (hasCachedOriginals) return;
 
-        // This creates an instance - won't affect other blocks
         instancedMaterial = spriteRenderer.material;
 
         if (instancedMaterial.HasProperty("_Spacing"))
@@ -59,34 +67,20 @@ public class BlockScaler : MonoBehaviour
         }
         else
         {
-            originalSpacing = 0.15f; // Fallback default
-            Debug.LogWarning($"BlockScaler: Material on {gameObject.name} doesn't have _Spacing property!");
+            originalSpacing = 0.15f;
         }
 
         hasCachedOriginals = true;
     }
 
-    void OnEnable()
+    void Update()
     {
-        BlockGeneration.OnTreeGrew += RecalculateScale;
-        if (blockGeneration != null)
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
         {
-            blockGeneration.OnGenerationChanged += RecalculateScale; // NEW: Listen to local generation changes
+            timer = checkInterval;
+            RecalculateScale();
         }
-    }
-
-    void OnDisable()
-    {
-        BlockGeneration.OnTreeGrew -= RecalculateScale;
-        if (blockGeneration != null)
-        {
-            blockGeneration.OnGenerationChanged -= RecalculateScale; // NEW: Unsubscribe from local changes
-        }
-    }
-
-    void Start()
-    {
-        RecalculateScale();
     }
 
     private void RecalculateScale()
@@ -94,27 +88,22 @@ public class BlockScaler : MonoBehaviour
         int myGeneration = blockGeneration.GetGeneration();
         int maxGeneration = BlockGeneration.GlobalMaxGeneration;
 
-        // Distance from tip: root has highest distance, tip has 0
-        int distanceFromTip = maxGeneration - myGeneration;
+        // Skip if we look like we're mid-insert (orphaned temporarily)
+        if (myGeneration == 0 && maxGeneration > 0)
+        {
+            return;
+        }
 
-        // Apply tip buffer - only start scaling after N generations from tip
+        int distanceFromTip = maxGeneration - myGeneration;
         int effectiveDistance = Mathf.Max(0, distanceFromTip - generationsAtTipUnchanged);
 
-        // Calculate target scale
         float targetScale = baseScale + (effectiveDistance * scalePerGeneration);
-
-        // Clamp to max
         targetScale = Mathf.Min(targetScale, maxScale);
 
-        // Only grow, never shrink
         if (targetScale > personalMaxScaleReached)
         {
             personalMaxScaleReached = targetScale;
-
-            // Step 1: Apply scale to transform
             ApplyTransformScale(personalMaxScaleReached);
-
-            // Step 2: Adjust shader to compensate
             ApplyShaderCompensation(personalMaxScaleReached);
         }
     }
@@ -128,16 +117,7 @@ public class BlockScaler : MonoBehaviour
     {
         if (instancedMaterial == null || !hasCachedOriginals) return;
 
-        // Divide spacing by scale to keep bracket density consistent
         float compensatedSpacing = originalSpacing / scale;
         instancedMaterial.SetFloat("_Spacing", compensatedSpacing);
-    }
-
-    /// <summary>
-    /// Force a recalculation (useful if generation changes outside of tree growth)
-    /// </summary>
-    public void ForceRecalculate()
-    {
-        RecalculateScale();
     }
 }

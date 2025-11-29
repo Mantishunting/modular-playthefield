@@ -3100,9 +3100,9 @@ MonoBehaviour:
   enableStarvation: 1
   blocksToKillPerCheck: 0
   starvationCheckInterval: 8
-  enableDeathRefund: 1
+  enableDeathRefund: 0
   deathRefundMultiplier: 1.1
-  showRefundLogs: 1
+  showRefundLogs: 0
   allowPlayerDestroyWood: 1
   allowLowResourceDestroyWood: 1
   foodHoldThresholdSeconds: 8
@@ -3405,14 +3405,6 @@ PrefabInstance:
     - target: {fileID: -639064433553998507, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
       propertyPath: m_BodyType
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4623208119085011070, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
-      propertyPath: m_ConnectedAnchor.x
-      value: -0.005
-      objectReference: {fileID: 0}
-    - target: {fileID: 4623208119085011070, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
-      propertyPath: m_ConnectedAnchor.y
-      value: -0.001
       objectReference: {fileID: 0}
     - target: {fileID: 5271642053659760612, guid: 5200c039cb2f3764393cc9b31e53edd7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4137,7 +4129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   refreshKey: 120
-  showDebugMessage: 1
+  showDebugMessage: 0
 --- !u!114 &2046838587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4153,7 +4145,7 @@ MonoBehaviour:
   upkeepInterval: 1
   costPerBlock: 1.8
   penaltyType: 0
-  showDebugLogs: 1
+  showDebugLogs: 0
   foodHoldThresholdSeconds: 5
 --- !u!1 &2098850238
 GameObject:

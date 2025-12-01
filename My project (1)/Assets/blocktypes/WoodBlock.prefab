@@ -493,6 +493,7 @@ MonoBehaviour:
   scalePerGeneration: 0.02
   maxScale: 8
   generationsAtTipUnchanged: 4
+  checkInterval: 1
 --- !u!114 &-9003852712806904563
 MonoBehaviour:
   m_ObjectHideFlags: 0

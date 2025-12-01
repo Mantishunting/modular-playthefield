@@ -1,13 +1,29 @@
 using UnityEngine;
 
 public enum Anchor { Root, Tip }
+public enum StepType { Move, Spawn }
 
 [System.Serializable]
 public struct GrowthStep
 {
-    public Anchor anchor;                 // Root = push from anchor; Tip = follow the head
-    public HumanClick.Direction dir;      // North/East/South/West
-    public int repeats;                   // how many times to apply this step (>=1)
+    [Tooltip("Move = place a block and optionally advance. Spawn = place a block with its own growth agent.")]
+    public StepType type;
+
+    [Tooltip("Root = act from the fixed starting point. Tip = act from the current head.")]
+    public Anchor anchor;
+
+    [Tooltip("Direction to place the new block.")]
+    public HumanClick.Direction dir;
+
+    [Tooltip("How many times to repeat this step (minimum 1).")]
+    public int repeats;
+
+    [Header("Spawn Settings (only used if type = Spawn)")]
+    [Tooltip("The pattern the spawned agent should execute. Leave null to use the same blockType but no agent.")]
+    public GrowthPattern spawnPattern;
+
+    [Tooltip("If true, the main agent will wait for the spawned agent to finish before continuing.")]
+    public bool waitForSpawn;
 }
 
 public class GrowthChain

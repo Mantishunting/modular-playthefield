@@ -1913,6 +1913,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5244141215237390994, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5507865367407613818, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_Name
       value: Visits

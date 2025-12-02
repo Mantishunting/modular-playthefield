@@ -47,10 +47,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodText: {fileID: 0}
-  flowerText: {fileID: 0}
+  visitText: {fileID: 0}
+  upkeepCostText: {fileID: 0}
+  leafBlockName: Leaf
+  foodGainPerTick: 100
+  foodGainFrequency: 4
+  upkeepCostPerTick: 5
+  upkeepFrequency: 3
   nextLevelButton: {fileID: 0}
   winText: {fileID: 0}
-  winThreshold: 0
   winMessage: FERTILISATION
   winFadeInSeconds: 10
 --- !u!114 &5081669018404933032

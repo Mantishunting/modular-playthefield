@@ -16,7 +16,7 @@ MonoBehaviour:
   - type: 0
     anchor: 1
     dir: 1
-    repeats: 7
+    repeats: 8
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
   - type: 0
@@ -64,13 +64,13 @@ MonoBehaviour:
   - type: 0
     anchor: 1
     dir: 2
-    repeats: 1
+    repeats: 0
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
   - type: 0
     anchor: 1
     dir: 3
-    repeats: 1
+    repeats: 0
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
   - type: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
   - type: 0
     anchor: 1
     dir: 4
-    repeats: 3
+    repeats: 5
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
   loop: 0

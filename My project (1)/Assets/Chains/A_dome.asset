@@ -34,7 +34,7 @@ MonoBehaviour:
   - type: 0
     anchor: 1
     dir: 3
-    repeats: 1
+    repeats: 2
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
   - type: 0
@@ -52,7 +52,7 @@ MonoBehaviour:
   - type: 0
     anchor: 1
     dir: 2
-    repeats: 1
+    repeats: 3
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
   loop: 0

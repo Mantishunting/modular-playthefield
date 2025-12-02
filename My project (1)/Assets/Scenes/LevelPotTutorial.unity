@@ -797,8 +797,8 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Introduction
-  - messageText: Click here to place wood blocks
-    requiredBlockCount: 2
+  - messageText: Click here to place WOOD blocks
+    requiredBlockCount: -1
     showNextButton: 0
     showArrow: 1
     arrowInWorldSpace: 1
@@ -809,7 +809,7 @@ MonoBehaviour:
     triggerType: 1
     designerNotes: First stem placement - arrow needs positioning. Player can also
       click Next to skip.
-  - messageText: Add a couple wood block
+  - messageText: Click the WOOD button and 2 WOOD blocks
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 1
@@ -820,7 +820,7 @@ MonoBehaviour:
     arrowShouldBounce: 1
     triggerType: 1
     designerNotes: Wait for stem count to increase
-  - messageText: Try clicking inbetween two blocks to insert
+  - messageText: Try clicking in between two blocks to insert
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 1
@@ -831,7 +831,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Teaches insertion mechanic
-  - messageText: Click and hold to add lots of blocks, grow barnchs as well as shoots.
+  - messageText: Click and hold to add lots of blocks, grow branches
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -853,7 +853,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 2
     designerNotes: Must delete a block to advance
-  - messageText: A single right click will show targeted wood
+  - messageText: A single right click will tell you what's about to get removed
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -864,7 +864,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Camera controls - moved to end so arrows stay in correct position
-  - messageText: Deleting works for flowers and leaves too
+  - messageText: Deleting works for FLOWERS and LEAVES too
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -875,7 +875,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Camera controls - moved to end so arrows stay in correct position
-  - messageText: Good. Now try switching to Leaf
+  - messageText: Good. Now try switching to LEAF
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -886,7 +886,7 @@ MonoBehaviour:
     arrowShouldBounce: 1
     triggerType: 3
     designerNotes: Arrow should point to Leaf UI button
-  - messageText: Leaves like fresh wood blocks to grow from
+  - messageText: LEAVES like fresh WOOD blocks to grow from
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -897,7 +897,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info about leaf requirements
-  - messageText: Add some leaf blocks along both sides of your stem
+  - messageText: Add some LEAF blocks along both sides of your stem
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -908,8 +908,8 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 1
     designerNotes: Wait for 2 leaves - may need special handling for sequential arrows
-  - messageText: Add some leaves along the stem. They produce food. when you run
-      out of food bocks start to fall of the plant
+  - messageText: Add some LEAVES along the stem. They produce food. When you run
+      out of food, blocks will start to fall
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -920,7 +920,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Arrow should point to food counter
-  - messageText: A leaf can support about 5 blocks
+  - messageText: A LEAF can support about 5 blocks
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -931,7 +931,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info dump
-  - messageText: Each block has an upkeep cost. you can see it effecting your food
+  - messageText: Each block has an upkeep cost. You can see it affecting your food
       in the top left
     requiredBlockCount: -1
     showNextButton: 1
@@ -943,7 +943,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info dump
-  - messageText: Keep an eye on your Food Is it going up or down?
+  - messageText: Keep an eye on your food. Is it going up or down?
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -954,7 +954,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Point to food indicator
-  - messageText: Leaves need light to make food. They are inactive in shade
+  - messageText: LEAVES need light to make food. They are inactive in shade
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -965,7 +965,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Should trigger transparency animation - see TutorialManager.HandleSpecialStepSetup
-  - messageText: a leaf must be in the sun to produce food, it will make a noise
+  - messageText: A LEAF must be in the sun to produce food, it will make a sound
       each time it produces
     requiredBlockCount: -1
     showNextButton: 1
@@ -977,7 +977,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Should spawn shaded leaf - see TutorialManager.HandleSpecialStepSetup
-  - messageText: Try Removing the inactive leaf blocks
+  - messageText: Try removing any inactive LEAVES
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -988,7 +988,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 2
     designerNotes: Must delete the shaded leaf
-  - messageText: Flowers are very expensive but lets make one
+  - messageText: FLOWERS are very expensive but let's make one
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -999,7 +999,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Arrow should point to Flower UI button
-  - messageText: To win you need bees to vist them
+  - messageText: To win you need bees to vist your FLOWERS
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -1010,7 +1010,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Camera controls - moved to end so arrows stay in correct position
-  - messageText: Flowers Grow on there own
+  - messageText: FLOWERS continue to grow after you place them
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -1032,7 +1032,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Info about bees - can increase spawn rate here
-  - messageText: Resources are more genrous in the tuorial.
+  - messageText: Resources are more generous in the tuorial.
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -1054,7 +1054,7 @@ MonoBehaviour:
     arrowShouldBounce: 0
     triggerType: 0
     designerNotes: Camera controls - moved to end so arrows stay in correct position
-  - messageText: Middle mouse wheel to zoom in and out
+  - messageText: Middle mouse wheel to zoom in and out. Happy Flowering
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -1336,12 +1336,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0

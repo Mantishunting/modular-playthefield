@@ -50,6 +50,13 @@ public class TutorialStep
     [Header("Advancement")]
     public TriggerType triggerType = TriggerType.NextButtonOnly;
 
+    [Header("Component Activation")]
+    [Tooltip("Scripts/Components to enable when this step is shown")]
+    public Behaviour[] componentsToEnable;
+
+    [Tooltip("GameObjects to activate when this step is shown")]
+    public GameObject[] objectsToActivate;
+
     [Header("Notes (not used by code)")]
     [TextArea(1, 3)]
     public string designerNotes = "Add notes about this step here for reference";

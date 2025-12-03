@@ -81,6 +81,34 @@ public class TutorialManager : MonoBehaviour
         currentStepIndex = stepIndex;
         TutorialStep step = tutorialSteps[stepIndex];
 
+        // Enable any components this step releases
+        if (step.componentsToEnable != null)
+        {
+            foreach (Behaviour comp in step.componentsToEnable)
+            {
+                if (comp != null)
+                {
+                    comp.enabled = true;
+                    if (showDebugLogs)
+                        Debug.Log($"Tutorial: Enabled {comp.GetType().Name} on {comp.gameObject.name}");
+                }
+            }
+        }
+
+        // Activate any GameObjects this step releases
+        if (step.objectsToActivate != null)
+        {
+            foreach (GameObject obj in step.objectsToActivate)
+            {
+                if (obj != null)
+                {
+                    obj.SetActive(true);
+                    if (showDebugLogs)
+                        Debug.Log($"Tutorial: Activated {obj.name}");
+                }
+            }
+        }
+
         tutorialUI.DisplayStep(step);
 
         // Store baseline counts for increase steps

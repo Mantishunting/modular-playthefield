@@ -337,6 +337,8 @@ public class HumanClick : MonoBehaviour
         BlockType selectedType = BlockTypeManager.Instance.GetSelectedType();
         if (selectedType == null) return;
 
+        if (!IsValidPlacement(selectedType, childToShift)) return;
+        
         int dynamicCost = GetDynamicCost(selectedType);
         if (!Resources.Instance.CanAfford(dynamicCost)) return;
 

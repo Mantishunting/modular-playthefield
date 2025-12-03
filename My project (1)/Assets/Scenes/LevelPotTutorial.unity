@@ -341,17 +341,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &64500565 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7917702613745054204, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
-  m_PrefabInstance: {fileID: 1150882045}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &113588409
 GameObject:
   m_ObjectHideFlags: 0
@@ -389,7 +378,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -68}
+  m_AnchoredPosition: {x: 339, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &113588411
@@ -786,7 +775,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialSteps:
-  - messageText: You're a BEAN
+  - messageText: You're a BEAN your goal is to get pollinated by bees
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 1
@@ -796,6 +785,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Introduction
   - messageText: Click here to place WOOD blocks
     requiredBlockCount: -1
@@ -807,6 +798,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 1
     triggerType: 1
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: First stem placement - arrow needs positioning. Player can also
       click Next to skip.
   - messageText: Click the WOOD button and 2 WOOD blocks
@@ -819,6 +812,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 1
     triggerType: 1
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Wait for stem count to increase
   - messageText: Try clicking in between two blocks to insert
     requiredBlockCount: -1
@@ -830,6 +825,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Teaches insertion mechanic
   - messageText: Click and hold to add lots of blocks, grow branches
     requiredBlockCount: -1
@@ -841,6 +838,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Wait for 3 blocks to be added
   - messageText: You can cut off a branch with triple right click.
     requiredBlockCount: -1
@@ -852,6 +851,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 2
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Must delete a block to advance
   - messageText: A single right click will tell you what's about to get removed
     requiredBlockCount: -1
@@ -863,6 +864,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Camera controls - moved to end so arrows stay in correct position
   - messageText: Deleting works for FLOWERS and LEAVES too
     requiredBlockCount: -1
@@ -874,6 +877,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Camera controls - moved to end so arrows stay in correct position
   - messageText: Good. Now try switching to LEAF
     requiredBlockCount: -1
@@ -885,6 +890,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 1
     triggerType: 3
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Arrow should point to Leaf UI button
   - messageText: LEAVES like fresh WOOD blocks to grow from
     requiredBlockCount: -1
@@ -896,8 +903,10 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Info about leaf requirements
-  - messageText: Add some LEAF blocks along both sides of your stem
+  - messageText: Add some LEAF blocks to your plant
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -907,9 +916,11 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Wait for 2 leaves - may need special handling for sequential arrows
-  - messageText: Add some LEAVES along the stem. They produce food. When you run
-      out of food, blocks will start to fall
+  - messageText: Add some LEAVES to the plant. They produce food. When your food
+      runs out blocks will start to fall
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -919,6 +930,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Arrow should point to food counter
   - messageText: A LEAF can support about 5 blocks
     requiredBlockCount: -1
@@ -930,6 +943,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Info dump
   - messageText: Each block has an upkeep cost. You can see it affecting your food
       in the top left
@@ -942,6 +957,10 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable:
+    - {fileID: 1150882049}
+    objectsToActivate:
+    - {fileID: 1004517372}
     designerNotes: Info dump
   - messageText: Keep an eye on your food. Is it going up or down?
     requiredBlockCount: -1
@@ -953,6 +972,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Point to food indicator
   - messageText: LEAVES need light to make food. They are inactive in shade
     requiredBlockCount: -1
@@ -964,6 +985,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Should trigger transparency animation - see TutorialManager.HandleSpecialStepSetup
   - messageText: A LEAF must be in the sun to produce food, it will make a sound
       each time it produces
@@ -976,6 +999,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Should spawn shaded leaf - see TutorialManager.HandleSpecialStepSetup
   - messageText: Try removing any inactive LEAVES
     requiredBlockCount: -1
@@ -987,8 +1012,24 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 2
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Must delete the shaded leaf
-  - messageText: FLOWERS are very expensive but let's make one
+  - messageText: Hold right click and drag to move the camera or scroll to zoom
+    requiredBlockCount: -1
+    showNextButton: 1
+    showArrow: 0
+    arrowInWorldSpace: 1
+    arrowRotation: 0
+    arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
+    arrowShouldBounce: 0
+    triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
+    designerNotes: Camera controls - moved to end so arrows stay in correct position
+  - messageText: FLOWERS are very expensive but let's make one. The number in the
+      top right is how many pollinations left until you reach the goal.
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -998,6 +1039,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Arrow should point to Flower UI button
   - messageText: To win you need bees to vist your FLOWERS
     requiredBlockCount: -1
@@ -1009,6 +1052,8 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Camera controls - moved to end so arrows stay in correct position
   - messageText: FLOWERS continue to grow after you place them
     requiredBlockCount: -1
@@ -1020,8 +1065,10 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 1
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Wait for flower placement
-  - messageText: Brace for the cost while you wait for a bee
+  - messageText: Hopefully the bees will visit soon
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -1031,8 +1078,27 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 0
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Info about bees - can increase spawn rate here
-  - messageText: Resources are more generous in the tuorial.
+  - messageText: Middle mouse wheel to zoom in and out. Good Luck
+    requiredBlockCount: -1
+    showNextButton: 1
+    showArrow: 0
+    arrowInWorldSpace: 1
+    arrowRotation: 0
+    arrowTargetPosition: {x: 0, y: 0, z: 0}
+    arrowUIPosition: {x: 0, y: 0}
+    arrowShouldBounce: 0
+    triggerType: 0
+    componentsToEnable:
+    - {fileID: 698691997}
+    objectsToActivate:
+    - {fileID: 2130677116}
+    - {fileID: 1190700512}
+    designerNotes: Camera controls - moved to end so arrows stay in correct position
+  - messageText: More flowers will attract more bees. Resources are more generous
+      in the tuorial
     requiredBlockCount: -1
     showNextButton: 1
     showArrow: 0
@@ -1042,29 +1108,9 @@ MonoBehaviour:
     arrowUIPosition: {x: 0, y: 0}
     arrowShouldBounce: 0
     triggerType: 5
+    componentsToEnable: []
+    objectsToActivate: []
     designerNotes: Tutorial ends when bee visits - loads next level
-  - messageText: Hold right click and drag to move the camera or scroll to zoom
-    requiredBlockCount: -1
-    showNextButton: 1
-    showArrow: 0
-    arrowInWorldSpace: 1
-    arrowRotation: 0
-    arrowTargetPosition: {x: 0, y: 0, z: 0}
-    arrowUIPosition: {x: 0, y: 0}
-    arrowShouldBounce: 0
-    triggerType: 0
-    designerNotes: Camera controls - moved to end so arrows stay in correct position
-  - messageText: Middle mouse wheel to zoom in and out. Happy Flowering
-    requiredBlockCount: -1
-    showNextButton: 1
-    showArrow: 0
-    arrowInWorldSpace: 1
-    arrowRotation: 0
-    arrowTargetPosition: {x: 0, y: 0, z: 0}
-    arrowUIPosition: {x: 0, y: 0}
-    arrowShouldBounce: 0
-    triggerType: 0
-    designerNotes: Camera controls - moved to end so arrows stay in correct position
   tutorialUI: {fileID: 223026094}
   showDebugLogs: 1
 --- !u!4 &223026096
@@ -1402,7 +1448,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 6.51, z: -10}
+  m_LocalPosition: {x: 9.27, y: 6.51, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2084,8 +2130,8 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8959933708668019954, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
   m_PrefabInstance: {fileID: 1150882045}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_GameObject: {fileID: 2130677116}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -2285,90 +2331,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 351499496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &996043878
+--- !u!1 &1004517372 stripped
 GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 2104349299592810186, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+  m_PrefabInstance: {fileID: 1150882045}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 996043880}
-  - component: {fileID: 996043879}
-  m_Layer: 0
-  m_Name: darker filter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!212 &996043879
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 996043878}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: -3000
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.071151756, g: 0, b: 0.23584908, a: 0.77254903}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
---- !u!4 &996043880
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 996043878}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.5, y: 31.6067, z: 0}
-  m_LocalScale: {x: 514.5097, y: 571.3116, z: 514.5097}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1106439074 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8664825908836747792, guid: d19da3f0c455e1b4f82e3c991f6a1753, type: 3}
@@ -2637,8 +2604,16 @@ PrefabInstance:
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1385991144660735187, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1385991144660735187, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_margin.z
       value: -1017.662
+      objectReference: {fileID: 0}
+    - target: {fileID: 2104349299592810186, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3180577141776022267, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_IsActive
@@ -2659,6 +2634,10 @@ PrefabInstance:
     - target: {fileID: 5507865367407613818, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_Name
       value: Visits
+      objectReference: {fileID: 0}
+    - target: {fileID: 5507865367407613818, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5841688680862564169, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_Pivot.x
@@ -2752,6 +2731,10 @@ PrefabInstance:
       propertyPath: m_margin.z
       value: -1097.3811
       objectReference: {fileID: 0}
+    - target: {fileID: 8042274284647895730, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8371311035745236555, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 148
@@ -2763,6 +2746,10 @@ PrefabInstance:
     - target: {fileID: 8893855530153295365, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8959933708668019954, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2793,8 +2780,8 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1385991144660735187, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
   m_PrefabInstance: {fileID: 1150882045}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_GameObject: {fileID: 1004517372}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -2983,6 +2970,11 @@ Transform:
   - {fileID: 2098850239}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1190700512 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8004193277229458961, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+  m_PrefabInstance: {fileID: 2108756171}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1418880231
 GameObject:
   m_ObjectHideFlags: 0
@@ -3540,12 +3532,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodText: {fileID: 1150882049}
   visitText: {fileID: 698691997}
-  upkeepCostText: {fileID: 64500565}
-  leafBlockName: Leaf
-  foodGainPerTick: 100
-  foodGainFrequency: 4
-  upkeepCostPerTick: 1
-  upkeepFrequency: 3
+  sampleWindow: 5
   nextLevelButton: {fileID: 1150882046}
   winText: {fileID: 1150882047}
   winMessage: TUTORIAL COMPLETE
@@ -3690,6 +3677,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1902446480
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5961357240938748693, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_Name
+      value: darker filter (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 31.6067
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7444939915731624802, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
 --- !u!1 &1932503640
 GameObject:
   m_ObjectHideFlags: 0
@@ -4308,11 +4352,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4271512497693849835, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: emissionDuration
-      value: 180
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 8004193277229458961, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: m_Name
       value: BeeSpawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 8004193277229458961, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8721800243711638645, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: visitsToWin
@@ -4407,6 +4455,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2130677116 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5507865367407613818, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
+  m_PrefabInstance: {fileID: 1150882045}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5389245201919930289
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4449,7 +4502,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7677798265810386277, guid: d19da3f0c455e1b4f82e3c991f6a1753, type: 3}
       propertyPath: rotationDuration
-      value: 180
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 8664825908836747792, guid: d19da3f0c455e1b4f82e3c991f6a1753, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4589,7 +4642,7 @@ SceneRoots:
   - {fileID: 61003415}
   - {fileID: 1975769394}
   - {fileID: 1418880233}
-  - {fileID: 996043880}
+  - {fileID: 1902446480}
   - {fileID: 1174342884}
   - {fileID: 1468730096}
   - {fileID: 1795647078}

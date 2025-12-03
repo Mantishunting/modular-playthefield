@@ -452,7 +452,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8721800243711638645, guid: 45719c5fc2779d447b8f688bc46f685b, type: 3}
       propertyPath: visitsToWin
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1801,7 +1801,6 @@ GameObject:
   - component: {fileID: 1201979321}
   - component: {fileID: 1201979320}
   - component: {fileID: 1201979319}
-  - component: {fileID: 1201979318}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -1809,37 +1808,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1201979318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1201979317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 071c69adc5475894dbb674dd6b01e489, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialText: {fileID: 1435455462}
-  messages:
-  - You're a bean!
-  - Click the Wood button to grow your stem. Try it now!
-  - Click Leaf to add leaves to your body.
-  - You're not ready to flower... yet.
-  - Reach for the light!
-  - Leaves only produce food when they're in sunlight.
-  - "Be careful \u2014 light comes and goes, so spread out your leaves."
-  - When the bar spins and turns red, you'll start losing branches.
-  - Each block has an upkeep cost.
-  - Balance your resources as well as your branches.
-  - You are beautiful, and you will grow far and wide.
-  fadeInDuration: 0.6
-  holdDuration: 4
-  fadeOutDuration: 0.2
-  delayBetweenMessages: 0.2
-  playOnStart: 1
-  showDebugLogs: 0
 --- !u!114 &1201979319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1864,7 +1832,7 @@ MonoBehaviour:
   unaffordableColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   selectedBorderColor: {r: 1, g: 1, b: 1, a: 1}
   selectedBrightness: 1.2
-  resourcesScript: {fileID: 0}
+  resourcesScript: {fileID: 1468730095}
   showDebugLogs: 0
 --- !u!114 &1201979320
 MonoBehaviour:
@@ -2527,17 +2495,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1435455462 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4885416078639657094, guid: 8a8cb05685d21f84a9e798d804e99fa7, type: 3}
-  m_PrefabInstance: {fileID: 1205249753544452365}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1468730094
 GameObject:
   m_ObjectHideFlags: 0
@@ -2724,7 +2681,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: 8be8836620ec89c48b5c6c4dfa95aedf, type: 3}
-  m_Color: {r: 0.23137255, g: 0.35686275, b: 0.70980394, a: 1}
+  m_Color: {r: 0.16273585, g: 0.43262926, b: 0.5, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3943,8 +3900,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de0fcdfce80fd344a9de1e52ad42df1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upkeepInterval: 1
-  costPerBlock: 1.8
+  upkeepInterval: 2
+  costPerBlock: 1.2
   penaltyType: 0
   showDebugLogs: 1
   foodHoldThresholdSeconds: 5

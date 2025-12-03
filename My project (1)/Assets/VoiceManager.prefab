@@ -63,7 +63,7 @@ MonoBehaviour:
   duckingFadeTime: 4
   minPoolSize: 1
   maxPoolSize: 6
-  blocksPerVoice: 10
+  blocksPerVoice: 5
   poolUpdateInterval: 1
   minPitch: 0.85
   maxPitch: 1.15

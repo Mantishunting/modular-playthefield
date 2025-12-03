@@ -30,7 +30,8 @@ Transform:
   m_LocalPosition: {x: 6.5, y: 31.6067, z: 0}
   m_LocalScale: {x: 514.5097, y: 571.3116, z: 514.5097}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6800277948950022350}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1046621539189533064
@@ -104,3 +105,56 @@ MonoBehaviour:
   colour3: {r: 0.09451762, g: 0.16502735, b: 0.33962262, a: 0.77254903}
   colour4: {r: 0.1981132, g: 0.057004265, b: 0.09103577, a: 0.77254903}
   colour5: {r: 0.07058824, g: 0, b: 0.12156863, a: 1}
+--- !u!1 &6732643211554345174
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6800277948950022350}
+  - component: {fileID: 998761741748223075}
+  m_Layer: 0
+  m_Name: BlockPlacementAudio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6800277948950022350
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6732643211554345174}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.0063048615, y: -0.02259269, z: -0.00024866982}
+  m_LocalScale: {x: 0.0019435979, y: 0.0017503584, z: 0.0019435979}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7444939915731624802}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &998761741748223075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6732643211554345174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82bf0340ba18f248bf5273307db2ad0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placementSounds:
+  - {fileID: 8300000, guid: c07735cdc5114a94297b0131046ec05c, type: 3}
+  - {fileID: 8300000, guid: a831d49dd80eaca46bf62aef7993a49b, type: 3}
+  - {fileID: 8300000, guid: 3a64407caeef84242921e8e652d75d7e, type: 3}
+  - {fileID: 8300000, guid: 6f0450704a727164a877bb49d60804c3, type: 3}
+  baseVolume: 0.5
+  minPitch: 0.9
+  maxPitch: 1.1
+  cooldownTime: 0.1

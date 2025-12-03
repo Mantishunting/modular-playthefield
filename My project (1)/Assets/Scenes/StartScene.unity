@@ -152,7 +152,7 @@ RectTransform:
   m_GameObject: {fileID: 32682779}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.61108, y: 0.61108, z: 0.61108}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1506413426}
@@ -160,8 +160,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 351}
-  m_SizeDelta: {x: 500.5847, y: 93.8596}
+  m_AnchoredPosition: {x: 0, y: 197.73004}
+  m_SizeDelta: {x: 500.5847, y: 93.85962}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &32682781
 MonoBehaviour:
@@ -857,6 +857,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5657586922080941456, guid: 21cafe80abbe1ba45a3b68ef193c0f4d, type: 3}
+      propertyPath: blocksPerVoice
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5657586922080941456, guid: 21cafe80abbe1ba45a3b68ef193c0f4d, type: 3}
       propertyPath: woodClipsVolume
       value: 0.8
       objectReference: {fileID: 0}
@@ -1020,12 +1024,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -1061,7 +1065,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 12.35
+  orthographic size: 25.58
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1331,8 +1335,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSource: {fileID: 0}
-  musicTrack: {fileID: 8300000, guid: 02ab6010d9f6a7e43afb844b9cd0cec8, type: 3}
-  delayBeforeMusic: 60
+  musicTrack: {fileID: 8300000, guid: 6915f04fed244084fb39fd2177b35ff2, type: 3}
+  delayBeforeMusic: 0
   delayAfterMusic: 0
   startOnAwake: 0
   showDebugLogs: 0
@@ -3003,7 +3007,7 @@ RectTransform:
   m_GameObject: {fileID: 1213387287}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.61108, y: 0.61108, z: 0.61108}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 766618893}
@@ -3011,8 +3015,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 482.37}
-  m_SizeDelta: {x: 500.5847, y: 93.8596}
+  m_AnchoredPosition: {x: 0, y: 278}
+  m_SizeDelta: {x: 500.5847, y: 93.85962}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1213387289
 MonoBehaviour:
@@ -3487,8 +3491,8 @@ Transform:
   m_GameObject: {fileID: 1543231303}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14.52, y: 25.73, z: 0}
-  m_LocalScale: {x: 2.020347, y: 2.020347, z: 2.020347}
+  m_LocalPosition: {x: 14.52, y: 31.6, z: 0}
+  m_LocalScale: {x: 4.7526646, y: 4.7526646, z: 4.7526646}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -3665,12 +3669,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodText: {fileID: 0}
   visitText: {fileID: 0}
-  upkeepCostText: {fileID: 0}
-  leafBlockName: Leaf
-  foodGainPerTick: 100
-  foodGainFrequency: 4
-  upkeepCostPerTick: 5
-  upkeepFrequency: 3
+  sampleWindow: 5
   nextLevelButton: {fileID: 1150882046}
   winText: {fileID: 0}
   winMessage: FERTILISATION
@@ -4586,5 +4585,5 @@ SceneRoots:
   - {fileID: 1206432526}
   - {fileID: 420983604}
   - {fileID: 1717453934}
-  - {fileID: 1150882045}
   - {fileID: 1063297350529419504}
+  - {fileID: 1150882045}

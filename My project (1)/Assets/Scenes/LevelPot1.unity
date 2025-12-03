@@ -1035,8 +1035,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSource: {fileID: 0}
-  musicTrack: {fileID: 8300000, guid: 02ab6010d9f6a7e43afb844b9cd0cec8, type: 3}
-  delayBeforeMusic: 60
+  musicTrack: {fileID: 8300000, guid: 84631265d2d028b48badf9c981b62fc7, type: 3}
+  delayBeforeMusic: 5
   delayAfterMusic: 0
   startOnAwake: 0
   showDebugLogs: 0
@@ -1312,7 +1312,7 @@ MonoBehaviour:
   leafCantAffordState: {fileID: 11400000, guid: f4a9b3c8043127f4ab9fb6f04e8ddb15, type: 2}
   flowerCanAffordState: {fileID: 11400000, guid: 72514e1b4d35c0c499b9a5f7d1fd7740, type: 2}
   flowerCantAffordState: {fileID: 11400000, guid: d689aaaa75739974a99711145ec37a63, type: 2}
-  parentHighlightState: {fileID: 0}
+  parentHighlightState: {fileID: 11400000, guid: 1c67a4b91bf8cb341ad8dd642eda493e, type: 2}
   costTextOffset: 0.7
   costTextSize: 0.05
   affordableColor: {r: 1, g: 1, b: 1, a: 1}
@@ -2603,7 +2603,6 @@ GameObject:
   - component: {fileID: 1717453934}
   - component: {fileID: 1717453933}
   - component: {fileID: 1717453935}
-  - component: {fileID: 1717453936}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -2628,7 +2627,7 @@ MonoBehaviour:
   sampleWindow: 5
   nextLevelButton: {fileID: 1150882046}
   winText: {fileID: 1150882047}
-  winMessage: FERTILISATION
+  winMessage: POLLINATED
   winFadeInSeconds: 10
 --- !u!4 &1717453934
 Transform:
@@ -2670,37 +2669,6 @@ MonoBehaviour:
   selectedBorderColor: {r: 1, g: 1, b: 1, a: 1}
   selectedBrightness: 1.2
   resourcesScript: {fileID: 1468730095}
-  showDebugLogs: 0
---- !u!114 &1717453936
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1717453932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 071c69adc5475894dbb674dd6b01e489, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialText: {fileID: 0}
-  messages:
-  - You're a bean!
-  - Click the Wood button to grow your stem. Try it now!
-  - Click Leaf to add leaves to your body.
-  - You're not ready to flower... yet.
-  - Reach for the light!
-  - Leaves only produce food when they're in sunlight.
-  - "Be careful \u2014 light comes and goes, so spread out your leaves."
-  - When the bar spins and turns red, you'll start losing branches.
-  - Each block has an upkeep cost.
-  - Balance your resources as well as your branches.
-  - You are beautiful, and you will grow far and wide.
-  fadeInDuration: 0.6
-  holdDuration: 4
-  fadeOutDuration: 0.2
-  delayBetweenMessages: 0.2
-  playOnStart: 1
   showDebugLogs: 0
 --- !u!1 &1795647075
 GameObject:

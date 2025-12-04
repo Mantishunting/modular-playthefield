@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   orbitRadius: 500
   centerPoint: {x: 0, y: 0, z: 0}
-  startAngle: 0
+  startAngle: -10
   stopAngle: 180
   rotationDuration: 10
   loopDelay: 5

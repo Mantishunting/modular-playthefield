@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 641e23952fd59a742a8ab1809a42ebf5, type: 3}
+  m_Name: Buttlebrush_Spine
+  m_EditorClassIdentifier: 
+  steps:
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 2
+    spawnPattern: {fileID: 0}
+    waitForSpawn: 0
+  - type: 1
+    anchor: 1
+    dir: 3
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: 9cde36a16f0568d459d26f76ca34c9a4, type: 2}
+    waitForSpawn: 0
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 1
+    spawnPattern: {fileID: 11400000, guid: edbff66df22aefa4db91c3dc6ae1814b, type: 2}
+    waitForSpawn: 0
+  - type: 1
+    anchor: 1
+    dir: 4
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: edbff66df22aefa4db91c3dc6ae1814b, type: 2}
+    waitForSpawn: 0
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 1
+    spawnPattern: {fileID: 11400000, guid: 9cde36a16f0568d459d26f76ca34c9a4, type: 2}
+    waitForSpawn: 0
+  - type: 1
+    anchor: 1
+    dir: 3
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: 112e1a927ddd2e74ca1cda419a7c49f0, type: 2}
+    waitForSpawn: 0
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 2
+    spawnPattern: {fileID: 11400000, guid: 112e1a927ddd2e74ca1cda419a7c49f0, type: 2}
+    waitForSpawn: 0
+  - type: 1
+    anchor: 1
+    dir: 4
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: 236ed05f5a75fca4c9f745371edc0763, type: 2}
+    waitForSpawn: 0
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 1
+    spawnPattern: {fileID: 11400000, guid: 9cde36a16f0568d459d26f76ca34c9a4, type: 2}
+    waitForSpawn: 0
+  - type: 1
+    anchor: 1
+    dir: 3
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: 112e1a927ddd2e74ca1cda419a7c49f0, type: 2}
+    waitForSpawn: 0
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 1
+    spawnPattern: {fileID: 11400000, guid: 112e1a927ddd2e74ca1cda419a7c49f0, type: 2}
+    waitForSpawn: 0
+  - type: 1
+    anchor: 1
+    dir: 4
+    repeats: 1
+    spawnPattern: {fileID: 11400000, guid: 236ed05f5a75fca4c9f745371edc0763, type: 2}
+    waitForSpawn: 0
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 1
+    spawnPattern: {fileID: 11400000, guid: 236ed05f5a75fca4c9f745371edc0763, type: 2}
+    waitForSpawn: 0
+  loop: 0
+  intervalSeconds: 0.2

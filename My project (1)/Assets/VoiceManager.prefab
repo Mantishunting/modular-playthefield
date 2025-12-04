@@ -45,13 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allVoiceClips:
-  - {fileID: 8300000, guid: 8c96e6d0ca1621d4ebaa6810e138c144, type: 3}
-  - {fileID: 8300000, guid: a28c08079488eba4896ea3d668781e79, type: 3}
-  - {fileID: 8300000, guid: 2e57e567ee57df845babcda3e6b05cb0, type: 3}
+  - {fileID: 8300000, guid: 2b3e656e83b66064fa1fe518928651c2, type: 3}
+  - {fileID: 8300000, guid: 21865892c043aa447ba99b636f5cafbb, type: 3}
+  - {fileID: 8300000, guid: 36b388770460fc44ebf352e889d7f53d, type: 3}
   - {fileID: 8300000, guid: bcce2e47d8e384d4abdfbaa08a26915a, type: 3}
-  - {fileID: 8300000, guid: 50352d8f561389f49a276217f9557156, type: 3}
-  - {fileID: 8300000, guid: 53bffd2e866b8904aa826dae80bb7208, type: 3}
-  - {fileID: 8300000, guid: f20bf08c8c42f9c469f20cfd4aeadf66, type: 3}
+  - {fileID: 8300000, guid: c4d383f78e8b20d4785bfe433dd312e7, type: 3}
+  - {fileID: 8300000, guid: 5268c2e5720e9b248a09acdcf7bab0cd, type: 3}
   voiceVolumes:
   - 1
   - 1

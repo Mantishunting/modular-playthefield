@@ -3470,7 +3470,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7677798265810386277, guid: d19da3f0c455e1b4f82e3c991f6a1753, type: 3}
       propertyPath: startAngle
-      value: 0
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 7677798265810386277, guid: d19da3f0c455e1b4f82e3c991f6a1753, type: 3}
       propertyPath: orbitRadius

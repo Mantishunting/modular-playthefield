@@ -111,7 +111,7 @@ public class UI : MonoBehaviour
         {
             int current = BeeVisitTracker.Instance.TotalVisits;
             int goal = BeeVisitTracker.Instance.visitsToWin;
-            visitText.text = $"Visits: {current} / {goal}";
+            visitText.text = $"{current} / {goal}";
         }
     }
 

@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FoodBarTester : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Resources resourcesScript;
+    [SerializeField] private ResourceManager resourcesScript;
 
     [Header("Test Controls")]
     [SerializeField] private float changeRate = 10f;

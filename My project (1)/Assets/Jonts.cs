@@ -53,6 +53,10 @@ public class Joint : MonoBehaviour
     {
         if (joint == null || genScript == null) return;
 
+        // If the global stiffness slider is in the scene, it is authoritative.
+        // Skip this generation-based reinforcement so the two don't fight over the joint.
+        if (JointStiffness.Instance != null) return;
+
         int myGen = genScript.GetGeneration();
 
         // STEP 1: Handle the "Trunk" (Perfectly Rigid)

@@ -171,9 +171,9 @@ public class LeafProduction : MonoBehaviour
 
     void ProduceFood()
     {
-        if (Resources.Instance == null) return;
+        if (ResourceManager.Instance == null) return;
 
-        Resources.Instance.AddFood(myBlockType.productionAmount);
+        ResourceManager.Instance.AddFood(myBlockType.productionAmount);
 
         // This is where the sound plays
         if (audioPlayer != null)

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FoodDisplayBar : MonoBehaviour
 {
@@ -7,7 +7,7 @@ public class FoodDisplayBar : MonoBehaviour
     [SerializeField] private SpriteRenderer barRenderer;
     [SerializeField] private Transform arrowTransform;
     [SerializeField] private SpriteRenderer arrowRenderer;
-    [SerializeField] private Resources resourcesScript;
+    [SerializeField] private ResourceManager resourcesScript;
 
     [Header("Bar Settings")]
     [SerializeField] private float minHeight = 0.1f;

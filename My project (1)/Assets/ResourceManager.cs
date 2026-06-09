@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class Resources : MonoBehaviour
+public class ResourceManager : MonoBehaviour
 {
-    public static Resources Instance { get; private set; }
+    public static ResourceManager Instance { get; private set; }
 
     [Header("Resource Tracking")]
     [SerializeField] private int currentFood = 0;
@@ -28,7 +28,7 @@ public class Resources : MonoBehaviour
 
     // **2️⃣ Public Read-only Properties**
     public bool AllowPlayerDestroyWood => allowPlayerDestroyWood;
-    public bool AllowLowResourceDestroyWood => allowPlayerDestroyWood;
+    public bool AllowLowResourceDestroyWood => allowLowResourceDestroyWood;
 
     // Internal tracker
     private int lastBlockCount = -1;
@@ -238,6 +238,13 @@ public class Resources : MonoBehaviour
 
         foreach (HumanClick block in allBlocks)
         {
+            // Respect the "never starve Wood" policy
+            if (!allowLowResourceDestroyWood)
+            {
+                BlockType bt = block.GetBlockType();
+                if (bt != null && bt.blockName == "Wood") continue;
+            }
+
             bool hasChildren = block.northChild != null ||
                               block.southChild != null ||
                               block.eastChild != null ||

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class BlockDailyCost : MonoBehaviour
@@ -49,7 +49,7 @@ public class BlockDailyCost : MonoBehaviour
         }
 
         // --- Detect stagnant food levels and force a penalty if food won't drop ---
-        int currentFood = Resources.Instance.GetCurrentFood();
+        int currentFood = ResourceManager.Instance.GetCurrentFood();
 
         if (currentFood == lastFoodAmount)
         {
@@ -66,7 +66,7 @@ public class BlockDailyCost : MonoBehaviour
 
                 // reset so we don't cascade
                 foodHoldTimer = 0f;
-                lastFoodAmount = Resources.Instance.GetCurrentFood();
+                lastFoodAmount = ResourceManager.Instance.GetCurrentFood();
             }
         }
         else
@@ -101,7 +101,7 @@ public class BlockDailyCost : MonoBehaviour
         }
         
         // Try to pay the upkeep
-        bool paid = Resources.Instance.TrySpendFood(upkeepCost);
+        bool paid = ResourceManager.Instance.TrySpendFood(upkeepCost);
         
         if (!paid)
         {
@@ -140,12 +140,28 @@ public class BlockDailyCost : MonoBehaviour
     {
         // Find all blocks
         HumanClick[] allBlocks = FindObjectsOfType<HumanClick>();
-        
+
+        // Respect the "never let upkeep target Wood" policy
+        bool protectWood = ResourceManager.Instance != null &&
+                           !ResourceManager.Instance.AllowLowResourceDestroyWood;
+        if (protectWood)
+        {
+            System.Collections.Generic.List<HumanClick> killable =
+                new System.Collections.Generic.List<HumanClick>();
+            foreach (HumanClick block in allBlocks)
+            {
+                BlockType bt = block.GetBlockType();
+                if (bt != null && bt.blockName == "Wood") continue;
+                killable.Add(block);
+            }
+            allBlocks = killable.ToArray();
+        }
+
         if (allBlocks.Length == 0)
         {
             return;
         }
-        
+
         // Kill random blocks (up to the amount owed or available blocks)
         int blocksToKill = Mathf.Min(numberOfBlocksToKill, allBlocks.Length);
         

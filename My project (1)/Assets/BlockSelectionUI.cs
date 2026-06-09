@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -30,7 +30,7 @@ public class BlockSelectionUI : MonoBehaviour
     [SerializeField] private float selectedBrightness = 1.2f; // Makes selected button brighter
 
     [Header("References")]
-    [SerializeField] private Resources resourcesScript;
+    [SerializeField] private ResourceManager resourcesScript;
 
     [Header("Settings")]
     [SerializeField] private bool showDebugLogs = false;

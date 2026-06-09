@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class FoodBarRotator : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Resources resourcesScript;
+    [SerializeField] private ResourceManager resourcesScript;
 
     [Header("Rotation Settings")]
     [SerializeField] private float rotationSpeed = 5f;
@@ -45,7 +45,7 @@ public class FoodBarRotator : MonoBehaviour
             timeSinceLastCheck = 0f;
         }
 
-        // Rotate: 0° when gaining (green up), 180° when losing (red up)
+        // Rotate: 0ï¿½ when gaining (green up), 180ï¿½ when losing (red up)
         float targetRotation = isGaining ? 0f : 180f;
         Vector3 currentRotation = transform.localEulerAngles;
         currentRotation.z = Mathf.LerpAngle(currentRotation.z, targetRotation, Time.deltaTime * rotationSpeed);

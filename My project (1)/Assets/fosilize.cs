@@ -55,7 +55,7 @@ public class Fossilize : MonoBehaviour
                 rb.bodyType = RigidbodyType2D.Kinematic;
 
                 // Optional: Stop calculating velocity to ensure it stops INSTANTLY
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
                 rb.angularVelocity = 0f;
             }
         }

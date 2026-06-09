@@ -2429,6 +2429,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 998761741748223075, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: placementSounds.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 7c657516e15c0394fb08aacf74b0cb93, type: 3}
+    - target: {fileID: 998761741748223075, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: placementSounds.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 103b29a73ba9fb6409548cba8091bb57, type: 3}
+    - target: {fileID: 998761741748223075, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: placementSounds.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 0e29a53f6e1c4ed409afcef91106366f, type: 3}
+    - target: {fileID: 998761741748223075, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
+      propertyPath: placementSounds.Array.data[3]
+      value: 
+      objectReference: {fileID: 8300000, guid: 74e857c5c80f1674a884df37cfd81bfb, type: 3}
     - target: {fileID: 5474822612383061062, guid: fc2408bb633cce04aa83eb1ce14fe1fa, type: 3}
       propertyPath: colour1.a
       value: 0.90588236

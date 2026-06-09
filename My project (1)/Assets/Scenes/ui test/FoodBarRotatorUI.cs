@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class FoodBarRotatorUI : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Resources resourcesScript;
+    [SerializeField] private ResourceManager resourcesScript;
 
     [Header("Rotation Settings")]
     [SerializeField] private float rotationSpeed = 5f;

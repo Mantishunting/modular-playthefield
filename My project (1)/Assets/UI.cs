@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using System.Collections;
 
@@ -42,9 +42,9 @@ public class UI : MonoBehaviour
     void Start()
     {
         // Initialize food tracking
-        if (Resources.Instance != null)
+        if (ResourceManager.Instance != null)
         {
-            foodAtWindowStart = Resources.Instance.GetCurrentFood();
+            foodAtWindowStart = ResourceManager.Instance.GetCurrentFood();
         }
         windowTimer = 0f;
 
@@ -64,10 +64,10 @@ public class UI : MonoBehaviour
 
     void Update()
     {
-        if (Resources.Instance == null) return;
+        if (ResourceManager.Instance == null) return;
 
         // --- Rolling window: measure change over sampleWindow seconds ---
-        int currentFood = Resources.Instance.GetCurrentFood();
+        int currentFood = ResourceManager.Instance.GetCurrentFood();
         windowTimer += Time.deltaTime;
 
         if (windowTimer >= sampleWindow)

@@ -9,11 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/StartScene.unity
     guid: b11cf24a04b6c3346a61db230b9f52d5
   - enabled: 1
-    path: Assets/Scenes/LevelPotTutorial.unity
-    guid: f693be2f3da8edd49a7f313bd3b146ca
-  - enabled: 1
     path: Assets/Scenes/LevelPot1.unity
     guid: 03ac7563f51b6734287c97b5b8826fd2
+  - enabled: 1
+    path: Assets/Scenes/LevelPotTutorial.unity
+    guid: f693be2f3da8edd49a7f313bd3b146ca
   - enabled: 1
     path: Assets/Scenes/LevelPot2.unity
     guid: 4c76446ebe8daeb40a9b279923fb6c0f

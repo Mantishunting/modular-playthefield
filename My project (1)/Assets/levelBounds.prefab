@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3688092472230461678}
   - component: {fileID: 7731255259890443735}
+  - component: {fileID: 5908451371852374982}
   m_Layer: 0
   m_Name: levelBounds
   m_TagString: Untagged
@@ -48,3 +49,18 @@ MonoBehaviour:
   maxX: 70
   minY: -5
   maxY: 45
+--- !u!114 &5908451371852374982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7125960326181088480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 084e52d438c8f22459db33f7d49778a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  landingSceneName: StartScene
+  idleTimeoutSeconds: 600
+  doublePressWindow: 0.5

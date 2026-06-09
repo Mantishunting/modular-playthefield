@@ -12,12 +12,19 @@ public class PhysicsConnector : MonoBehaviour
     // We track this so we don't refresh unnecessarily
     private HumanClick currentParent;
 
-    [Header("Joint Settings")]
+    [Header("Joint Settings (fallback when no JointStiffness controller is present)")]
     [Tooltip("Strength of the joint. Higher = Stiffer. Try 20.")]
     [SerializeField] private float frequency = 20f;
 
     [Tooltip("Shock absorption. 0 = Bouncy, 1 = No Bounce. Try 0.5.")]
     [SerializeField] private float dampingRatio = 0.5f;
+
+    // Bumped whenever ANY block's connections change, so every joint recomputes its
+    // depth/load-based stiffness (a block added deep in the tree changes ancestors' load).
+    private static int sStructureVersion;
+
+    private int lastStructureVersion = -1;
+    private int lastSettingsVersion = -1;
 
     void Awake()
     {
@@ -50,7 +57,10 @@ public class PhysicsConnector : MonoBehaviour
 
     private void OnConnectionsChanged()
     {
-        // Only refresh if the parent actually changed (e.g. insertion)
+        // Any structural change anywhere invalidates depth/load for the whole tree.
+        sStructureVersion++;
+
+        // Only rebuild our own joint connection if our parent actually changed.
         if (humanClick.GetParent() != currentParent)
         {
             RefreshConnection();
@@ -77,9 +87,8 @@ public class PhysicsConnector : MonoBehaviour
             {
                 joint.connectedBody = parentRb;
                 joint.autoConfigureConnectedAnchor = true; // Lock to relative position
-                joint.frequency = frequency;
-                joint.dampingRatio = dampingRatio;
                 joint.enabled = true;
+                ApplyStiffness();
             }
         }
         else
@@ -90,18 +99,94 @@ public class PhysicsConnector : MonoBehaviour
             rb.bodyType = RigidbodyType2D.Kinematic;
 
             // Stop any momentum
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }
     }
 
-    // Helper to update settings in Play Mode without restarting
-    void OnValidate()
+    /// <summary>
+    /// Sets this joint's stiffness from the global plant controller, based on how deep
+    /// this block is from the root and how much mass hangs below it: rigid weld near
+    /// the trunk, progressively softer (bendier) toward the tips. Recomputed only on
+    /// structural changes or slider tweaks, never per frame.
+    /// </summary>
+    public void ApplyStiffness()
     {
-        if (joint != null && joint.enabled)
+        if (joint == null || !joint.enabled) return;
+
+        var js = JointStiffness.Instance;
+        if (js != null)
+        {
+            int depth = ComputeDepth();
+            float load = ComputeLoad();
+            joint.frequency = js.GetFrequency(depth, load);
+            joint.dampingRatio = js.GetDampingRatio();
+
+            lastSettingsVersion = js.SettingsVersion;
+        }
+        else
         {
             joint.frequency = frequency;
             joint.dampingRatio = dampingRatio;
         }
+
+        lastStructureVersion = sStructureVersion;
+    }
+
+    // Recompute only when the structure or the tuning slider actually changed.
+    void Update()
+    {
+        if (joint == null || !joint.enabled) return;
+
+        var js = JointStiffness.Instance;
+        if (js == null) return; // fallback already applied on connect
+
+        if (js.SettingsVersion != lastSettingsVersion || sStructureVersion != lastStructureVersion)
+        {
+            ApplyStiffness();
+        }
+    }
+
+    /// <summary>Number of joints between this block and the root (0 = root's child chain start).</summary>
+    private int ComputeDepth()
+    {
+        int depth = 0;
+        HumanClick p = humanClick.GetParent();
+        while (p != null)
+        {
+            depth++;
+            p = p.GetParent();
+        }
+        return depth;
+    }
+
+    /// <summary>Total mass of every descendant block hanging below this one.</summary>
+    private float ComputeLoad()
+    {
+        return SumSubtreeMass(humanClick);
+    }
+
+    private static float SumSubtreeMass(HumanClick node)
+    {
+        float sum = 0f;
+        AddChildMass(node.GetNorthChild(), ref sum);
+        AddChildMass(node.GetSouthChild(), ref sum);
+        AddChildMass(node.GetEastChild(), ref sum);
+        AddChildMass(node.GetWestChild(), ref sum);
+        return sum;
+    }
+
+    private static void AddChildMass(HumanClick child, ref float sum)
+    {
+        if (child == null) return;
+        Rigidbody2D crb = child.GetComponent<Rigidbody2D>();
+        if (crb != null) sum += crb.mass;
+        sum += SumSubtreeMass(child);
+    }
+
+    // Re-apply when values are tweaked in the Inspector in Play mode.
+    void OnValidate()
+    {
+        ApplyStiffness();
     }
 }

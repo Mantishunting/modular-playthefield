@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class FoodDisplayBarUI : MonoBehaviour
@@ -8,7 +8,7 @@ public class FoodDisplayBarUI : MonoBehaviour
     [SerializeField] private Image barImage;
     [SerializeField] private RectTransform arrowRectTransform;
     [SerializeField] private Image arrowImage;
-    [SerializeField] private Resources resourcesScript;
+    [SerializeField] private ResourceManager resourcesScript;
 
     [Header("Bar Settings")]
     [SerializeField] private float minHeight = 10f;   // UI units instead of world units

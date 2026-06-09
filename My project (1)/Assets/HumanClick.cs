@@ -143,9 +143,9 @@ public class HumanClick : MonoBehaviour
         if (Vector3.Distance(mousePos, blockCenter) < radius)
         {
             BlockType bt = GetBlockType();
-            if (!Resources.Instance.AllowPlayerDestroyWood && bt != null && bt.blockName == "Wood")
+            if (!ResourceManager.Instance.AllowPlayerDestroyWood && bt != null && bt.blockName == "Wood")
             {
-                if (Resources.Instance.ShowDebugLogs) Debug.Log("Player attempted to destroy Wood, but policy disallows it.");
+                if (ResourceManager.Instance.ShowDebugLogs) Debug.Log("Player attempted to destroy Wood, but policy disallows it.");
                 return;
             }
 
@@ -173,6 +173,77 @@ public class HumanClick : MonoBehaviour
     public Vector2 GetForwardVector()
     {
         return transform.up; // rotates with the block
+    }
+
+    // --- Debug/visualization helpers: the clickable "node" radii ---
+    // Body radius: this block's own circle (right-click delete / occupancy).
+    public float GetBodyRadius()
+    {
+        return (blockSize / 2f) * transform.localScale.x;
+    }
+
+    // Click range: the larger area where clicking near this block places a new one.
+    public float GetClickRadius()
+    {
+        return GetBodyRadius() * clickRangeMultiplier;
+    }
+
+    // Debug: the empty, valid grid cells next to this block where 'type' could be
+    // placed (forward / left / right arcs; never backward toward the parent).
+    // Reuses the real placement rules so it matches what a click would allow.
+    public void GetOpenPlacementPositions(BlockType type, List<Vector3> results)
+    {
+        if (type == null) return;
+
+        Vector2 forward = GetForwardVector();
+        Vector3 fwd = new Vector3(forward.x, forward.y, 0f).normalized;
+        Vector3 right = new Vector3(forward.y, -forward.x, 0f).normalized;
+        Vector3 left = new Vector3(-forward.y, forward.x, 0f).normalized;
+
+        TryAddOpenSlot(fwd, type, results);
+        TryAddOpenSlot(right, type, results);
+        TryAddOpenSlot(left, type, results);
+    }
+
+    private void TryAddOpenSlot(Vector3 dir, BlockType type, List<Vector3> results)
+    {
+        HumanClick childToMove = GetChildInDirection(dir);
+        if (childToMove != null) return; // cell already filled
+
+        Vector3 spawnPos = transform.position + dir * blockSize;
+        if (IsPositionOccupied(spawnPos) || IsHazard(spawnPos)) return;
+        if (!IsValidPlacement(type, childToMove)) return;
+
+        results.Add(spawnPos);
+    }
+
+    // Debug: given a mouse world position, returns the exact snap position where a
+    // new block of 'type' would land off this block (mirrors the hover preview).
+    public bool TryGetPlacementPosition(Vector3 mouseWorld, BlockType type, out Vector3 spawnPosition)
+    {
+        spawnPosition = Vector3.zero;
+        if (type == null) return false;
+
+        Vector3 blockCenter = transform.position;
+        float scaledHalfSize = (blockSize / 2f) * transform.localScale.x;
+        if (Vector3.Distance(mouseWorld, blockCenter) > scaledHalfSize * clickRangeMultiplier)
+            return false;
+
+        Vector2 forward = GetForwardVector();
+        List<BlockGeom> neighbors = GetNeighbors();
+        PlacementResult result = ArcMath.SolvePlacement(blockCenter, forward, scaledHalfSize, neighbors, mouseWorld);
+        if (result.type == PlacementResultType.None) return false;
+
+        Vector3 spawnDirection = GetDirectionFromArc(forward, result.arc);
+        if (spawnDirection == Vector3.zero) return false;
+
+        Vector3 pos = blockCenter + (spawnDirection * blockSize);
+        HumanClick childToMove = GetChildInDirection(spawnDirection);
+        if (!IsValidPlacement(type, childToMove)) return false;
+        if (childToMove == null && (IsPositionOccupied(pos) || IsHazard(pos))) return false;
+
+        spawnPosition = pos;
+        return true;
     }
 
     private List<BlockGeom> GetNeighbors()
@@ -283,7 +354,7 @@ public class HumanClick : MonoBehaviour
         if (selectedType == null) return;
 
         int dynamicCost = GetDynamicCost(selectedType);
-        bool canAfford = Resources.Instance.CanAfford(dynamicCost);
+        bool canAfford = ResourceManager.Instance.CanAfford(dynamicCost);
 
         bool isPlacementValid = IsValidPlacement(selectedType, childToMove);
 
@@ -340,9 +411,9 @@ public class HumanClick : MonoBehaviour
         if (!IsValidPlacement(selectedType, childToShift)) return;
         
         int dynamicCost = GetDynamicCost(selectedType);
-        if (!Resources.Instance.CanAfford(dynamicCost)) return;
+        if (!ResourceManager.Instance.CanAfford(dynamicCost)) return;
 
-        if (!Resources.Instance.TrySpendFood(dynamicCost)) return;
+        if (!ResourceManager.Instance.TrySpendFood(dynamicCost)) return;
 
         // Move the existing child (and its entire subtree) out of the way first
         childToShift.Move(moveStep);
@@ -408,7 +479,7 @@ public class HumanClick : MonoBehaviour
 
         int dynamicCost = GetDynamicCost(selectedType);
 
-        if (!Resources.Instance.CanAfford(dynamicCost)) return;
+        if (!ResourceManager.Instance.CanAfford(dynamicCost)) return;
 
         if (!IsValidPlacement(selectedType, childToMove)) return;
 
@@ -423,7 +494,7 @@ public class HumanClick : MonoBehaviour
         isSpawning = true;
         StartWobble();
 
-        if (!Resources.Instance.TrySpendFood(dynamicCost))
+        if (!ResourceManager.Instance.TrySpendFood(dynamicCost))
         {
             isSpawning = false;
             return;
@@ -812,12 +883,12 @@ public class HumanClick : MonoBehaviour
         if (childToMove == null && (IsPositionOccupied(spawnPosition) || IsHazard(spawnPosition))) return false;
 
         int dynamicCost = GetDynamicCost(type);
-        if (spendResources && !Resources.Instance.CanAfford(dynamicCost)) return false;
+        if (spendResources && !ResourceManager.Instance.CanAfford(dynamicCost)) return false;
 
         if (IsPositionOccupied(spawnPosition) && childToMove != null)
             childToMove.Move(step);
 
-        if (spendResources && !Resources.Instance.TrySpendFood(dynamicCost)) return false;
+        if (spendResources && !ResourceManager.Instance.TrySpendFood(dynamicCost)) return false;
 
         GameObject newBlock = spawner.SpawnBlockAt(spawnPosition, type);
         if (newBlock == null) return false;

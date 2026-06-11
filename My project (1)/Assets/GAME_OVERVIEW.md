@@ -305,6 +305,19 @@ For pre-grown plants, demos, or scripted sequences rather than player clicks:
   the generation-based `Jonts`); `Jonts` steps aside when the global controller
   exists. (Note: `JointStiffness` is referenced by `PhysicsConnector`/`Jonts` as the
   authoritative tuning singleton.)
+- **Placement is rotation- AND parent-aware.** Blocks can rotate (Rigidbody2D
+  rotation is unfrozen). Two pieces make placement work in any orientation:
+  - `GetForwardVector()` returns the block's LOCAL axis (`transform.up`/`right` or
+    their negatives) that points *away from the parent*. Because the arc system
+    forbids the side opposite "forward," the forbidden side now always points back at
+    the parent — so the genuinely open sides (incl. the underside of a horizontal or
+    leaning stem) stay buildable. `GetChildInDirection()`/`LinkChild()` also bucket
+    against the local axes.
+  - `IsPositionOccupied()` treats a cell as occupied only when another block's
+    *centre* sits in it (within 0.5 cell), instead of testing raw collider overlap —
+    otherwise `BlockScaler`'s up-to-3× blocks make every neighbouring cell read as
+    "occupied." If placement ever wrongly allows/blocks a spot, these two methods are
+    where to look.
 - The "never let starvation/upkeep destroy Wood" policy
   (`allowLowResourceDestroyWood`) is now wired up: `ResourceManager.CheckStarvation`
   and `BlockDailyCost.KillRandomBlocks` both skip Wood when the flag is off.

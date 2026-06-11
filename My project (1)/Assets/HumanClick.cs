@@ -172,7 +172,33 @@ public class HumanClick : MonoBehaviour
 
     public Vector2 GetForwardVector()
     {
-        return transform.up; // rotates with the block
+        // "Forward" = the block's LOCAL axis (up/down/left/right, in world space)
+        // that points AWAY from the parent. This is both:
+        //   • rotation-aware — it's one of the block's actual axes, so attachment
+        //     points stay at right angles to the block after it rotates, and
+        //   • parent-aware — the arc system's forbidden "bottom" arc (the opposite
+        //     of forward) therefore always points back at the parent, never at an
+        //     arbitrary world direction. That's what keeps the genuinely-open sides
+        //     (including the underside of a horizontal/leaning stem) buildable.
+        // Root / unparented blocks default to local up.
+        HumanClick parent = GetParent();
+        if (parent == null) return transform.up;
+
+        Vector2 away = ((Vector2)(transform.position - parent.transform.position));
+        if (away.sqrMagnitude < 0.0001f) return transform.up;
+        away.Normalize();
+
+        // Snap "away from parent" to this block's nearest local axis.
+        Vector2 up = transform.up;
+        Vector2 right = transform.right;
+        Vector2 best = up;
+        float bestDot = Vector2.Dot(up, away);
+
+        float d = Vector2.Dot(-up, away);    if (d > bestDot) { bestDot = d; best = -up; }
+        d = Vector2.Dot(right, away);         if (d > bestDot) { bestDot = d; best = right; }
+        d = Vector2.Dot(-right, away);        if (d > bestDot) { bestDot = d; best = -right; }
+
+        return best;
     }
 
     // --- Debug/visualization helpers: the clickable "node" radii ---
@@ -529,10 +555,14 @@ public class HumanClick : MonoBehaviour
     {
         Vector2 d = dir.normalized;
 
-        float eastDot = Vector2.Dot(d, Vector2.right);
-        float westDot = Vector2.Dot(d, Vector2.left);
-        float northDot = Vector2.Dot(d, Vector2.up);
-        float southDot = Vector2.Dot(d, Vector2.down);
+        // Compare against this block's LOCAL axes (rotation-aware), not the world grid.
+        Vector2 up = transform.up;
+        Vector2 right = transform.right;
+
+        float eastDot = Vector2.Dot(d, right);
+        float westDot = Vector2.Dot(d, -right);
+        float northDot = Vector2.Dot(d, up);
+        float southDot = Vector2.Dot(d, -up);
 
         float max = Mathf.Max(eastDot, westDot, northDot, southDot);
 
@@ -547,10 +577,14 @@ public class HumanClick : MonoBehaviour
     {
         Vector2 d = dir.normalized;
 
-        float eastDot = Vector2.Dot(d, Vector2.right);
-        float westDot = Vector2.Dot(d, Vector2.left);
-        float northDot = Vector2.Dot(d, Vector2.up);
-        float southDot = Vector2.Dot(d, Vector2.down);
+        // Assign to the slot matching this block's LOCAL axes (rotation-aware).
+        Vector2 up = transform.up;
+        Vector2 right = transform.right;
+
+        float eastDot = Vector2.Dot(d, right);
+        float westDot = Vector2.Dot(d, -right);
+        float northDot = Vector2.Dot(d, up);
+        float southDot = Vector2.Dot(d, -up);
 
         float max = Mathf.Max(eastDot, westDot, northDot, southDot);
 
@@ -740,14 +774,24 @@ public class HumanClick : MonoBehaviour
 
     bool IsPositionOccupied(Vector3 position)
     {
-        // CIRCLE COLLIDER CHECK
-        float checkRadius = 0.45f * blockSize;
+        // A cell counts as occupied only if ANOTHER block's CENTRE sits in it (or a
+        // non-block collider overlaps it). We compare block centres rather than raw
+        // collider overlap, because BlockScaler inflates blocks up to 3x — a neighbour
+        // a full cell away still overlaps this point, which used to falsely block every
+        // adjacent side. Centre distance is immune to that scaling.
+        float searchRadius = blockSize;            // gather anything that could reach the cell
+        float centreThreshold = 0.5f * blockSize;  // ...but only a block centred IN the cell counts
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(position, checkRadius, occupancyLayer);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(position, searchRadius, occupancyLayer);
         foreach (Collider2D hit in hits)
         {
-            if (hit.transform.parent == transform || hit.transform == transform) continue;
-            return true;
+            HumanClick hc = hit.GetComponentInParent<HumanClick>();
+
+            if (hc == this) continue;     // ignore ourself (collider may be on a child object)
+            if (hc == null) return true;  // a solid non-block collider → genuinely blocked
+
+            if (Vector2.Distance(hc.transform.position, position) < centreThreshold)
+                return true;              // another block actually occupies this cell
         }
         return false;
     }
@@ -905,5 +949,44 @@ public class HumanClick : MonoBehaviour
         if (childToMove != null) ValidateAndRemoveInvalidLeafs(childToMove);
 
         return true;
+    }
+
+    // ----- Placement diagnostics (debug only) -----
+    // Reports, for all four of this block's LOCAL sides, why a block can or can't be
+    // placed there, plus the block's actual orientation. Lets a debug overlay show
+    // the REAL reason a side is rejected instead of us guessing.
+    public enum SlotStatus { Open, HasChild, Occupied, Hazard, Invalid }
+
+    public struct SlotDiag
+    {
+        public Vector3 pos;        // candidate cell position
+        public SlotStatus status;  // why it's open / rejected
+    }
+
+    public void GetPlacementDiagnostics(BlockType type, List<SlotDiag> results,
+                                        out Vector3 localUp, out Vector3 localRight)
+    {
+        localUp = transform.up;
+        localRight = transform.right;
+
+        AddDiag(transform.up, type, results);
+        AddDiag(transform.right, type, results);
+        AddDiag(-transform.up, type, results);
+        AddDiag(-transform.right, type, results);
+    }
+
+    private void AddDiag(Vector3 dir, BlockType type, List<SlotDiag> results)
+    {
+        dir = dir.normalized;
+        Vector3 pos = transform.position + dir * blockSize;
+
+        SlotStatus status;
+        if (GetChildInDirection(dir) != null) status = SlotStatus.HasChild;
+        else if (IsHazard(pos)) status = SlotStatus.Hazard;
+        else if (IsPositionOccupied(pos)) status = SlotStatus.Occupied;
+        else if (type != null && !IsValidPlacement(type, null)) status = SlotStatus.Invalid;
+        else status = SlotStatus.Open;
+
+        results.Add(new SlotDiag { pos = pos, status = status });
     }
 }

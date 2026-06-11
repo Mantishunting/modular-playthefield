@@ -60,6 +60,17 @@ public class JointConnectorVisualizer : MonoBehaviour
     [Tooltip("Half-size of the square dots, in world units.")]
     public float dotHalfSize = 0.08f;
 
+    [Header("Diagnostics (U)")]
+    [Tooltip("Show WHY each side is open/rejected, plus each block's real orientation. Hotkey: U")]
+    public bool showDiagnostics = false;
+    public KeyCode diagnosticsKey = KeyCode.U;
+    [Tooltip("Length of the orientation ticks (block's local up = yellow, right = cyan).")]
+    public float axisTickLength = 0.4f;
+
+    [Header("Performance")]
+    [Tooltip("Recompute the heavier overlays (block scan + open spots) every N frames. The cursor dot still updates every frame.")]
+    [Range(1, 20)] public int recomputeInterval = 3;
+
     // Built-in unlit material used for GL drawing (created on demand).
     private Material lineMaterial;
 
@@ -70,6 +81,16 @@ public class JointConnectorVisualizer : MonoBehaviour
     private readonly HashSet<Vector2Int> seen = new HashSet<Vector2Int>();
     private bool cursorDotValid;
     private Vector3 cursorDotPos;
+
+    // Diagnostics caches (slot positions grouped by rejection reason + orientation ticks).
+    private readonly List<Vector3> diagOpen = new List<Vector3>();
+    private readonly List<Vector3> diagChild = new List<Vector3>();
+    private readonly List<Vector3> diagOccupied = new List<Vector3>();
+    private readonly List<Vector3> diagHazard = new List<Vector3>();
+    private readonly List<Vector3> diagInvalid = new List<Vector3>();
+    private readonly List<Vector3> diagUpLines = new List<Vector3>();    // vertex pairs
+    private readonly List<Vector3> diagRightLines = new List<Vector3>(); // vertex pairs
+    private readonly List<HumanClick.SlotDiag> diagScratch = new List<HumanClick.SlotDiag>();
 
     private Camera cam;
 
@@ -90,15 +111,23 @@ public class JointConnectorVisualizer : MonoBehaviour
         if (Input.GetKeyDown(nodesKey)) showClickNodes = !showClickNodes;
         if (Input.GetKeyDown(openSpotsKey)) showOpenSpots = !showOpenSpots;
         if (Input.GetKeyDown(cursorDotKey)) showCursorDot = !showCursorDot;
-
-        // Cache the block list once per frame (not per camera).
-        blocks = FindObjectsOfType<HumanClick>();
+        if (Input.GetKeyDown(diagnosticsKey)) showDiagnostics = !showDiagnostics;
 
         BlockType selected = (BlockTypeManager.Instance != null)
             ? BlockTypeManager.Instance.GetSelectedType()
             : null;
 
-        ComputeOpenSpots(selected);
+        // Throttle the heavy work (scanning every block + occupancy checks) to every
+        // few frames; the dots simply persist between recomputes.
+        if (blocks == null || Time.frameCount % Mathf.Max(1, recomputeInterval) == 0)
+        {
+            blocks = FindObjectsOfType<HumanClick>();
+            ComputeOpenSpots(selected);
+            ComputeDiagnostics(selected);
+        }
+
+        // Cursor dot stays responsive every frame (cheap — only blocks near the
+        // mouse do real work, thanks to the distance early-out).
         ComputeCursorDot(selected);
     }
 
@@ -154,6 +183,38 @@ public class JointConnectorVisualizer : MonoBehaviour
         }
     }
 
+    private void ComputeDiagnostics(BlockType selected)
+    {
+        diagOpen.Clear(); diagChild.Clear(); diagOccupied.Clear();
+        diagHazard.Clear(); diagInvalid.Clear();
+        diagUpLines.Clear(); diagRightLines.Clear();
+        if (!showDiagnostics || blocks == null) return;
+
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            HumanClick b = blocks[i];
+            diagScratch.Clear();
+            b.GetPlacementDiagnostics(selected, diagScratch, out Vector3 up, out Vector3 right);
+
+            Vector3 c = b.transform.position;
+            diagUpLines.Add(c); diagUpLines.Add(c + up.normalized * axisTickLength);
+            diagRightLines.Add(c); diagRightLines.Add(c + right.normalized * axisTickLength);
+
+            for (int j = 0; j < diagScratch.Count; j++)
+            {
+                HumanClick.SlotDiag d = diagScratch[j];
+                switch (d.status)
+                {
+                    case HumanClick.SlotStatus.Open: diagOpen.Add(d.pos); break;
+                    case HumanClick.SlotStatus.HasChild: diagChild.Add(d.pos); break;
+                    case HumanClick.SlotStatus.Occupied: diagOccupied.Add(d.pos); break;
+                    case HumanClick.SlotStatus.Hazard: diagHazard.Add(d.pos); break;
+                    case HumanClick.SlotStatus.Invalid: diagInvalid.Add(d.pos); break;
+                }
+            }
+        }
+    }
+
     void EnsureMaterial()
     {
         if (lineMaterial != null) return;
@@ -183,8 +244,9 @@ public class JointConnectorVisualizer : MonoBehaviour
     private void DrawGL()
     {
         if (blocks == null) return;
-        bool anyLines = showConnectors || showClickNodes;
-        bool anyDots = (showOpenSpots && openSpots.Count > 0) || (showCursorDot && cursorDotValid);
+        bool anyLines = showConnectors || showClickNodes || showDiagnostics;
+        bool anyDots = (showOpenSpots && openSpots.Count > 0) || (showCursorDot && cursorDotValid)
+                       || showDiagnostics;
         if (!anyLines && !anyDots) return;
 
         EnsureMaterial();
@@ -218,6 +280,17 @@ public class JointConnectorVisualizer : MonoBehaviour
                 }
             }
 
+            if (showDiagnostics)
+            {
+                // Orientation ticks: local up = yellow, local right = cyan.
+                GL.Color(Color.yellow);
+                for (int i = 0; i + 1 < diagUpLines.Count; i += 2)
+                { GL.Vertex(diagUpLines[i]); GL.Vertex(diagUpLines[i + 1]); }
+                GL.Color(Color.cyan);
+                for (int i = 0; i + 1 < diagRightLines.Count; i += 2)
+                { GL.Vertex(diagRightLines[i]); GL.Vertex(diagRightLines[i + 1]); }
+            }
+
             GL.End();
         }
 
@@ -237,6 +310,16 @@ public class JointConnectorVisualizer : MonoBehaviour
             {
                 GL.Color(cursorDotColor);
                 DotGL(cursorDotPos, dotHalfSize * 1.4f);
+            }
+
+            if (showDiagnostics)
+            {
+                // Color-coded by WHY the side is open/rejected.
+                GL.Color(Color.green);    for (int i = 0; i < diagOpen.Count; i++)     DotGL(diagOpen[i], dotHalfSize);
+                GL.Color(Color.blue);     for (int i = 0; i < diagChild.Count; i++)    DotGL(diagChild[i], dotHalfSize);
+                GL.Color(Color.red);      for (int i = 0; i < diagOccupied.Count; i++) DotGL(diagOccupied[i], dotHalfSize);
+                GL.Color(new Color(1f, 0.5f, 0f)); for (int i = 0; i < diagHazard.Count; i++) DotGL(diagHazard[i], dotHalfSize);
+                GL.Color(Color.magenta);  for (int i = 0; i < diagInvalid.Count; i++)  DotGL(diagInvalid[i], dotHalfSize);
             }
 
             GL.End();

@@ -664,6 +664,69 @@ Transform:
   m_Children: []
   m_Father: {fileID: 408694230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -28.565}
+--- !u!1 &472019313
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 472019315}
+  - component: {fileID: 472019314}
+  m_Layer: 0
+  m_Name: jointdebug
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &472019314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472019313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03350afc59ae1f5499c1bd427e228e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JointConnectorVisualizer
+  showConnectors: 1
+  connectorsKey: 106
+  connectorColor: {r: 0.2, g: 1, b: 1, a: 0.9}
+  showClickNodes: 0
+  nodesKey: 110
+  bodyColor: {r: 1, g: 0.85, b: 0.2, a: 0.9}
+  clickRangeColor: {r: 1, g: 0.4, b: 0.2, a: 0.6}
+  circleSegments: 28
+  showOpenSpots: 0
+  openSpotsKey: 107
+  openSpotColor: {r: 0.3, g: 1, b: 0.3, a: 0.9}
+  showCursorDot: 0
+  cursorDotKey: 109
+  cursorDotColor: {r: 1, g: 1, b: 1, a: 1}
+  dotHalfSize: 0.08
+  showDiagnostics: 1
+  diagnosticsKey: 117
+  axisTickLength: 0.4
+  recomputeInterval: 3
+--- !u!4 &472019315
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472019313}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.97015, y: 9.2854, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &496078691
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2937,6 +3000,10 @@ MonoBehaviour:
   cursorDotKey: 109
   cursorDotColor: {r: 1, g: 1, b: 1, a: 1}
   dotHalfSize: 0.08
+  showDiagnostics: 0
+  diagnosticsKey: 111
+  axisTickLength: 0.4
+  recomputeInterval: 3
 --- !u!1001 &1894169511
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5651,3 +5718,4 @@ SceneRoots:
   - {fileID: 408694230}
   - {fileID: 4937128149830273671}
   - {fileID: 1425413672}
+  - {fileID: 472019315}

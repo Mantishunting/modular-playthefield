@@ -131,7 +131,16 @@ public static class ArcMath
             float dist = Vector2.Distance(blockPos, nb.position);
             if (dist < 0.001f) continue;
 
-            float beta = Mathf.Asin(Mathf.Clamp(nb.radius / dist, -1f, 1f));
+            // Cap the neighbour's occlusion radius relative to the gap between centres.
+            // Blocks scale up (BlockScaler) but stay on ~unit spacing, so a thick trunk's
+            // over/under neighbours would otherwise have radius >= dist -> asin clamps to
+            // 90deg -> they occlude an entire half-plane and the left/right click zones
+            // vanish as the trunk fattens. Capping at 0.6*dist keeps beta <= ~37deg, so a
+            // fat neighbour can never reach into the side arcs (which start ~40deg off the
+            // trunk axis). For base-size blocks (radius 0.5, dist 1) the cap doesn't bind,
+            // so normal placement is unchanged.
+            float occludeRadius = Mathf.Min(nb.radius, 0.6f * dist);
+            float beta = Mathf.Asin(Mathf.Clamp(occludeRadius / dist, -1f, 1f));
 
             float min = angleN - beta;
             float max = angleN + beta;

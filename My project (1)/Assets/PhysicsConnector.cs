@@ -19,6 +19,19 @@ public class PhysicsConnector : MonoBehaviour
     [Tooltip("Shock absorption. 0 = Bouncy, 1 = No Bounce. Try 0.5.")]
     [SerializeField] private float dampingRatio = 0.5f;
 
+    [Header("Stretch Kill (overstretched branches snap)")]
+    [Tooltip("How far (in cells) a block may drift from its parent before its branch dies. " +
+             "Keep this GENEROUS — normal spacing is 1 cell — so the player never feels cheated. " +
+             "Scaled up automatically for larger blocks.")]
+    [SerializeField] private float killStretchDistance = 3f;
+
+    [Tooltip("The overstretch must persist this long (seconds) before the branch dies, " +
+             "so a momentary leap while settling never kills a branch that would recover.")]
+    [SerializeField] private float killStretchGrace = 0.5f;
+
+    // How long we've been continuously overstretched. Resets the instant we're back in range.
+    private float overstretchTimer;
+
     // Bumped whenever ANY block's connections change, so every joint recomputes its
     // depth/load-based stiffness (a block added deep in the tree changes ancestors' load).
     private static int sStructureVersion;
@@ -35,8 +48,22 @@ public class PhysicsConnector : MonoBehaviour
 
     void Start()
     {
-        // Connect as soon as we spawn
-        RefreshConnection();
+        // A freshly spawned child is usually already connected
+        // SYNCHRONOUSLY during placement: LinkChild -> NotifyConnectionsChanged ->
+        // OnConnectionsChanged -> RefreshConnection, all in the same frame, capturing the
+        // clean placement position. If we blindly RefreshConnection() again here (a frame
+        // later), autoConfigureConnectedAnchor RE-captures wherever physics has since
+        // drifted us to — baking the drift in as the rest pose (long, rotated joint).
+        // So only connect from Start if we haven't been connected already.
+        if (humanClick.GetParent() == null)
+        {
+            RefreshConnection(); // unparented -> establish root / kinematic anchor
+        }
+        else if (joint.connectedBody == null)
+        {
+            RefreshConnection(); // parented but not yet wired (e.g. scene-authored links)
+        }
+        // else: already connected cleanly during placement — leave the anchor alone.
     }
 
     void OnEnable()
@@ -138,12 +165,45 @@ public class PhysicsConnector : MonoBehaviour
     {
         if (joint == null || !joint.enabled) return;
 
+        CheckStretchKill();
+
         var js = JointStiffness.Instance;
         if (js == null) return; // fallback already applied on connect
 
         if (js.SettingsVersion != lastSettingsVersion || sStructureVersion != lastStructureVersion)
         {
             ApplyStiffness();
+        }
+    }
+
+    /// <summary>
+    /// If a block gets yanked unreasonably far from its parent (e.g. shoved through tight
+    /// spaces while building) and STAYS there, its branch snaps off via Die(). Deliberately
+    /// generous and time-gated so a brief settling leap never costs the player a branch.
+    /// </summary>
+    private void CheckStretchKill()
+    {
+        if (joint.connectedBody == null) { overstretchTimer = 0f; return; }
+
+        // Allowance grows with block size so big (old) blocks aren't unfairly strict.
+        float parentScale = currentParent != null ? currentParent.transform.lossyScale.x : 1f;
+        float scale = Mathf.Max(transform.lossyScale.x, parentScale);
+        float maxDist = killStretchDistance * Mathf.Max(scale, 1f);
+
+        float dist = Vector2.Distance(transform.position, joint.connectedBody.transform.position);
+
+        if (dist <= maxDist)
+        {
+            overstretchTimer = 0f; // back in range — forgive instantly
+            return;
+        }
+
+        overstretchTimer += Time.deltaTime;
+        if (overstretchTimer >= killStretchGrace)
+        {
+            Debug.LogWarning($"[PhysicsConnector] {name} overstretched to {dist:0.0} (max {maxDist:0.0}) " +
+                             $"for {killStretchGrace}s — pruning branch.");
+            humanClick.Die();
         }
     }
 

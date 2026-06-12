@@ -529,6 +529,13 @@ public class HumanClick : MonoBehaviour
         GameObject newBlock = spawner.SpawnBlockAt(spawnPosition, selectedType);
         if (newBlock != null)
         {
+            // Inherit the parent's rotation so the child's LOCAL axes line up with the
+            // rotation-aware spawnDirection. Otherwise the child spawns
+            // world-aligned (Quaternion.identity), the joint auto-configures a mismatched
+            // relative orientation, and it visibly swings before settling. Runs before
+            // PhysicsConnector.Start() configures the joint.
+            newBlock.transform.rotation = transform.rotation;
+
             HumanClick newChild = newBlock.GetComponent<HumanClick>();
 
             LinkChild(spawnDirection, newChild);

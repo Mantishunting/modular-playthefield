@@ -32,6 +32,10 @@ public class PhysicsConnector : MonoBehaviour
     // How long we've been continuously overstretched. Resets the instant we're back in range.
     private float overstretchTimer;
 
+    // The stretch check is cheap but runs on every block; a few times a second is plenty.
+    private const float kStretchCheckInterval = 0.2f;
+    private float stretchCheckTimer;
+
     // Bumped whenever ANY block's connections change, so every joint recomputes its
     // depth/load-based stiffness (a block added deep in the tree changes ancestors' load).
     private static int sStructureVersion;
@@ -165,7 +169,12 @@ public class PhysicsConnector : MonoBehaviour
     {
         if (joint == null || !joint.enabled) return;
 
-        CheckStretchKill();
+        stretchCheckTimer += Time.deltaTime;
+        if (stretchCheckTimer >= kStretchCheckInterval)
+        {
+            CheckStretchKill(stretchCheckTimer);
+            stretchCheckTimer = 0f;
+        }
 
         var js = JointStiffness.Instance;
         if (js == null) return; // fallback already applied on connect
@@ -181,7 +190,7 @@ public class PhysicsConnector : MonoBehaviour
     /// spaces while building) and STAYS there, its branch snaps off via Die(). Deliberately
     /// generous and time-gated so a brief settling leap never costs the player a branch.
     /// </summary>
-    private void CheckStretchKill()
+    private void CheckStretchKill(float elapsed)
     {
         if (joint.connectedBody == null) { overstretchTimer = 0f; return; }
 
@@ -198,7 +207,7 @@ public class PhysicsConnector : MonoBehaviour
             return;
         }
 
-        overstretchTimer += Time.deltaTime;
+        overstretchTimer += elapsed;
         if (overstretchTimer >= killStretchGrace)
         {
             Debug.LogWarning($"[PhysicsConnector] {name} overstretched to {dist:0.0} (max {maxDist:0.0}) " +

@@ -44,6 +44,7 @@ public class HumanClick : MonoBehaviour
     private static int totalBlockCount = 0;
     private static bool anyBlockShowedPreviewThisFrame = false;
     private static int lastPreviewFrame = -1;
+    private static Vector3 cachedMouseWorld; // mouse world pos, computed once per frame (shared by all blocks)
 
     private BlockType myBlockType;
 
@@ -339,12 +340,16 @@ public class HumanClick : MonoBehaviour
                 PreviewBlockManager.Instance.HidePreview();
             }
             anyBlockShowedPreviewThisFrame = false;
+
+            // The mouse world position is identical for every block this frame, so compute
+            // it once here (first block to run) instead of once per block.
+            cachedMouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            cachedMouseWorld.z = 0;
         }
 
         if (PreviewBlockManager.Instance == null) return;
 
-        Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0;
+        Vector3 mousePos = cachedMouseWorld;
 
         Vector3 blockCenter = transform.position;
         float currentScale = transform.localScale.x;

@@ -17,6 +17,13 @@ public class ChainPatternAgent : MonoBehaviour
     public bool autoStart = true;     // start automatically on enable
     public bool suppressIfParentHasAgent = true; // prevents fan-out without editing HumanClick
 
+    [Header("Handedness (auto)")]
+    [Tooltip("Auto-computed at start from this block's place in the tree: a branch hanging off " +
+             "a WEST slot builds left-handed (East<->West mirrored); the root, a pure vertical " +
+             "stem, or an EAST branch builds right-handed. Shown for debugging; the saved value " +
+             "is overwritten at runtime.")]
+    [SerializeField] private bool mirrorHorizontal = false;
+
     private bool _running = false;
     public bool IsRunning => _running;
     public bool IsFinished { get; private set; } = false;
@@ -86,6 +93,9 @@ public class ChainPatternAgent : MonoBehaviour
         current = new GrowthChain(initialLabel, host);
         chains[current.label] = current;
 
+        // Handedness is established by where this branch hangs in the tree (see IsLeftHanded).
+        mirrorHorizontal = IsLeftHanded(host);
+
         StartCoroutine(Run());
     }
 
@@ -110,23 +120,26 @@ public class ChainPatternAgent : MonoBehaviour
                     yield break;
                 }
 
+                // Apply handedness: a left-handed agent flips East<->West before placing.
+                HumanClick.Direction dir = mirrorHorizontal ? MirrorDir(step.dir) : step.dir;
+
                 // Place the block
-                bool ok = actor.TryPlaceRelative(step.dir, blockType, true);
+                bool ok = actor.TryPlaceRelative(dir, blockType, true);
                 if (!ok)
                 {
                     MarkFinished();
                     yield break;
                 }
 
-                // Get reference to newly placed block
-                HumanClick newBlock = ChildInDirection(actor, step.dir);
+                // Get reference to newly placed block (must use the SAME mirrored dir)
+                HumanClick newBlock = ChildInDirection(actor, dir);
                 if (newBlock == null)
                 {
                     MarkFinished();
                     yield break;
                 }
 
-                Debug.Log($"Step {i}: type={step.type}, dir={step.dir}, spawnPattern={step.spawnPattern}");
+                Debug.Log($"Step {i}: type={step.type}, dir={dir} (raw {step.dir}, mirror={mirrorHorizontal}), spawnPattern={step.spawnPattern}");
 
 
                 // Handle spawn vs move
@@ -197,6 +210,8 @@ public class ChainPatternAgent : MonoBehaviour
         newAgent.autoStart = false;
         newAgent.overrideInterval = overrideInterval;
         newAgent.intervalSeconds = intervalSeconds;
+        // Note: the sub-agent computes its OWN handedness from its bud block in TryStart,
+        // so we do not copy mirrorHorizontal here.
 
         // Start it with the spawn pattern
         newAgent.StartWithPattern(spawnPattern, blockType);
@@ -209,6 +224,33 @@ public class ChainPatternAgent : MonoBehaviour
         _running = false;
         IsFinished = true;
         OnFinished?.Invoke();
+    }
+
+    // Handedness from the tree: a block in a parent's WEST slot has an eastParent (parent is
+    // to its east) => it's a LEFT block. In the EAST slot it has a westParent => RIGHT. Vertical
+    // (N/S) links carry no handedness, so we climb until we meet the first horizontal link.
+    // The root / a pure vertical stem reaches the top with none => right-handed (no mirror).
+    static bool IsLeftHanded(HumanClick block)
+    {
+        HumanClick b = block;
+        while (b != null)
+        {
+            if (b.GetEastParent() != null) return true;   // west-slot child  -> left
+            if (b.GetWestParent() != null) return false;  // east-slot child  -> right
+
+            HumanClick up = b.GetNorthParent();
+            if (up == null) up = b.GetSouthParent();
+            b = up;                                        // vertical link -> climb
+        }
+        return false; // root / vertical stem -> right-handed
+    }
+
+    // Flip East<->West for left/right-handed builds. North/South/None pass through.
+    static HumanClick.Direction MirrorDir(HumanClick.Direction d)
+    {
+        if (d == HumanClick.Direction.East) return HumanClick.Direction.West;
+        if (d == HumanClick.Direction.West) return HumanClick.Direction.East;
+        return d;
     }
 
     HumanClick ChildInDirection(HumanClick node, HumanClick.Direction dir)

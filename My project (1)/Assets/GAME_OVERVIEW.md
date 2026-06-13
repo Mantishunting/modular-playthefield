@@ -38,7 +38,7 @@ real light and shadow), and you grow your plant to catch light and reach bees.
 | Blocks & placement | Click to grow the plant, arc-based placement, insert/move | `HumanClick`, `ArcMath`, `BlockSpawner`, `BlockType`, `BlockTypeManager` |
 | Economy | Food currency, costs, starvation, upkeep, refunds | `ResourceManager`, `BlockDailyCost`, `HumanClick` (cost rules) |
 | Tree structure | Parent/child links, generation depth | `HumanClick`, `BlockGeneration`, `TreeLooker` |
-| Physics | Joints, stiffness, snapping, fossilising | `PhysicsConnector`, `Jonts` (Joint), `StructuralIntegrity`, `fosilize`, `hingeJ` |
+| Physics | Joints, stiffness, snapping, fossilising | `PhysicsConnector`, `Jonts` (Joint), `fosilize`, `hingeJ` |
 | Light & shadow | Moving sun, beam clipped around objects, leaf light checks | `Sun`, `SunbeamTracker`, `SunBeamSpriteOccluder`, `SunbeamClipContourOccluder`, `LeafProduction` |
 | Leaves / production | Food generation in rhythm, lifespan | `LeafProduction`, `BlockType` |
 | Bees & flowers | Bee drifting, flower bells, win condition | `Bee`, `BeeSpawner`, `BeeDirection`, `BeeWingFlapper`, `Flower`, `BeeVisitTracker`, `PollenRelease` |
@@ -115,13 +115,14 @@ real light and shadow), and you grow your plant to catch light and reach bees.
   The **root** is kinematic (the immovable anchor); children are dynamic so they
   swing. Joint **stiffness** is computed from **depth** and **load** (mass hanging
   below): rigid near the trunk, floppier toward the tips. Recomputed only when the
-  structure changes, not every frame.
+  structure changes, not every frame. Also owns the **stretch kill-switch**: a
+  throttled check (every 0.2s) that, if a block stays stretched too far from its
+  parent for long enough, kills the block and its branch (formerly a separate
+  `StructuralIntegrity` script).
 - **`Jonts`** (class `Joint`) — an **alternative** generation-based stiffness
   scheme: the first few generations are perfectly rigid, then stiffness decays
   toward the tips. It defers to the global `JointStiffness` controller if one is
   present (so the two don't fight).
-- **`StructuralIntegrity`** — a **kill switch**: if a block gets stretched too far
-  from its parent (e.g. physics blew it apart), the block and its branch die.
 - **`fosilize`** (class `Fossilize`) — performance + feel: blocks far from the
   growing tip turn **kinematic ("stone")** so old growth stops simulating; only the
   newest ~8 generations at the tip keep moving.
@@ -239,7 +240,10 @@ For pre-grown plants, demos, or scripted sequences rather than player clicks:
   spawn, anchored at root or tip, a direction, a repeat count, optional sub-pattern).
 - **`Chains/ChainPatternAgent`** — executes a `GrowthPattern` along a block, can
   **spawn child agents** running their own sub-patterns (branching), and avoids
-  fan-out by suppressing itself if its parent already has an agent.
+  fan-out by suppressing itself if its parent already has an agent. Each agent
+  **auto-derives left/right handedness** from its base block's slot (West→left/mirrored,
+  East or pure stem→right) and flips East↔West accordingly, so one pattern builds
+  symmetric branches. See `FLOWER_TECH.md` §4.
 
 ## 13. Audio
 

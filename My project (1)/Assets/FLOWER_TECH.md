@@ -135,127 +135,123 @@ stiffness, not weight.
 - **Scripted growth uses absolute world directions** (`TryPlaceRelative`); hand-building
   uses rotation-aware arcs (`HandleClick`). Don't assume one path's behaviour for the other.
 
-## 8. NEXT PLAN — Seed System (procedural, evolving flowers)
+## 8. FLOWER ENGINE — design goals (not yet built)
 
-> **STATUS: design record for a future session. Do NOT auto-implement.** This was written
-> by an earlier Claude from the owner's spec; by the time you read it, parts may already
-> exist, be partly built, or exist as a similar-but-different system. **Each phase below
-> opens with a `▶ CHECKPOINT` — do it before writing any code.**
+> **STATUS: design goals only. Nothing in this section is implemented.** An earlier attempt
+> at a full seed/genome system was built and **rolled back**. The current branch keeps only
+> the left/right handedness (§4) and the agent machinery (§2); there is **no** `FlowerGenome`,
+> `GenomeManager`, builder, colour wheel, or `FlowerGroup` in the code. We are rebuilding
+> **slowly and incrementally** — keeping the design goals below, discarding the previous
+> flawed plan. The owner authors the part shapes; Claude wires the engine and the budgets.
+> **Before writing any code, run the checkpoints in §8.8.**
 
-### 8.0 How to use this document (read first)
+### 8.1 The vision
 
-1. **Re-read §1–§7 above** — they're the living reference and may already record changes
-   that supersede parts of this plan.
-2. For each phase, run its **`▶ CHECKPOINT`**: grep/read for the named symbols and the
-   *concept* nearby. If something already does this (or close to it), write a short
-   **adapt-vs-replace** judgement before coding:
-   - Does it already satisfy the intent (genome-driven, monotonic evolution, **reuse of the
-     existing agent system**, per-block bells unchanged)?
-   - Is it cheaper/safer to **extend** it than replace it? What would replacing break
-     (callers, prefab refs, save data)?
-   - Default to **adapting** existing systems; only replace with a written reason.
-3. Confirm earlier phases' prerequisites still exist as described before relying on them.
+A flower stops being a single hand-placed block and becomes a **seed-grown bloom**. The
+player places one flower block; the **existing agent system** auto-grows a small structure
+off it. A **genome ("the seed")** chooses the base shape, which parts appear and where, and
+(later) colours. Within a level **every flower is the same**; when a trigger is reached
+(flowers placed, or pollinations) the genome **evolves a little**, and flowers placed after
+that grow the new shape. Bells stay **per-block** (one bee hit on one block = one pollination).
 
-### 8.1 Intent (the owner's spec, condensed)
+### 8.2 What already exists to build on (reuse, do not replace)
 
-Flowers stop being one hand-placed block and become a **seed-grown bloom**: the player
-places a flower, then the **existing marching-ant agent system** (`ChainPatternAgent`)
-auto-grows a small structure (a stem with parts). A **genome ("the seed")** controls shape,
-parts and colours. New game rolls a fresh seed; within a level every flower is the same
-type; at a pollination threshold the genome **evolves** (monotonic — grow/shift, never
-shrink) and the evolved genome carries into later levels. **Reuse the agent framework —
-no new agent types**; the seed supplies the rules the agents run. Everything except flowers
-(and the intro landing-level flex) stays player-placed. Bells stay **per-block and modular**
-(a bee hitting one block scores one pollination, not the whole bloom).
+The growth machinery is the "flower engine" in embryo — see §2 and `Chains/ChainPatternAgent.cs`:
 
-### 8.2 Genome data model
+- **`GrowthPattern`** (ScriptableObject) = an ordered list of `GrowthStep`s. Each step is a
+  **`Move`** (place a block, advance the head) or a **`Spawn`** (place a block *and give it
+  its own agent* running a sub-pattern). Steps carry a direction (N/S/E/W), a repeat count,
+  and an anchor (`Root` = push from base / `Tip` = extend the head).
+- **`ChainPatternAgent.SpawnAgentOnBlock()`** is exactly the *"tag pre-determined blocks with
+  their own agents that then grow new blocks"* mechanism — it adds a fresh `ChainPatternAgent`
+  to a just-placed block and runs a sub-pattern on it. **Mixing and matching branches already
+  works this way.**
+- **Handedness is automatic** (`IsLeftHanded` climbs the tree; a west-slot branch builds left,
+  mirroring East↔West) and every spawned sub-agent recomputes its own. **Keep this untouched.**
+- **`StartWithPattern(pattern, blockType)`** is the public entry point — the engine feeds
+  runtime-built patterns through here.
 
-```
-FlowerGenome:  int seed; int generation; int stemLength; List<PartGene> parts
-PartGene (recursive): PartCategory category; int attachIndex; bool budLeft;
-                      int extraBits(0..5); int colourIndex; List<PartGene> subParts
-```
-All genes **monotonic** under evolution (increment or hold), except `colourIndex` which
-**drifts ±1** around a colour wheel.
+So the engine needs **no new agent types**. It needs (a) something that **builds patterns
+from the seed** and feeds them through `StartWithPattern`, and (b) the **budgets** in §8.5 —
+which `ChainPatternAgent` has nothing like today.
 
-**Mutation per evolution:** `stemLength += 0|1`; `parts` count `+= 0|1`; each
-`extraBits += 0|1|2` (clamp ≤5); each part rolls to gain **1–2** `subParts` (recursion);
-each `colourIndex` drifts ±1. Never decrease.
+### 8.3 The engine in plain terms
 
-### 8.3 Phases (each gated by a checkpoint)
+1. Player places a flower block (generation 0 of the bloom).
+2. The engine reads the seed and builds a **base shape** (~2–5 blocks) that extends out using
+   the existing handedness.
+3. As the base builds, **pre-chosen blocks in the sequence get tagged with their own agents**
+   (the `Spawn` mechanism), each running a **part template** (§8.4).
+4. Part templates are **template agents/patterns**: a small parametric shape that is **copied
+   and tweaked by the seed before it runs** (size, which side it buds, how many) — not
+   authored one-per-flower.
+5. The **budgets** (§8.5) stop it before it can run away.
 
-**Phase 1 — Genome → growth, reusing agents.**
-`▶ CHECKPOINT:` search for `FlowerGenome`, `FlowerGrowthBuilder`, any runtime
-`GrowthPattern` generation, or genome/seed types. Check `ChainPatternAgent`/`Chains.cs`/
-`GrowthPattern.cs` still work as in §2. Adapt-vs-replace if a generator already exists.
-- New `FlowerGenome` (plain serializable C#) + `FlowerGrowthBuilder` (translator). The
-  builder creates runtime `GrowthPattern`s (`ScriptableObject.CreateInstance`): `stemLength`×
-  North `Move` steps with `Spawn` steps at each part's `attachIndex`; each spawn's
-  `spawnPattern` is the part's category shape sized by `extraBits`; `subParts` → nested
-  spawns; `budLeft` sets East/West (handedness auto-mirrors via `IsLeftHanded`).
-- Drive it through the existing path: `ChainPatternAgent.StartWithPattern(stemPattern, flowerBlockType)`.
-- **Don't** edit `Chains.cs` structs for colour/category — carry those on the spawned
-  **agent** (builder configures each), not the `GrowthStep`.
+### 8.4 The flower parts (owner authors the shapes)
 
-**Phase 2 — Placement + one-genome-per-level.**
-`▶ CHECKPOINT:` search for `GenomeManager`/any seed singleton; check how a Flower is placed
-today (`HumanClick` flower path, `BlockSpawner`, the flower's `ChainPatternAgent` running
-`ZigZagEN`). Decide whether to adapt that bootstrap.
-- New `GenomeManager` singleton (`DontDestroyOnLoad`) holds `Current` genome + seeded RNG.
-- Placing a Flower reads `GenomeManager.Current` and runs `FlowerGrowthBuilder` (replacing
-  the flower's authored `ZigZagEN`, which becomes a fallback). Intro landing-level pattern
-  untouched.
+Five small part shapes, each a parametric `GrowthPattern` template the seed can resize.
+**Keep them small** (see the budget). Proposed set:
 
-**Phase 3 — Evolution + persistence across levels.**
-`▶ CHECKPOINT:` find the pollination/win code (`BeeVisitTracker`, `visitsToWin`, the win
-event) and any existing level-flow reset (`NextLevelLoader`, scene-reset scripts). Check
-nothing already evolves/persists state.
-- Add editable **`evolutionThreshold`** beside `visitsToWin` (default = `visitsToWin`; lower
-  = evolve sooner). On reaching it, **evolve once** for the level (apply §8.2 mutations,
-  bump `generation`). Evolved genome carries to next level; **only newly-placed** flowers
-  use it (never re-grow existing blooms). New game → fresh random `seed`, reset to gen 0.
+| Part | Rough idea | Typical size |
+|---|---|---|
+| **Base** | the core/stem the flower grows from; sets the overall form | 2–5 blocks |
+| **Petal** | a short run out to the side, mirrored by handedness | 2–4 blocks |
+| **Stamen** | a thin spike from the centre/tip | 1–3 blocks |
+| **Frond** | a feathered / lightly branching arm | 2–4 blocks |
+| **Pom** | a compact cluster / pom-pom | 2–4 blocks |
 
-**Phase 4 — Colour wheel + per-part colour + drift.**
-`▶ CHECKPOINT:` search for any palette/`ColourWheel`/`_BracketColor` setters and how the
-flower material colour is set today (material is *Pink Bracket Flower*, `_BracketColor`).
-- New `ColourWheel` (ordered palette/HSV ring). Builder applies each part's
-  `colourIndex` colour to its blocks via a small `_BracketColor` hook on
-  `BracketStateController` (or a tiny applier the agent calls). Evolution drifts indices ±1.
+Author them **static first**, then make them seed-modifiable (size, side, count).
 
-**Phase 5 — Flower-group "visited" flag (poem-ready hook; poem itself is future).**
-`▶ CHECKPOINT:` search for `FlowerGroup` or any per-bloom grouping. Confirm `Flower.cs` bell
-logic is still per-block and unchanged.
-- New light `FlowerGroup` on the seed block; member blocks reference it; exposes
-  `AnyVisited` (set true the first time any member's `Flower` registers a visit). **No score
-  change** — pollination stays per-visited-block. The future "poem" feature (each block
-  reveals a line) reads this flag; do **not** build the poem here.
+### 8.5 BUDGETS — the hard lesson from the rollback
 
-### 8.4 Part categories (proposed — confirm with owner)
+The previous version had **no budget**: patterns spawned patterns spawned patterns, blooms
+ballooned to dozens of blocks, ate all the food, and broke the game. The only existing guard
+(`suppressIfParentHasAgent`) does **not** stop `Spawn` steps from recursing. The engine MUST
+own two budgets, checked and decremented as it builds:
 
-Categorise by placement behaviour, each a small parametric `GrowthPattern` shape scaled by
-`extraBits`: **Spike** (straight run out), **Cluster** (compact pom-pom), later **Fan** /
-**Ring/Crown** (around the tip). Start with Spike + Cluster.
+1. **Block budget — a hard cap on total blocks per flower.** Aim for **≤ 15 blocks** for the
+   whole bloom (all parts combined), rising toward **~20** only at late evolution. The builder
+   counts placed blocks and **stops spawning when the cap is hit**, regardless of what the
+   pattern says.
+2. **Agent budget by generation — controls recursion.** A *little* nesting is good (a shape
+   that grows a shape); runaway nesting is the bug. Rule of thumb: **each deeper generation may
+   add at most ONE more agent than the one above it** — occasionally **two**, as a seed-driven
+   variation roll. This caps both fan-out and depth. It needs a small **shared budget object**
+   that the builder seeds and every spawned agent consults/decrements before it spawns.
 
-### 8.5 Files (expected; verify each still applies)
+When in doubt, **build too small**. A 6-block flower that works beats a 20-block flower that
+breaks the economy.
 
-- New: `FlowerGenome.cs`, `FlowerGrowthBuilder.cs`, `GenomeManager.cs`, `ColourWheel.cs`,
-  `FlowerGroup.cs`.
-- Edit: `BeeVisitTracker` (`evolutionThreshold` + evolve event), `BracketStateController.cs`
-  (`_BracketColor` hook), the flower-placement bootstrap, and a new-game reset hook in the
-  level-flow scripts.
-- Reuse unchanged: `ChainPatternAgent.cs` (incl. auto-handedness), `Chains.cs`, `Flower.cs`.
+### 8.6 The seed / genome (define later — keep it light at first)
 
-### 8.6 Verification
+The genome is just the set of inputs the engine reads: a random `seed`, a `generation`
+counter, the base-shape choice, which parts attach and where, each part's size/side/count,
+and (later) colours. **Do not over-design this up front** — the prior attempt's elaborate
+recursive genome was part of what went wrong. Start with the smallest thing that drives §8.3
+and expand once the engine + budgets are proven.
 
-Same genome for all flowers in a level; one evolution at the threshold (new flowers bigger /
-more parts / colour drifted one step, existing blooms unchanged); evolved genome persists to
-next level; new game resets to a different flower; a bee hitting one bloom block scores one
-pollination and flips that bloom's `FlowerGroup.AnyVisited`; west-budded parts auto-mirror.
+### 8.7 Evolution (consistent per level, small monotonic change)
 
-### 8.7 Open choices to confirm with the owner
+- All flowers in a level share one genome.
+- A trigger — **number of flowers placed** or **number of pollinations** (owner to choose;
+  pollination count via `BeeVisitTracker` is the natural hook) — evolves the genome **once**.
+- Evolution is a **small, mostly monotonic** change: a part grows by one, a new part appears,
+  a colour drifts — **never shrink**, never a wholesale reshape.
+- **Existing blooms are left alone**; only newly placed flowers grow the evolved genome.
+- The evolved genome carries to later levels. A new game rolls a fresh seed at generation 0.
 
-- Part categories (§8.4) and how parts distribute along the stem (proposed: upper stem,
-  alternating sides for symmetry).
-- Whether evolution can fire more than once per level if `evolutionThreshold < visitsToWin`
-  (proposed: once per level).
-- Where the new-game reset is triggered (depends on the menu/level-flow entry point).
+### 8.8 Before you build — checkpoints & lessons
+
+This section is design intent, **not** a green light to generate code. Whoever implements:
+
+1. **Verify the mechanism still matches §8.2** — read `ChainPatternAgent.cs`, `Chains.cs`,
+   `GrowthPattern.cs`; confirm `Spawn` / `SpawnAgentOnBlock` / `StartWithPattern` /
+   `IsLeftHanded` still behave as described. Adapt to what's there; don't replace working code.
+2. **Build the budgets FIRST** (§8.5), before any genome richness. Prove a flower *cannot*
+   exceed the block cap or recurse past the agent budget — test with a deliberately greedy
+   pattern.
+3. **Author one tiny part end-to-end** (e.g. Base + one Petal) before adding the rest.
+4. **Keep bells per-block** and leave hand-built placement (§2 path A) alone — only the flower
+   growth path changes.
+5. **Go slowly.** One part / one budget / one trigger at a time, each verified in play before
+   the next.

@@ -202,25 +202,26 @@ Five small part shapes, each a parametric `GrowthPattern` template the seed can 
 
 Author them **static first**, then make them seed-modifiable (size, side, count).
 
-### 8.5 BUDGETS — the hard lesson from the rollback
+### 8.5 THE BUDGET — the hard lesson from the rollback
 
 The previous version had **no budget**: patterns spawned patterns spawned patterns, blooms
 ballooned to dozens of blocks, ate all the food, and broke the game. The only existing guard
-(`suppressIfParentHasAgent`) does **not** stop `Spawn` steps from recursing. The engine MUST
-own two budgets, checked and decremented as it builds:
+(`suppressIfParentHasAgent`) does **not** stop `Spawn` steps from recursing. The engine owns
+**one budget — an agent/routine budget** — and there is **no block cap, by design**. Blocks
+are never counted or capped; growth is bounded purely by how many *agents* (routines) may run.
 
-1. **Block budget — a hard cap on total blocks per flower.** Aim for **≤ 15 blocks** for the
-   whole bloom (all parts combined), rising toward **~20** only at late evolution. The builder
-   counts placed blocks and **stops spawning when the cap is hit**, regardless of what the
-   pattern says.
-2. **Agent budget by generation — controls recursion.** A *little* nesting is good (a shape
-   that grows a shape); runaway nesting is the bug. Rule of thumb: **each deeper generation may
-   add at most ONE more agent than the one above it** — occasionally **two**, as a seed-driven
-   variation roll. This caps both fan-out and depth. It needs a small **shared budget object**
-   that the builder seeds and every spawned agent consults/decrements before it spawns.
+**Routine budget — controls recursion AND fan-out with one number.** One **shared budget
+object** is owned by the whole bloom (found via the bloom's root block, so sharing works no
+matter how an agent started). **Every routine self-gates the moment it starts**: it claims a
+slot and runs, or — if the bloom is already full — **kills itself, leaving its block in place**.
+A single number therefore bounds the total routines in a bloom (both fan-out and depth), and it
+is a natural **genome parameter** that evolution increments to grow the flower. The limit lives
+on the genome (`FlowerGenome.routineBudget`); the live per-bloom counter is a separate
+`RoutineBudget`, one fresh instance per bloom (per-flower counting).
 
-When in doubt, **build too small**. A 6-block flower that works beats a 20-block flower that
-breaks the economy.
+When in doubt, **build too small**: give a small routine budget. A 6-block flower that works
+beats a 20-block flower that breaks the economy — and we control that by routines, not by
+counting blocks.
 
 ### 8.6 The seed / genome (define later — keep it light at first)
 
@@ -247,9 +248,9 @@ This section is design intent, **not** a green light to generate code. Whoever i
 1. **Verify the mechanism still matches §8.2** — read `ChainPatternAgent.cs`, `Chains.cs`,
    `GrowthPattern.cs`; confirm `Spawn` / `SpawnAgentOnBlock` / `StartWithPattern` /
    `IsLeftHanded` still behave as described. Adapt to what's there; don't replace working code.
-2. **Build the budgets FIRST** (§8.5), before any genome richness. Prove a flower *cannot*
-   exceed the block cap or recurse past the agent budget — test with a deliberately greedy
-   pattern.
+2. **Build the routine budget FIRST** (§8.5), before any genome richness. Prove a flower
+   *cannot* run more agents than its routine budget — test with a deliberately greedy pattern.
+   (No block cap — growth is bounded by agents, not by counting blocks.)
 3. **Author one tiny part end-to-end** (e.g. Base + one Petal) before adding the rest.
 4. **Keep bells per-block** and leave hand-built placement (§2 path A) alone — only the flower
    growth path changes.

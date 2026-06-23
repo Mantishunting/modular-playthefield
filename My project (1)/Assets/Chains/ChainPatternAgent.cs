@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -81,6 +81,7 @@ public class ChainPatternAgent : MonoBehaviour
             var parent = host.GetParent();
             if (parent != null && parent.GetComponent<ChainPatternAgent>() != null)
             {
+                Debug.Log($"[FLW] SUPPRESSED '{name}' — parent '{parent.name}' already has an agent.");
                 MarkFinished();
                 enabled = false;
                 yield break;
@@ -88,7 +89,22 @@ public class ChainPatternAgent : MonoBehaviour
         }
 
         if (_running) yield break;
+
+        // ROUTINE BUDGET self-gate: a bloom may run only as many agents as its genome allows. Climb
+        // to the bloom's RoutineBudget and claim a slot. Full -> kill myself but LEAVE my block in
+        // place. No budget in my ancestry (e.g. the title-screen BEAN chains) -> run unconstrained.
+        RoutineBudget budget = FindBloomBudget(host);
+        if (budget != null && !budget.TryClaim())
+        {
+            Debug.Log($"[FLW] BUDGET FULL — '{name}' self-killed (bloom at cap {budget.capacity}); block left in place.");
+            MarkFinished();
+            enabled = false;
+            yield break;
+        }
+
         _running = true;
+
+        Debug.Log($"[FLW] RUNNING '{name}' (pattern={pattern.name}, suppress={suppressIfParentHasAgent}, autoStart={autoStart}).");
 
         current = new GrowthChain(initialLabel, host);
         chains[current.label] = current;
@@ -200,10 +216,11 @@ public class ChainPatternAgent : MonoBehaviour
         if (existingAgent != null)
         {
             // Already has an agent - don't add another
-            Debug.LogWarning($"Block already has a ChainPatternAgent, skipping spawn.");
+            Debug.Log($"[FLW] spawn target '{targetBlock.name}' ALREADY has an agent → NOT starting sub-pattern '{spawnPattern.name}' (returning existing).");
             return existingAgent;
         }
 
+        Debug.Log($"[FLW] spawn target '{targetBlock.name}' had NO agent → adding one and starting sub-pattern '{spawnPattern.name}'.");
         // Add a new agent component
         ChainPatternAgent newAgent = targetBlock.gameObject.AddComponent<ChainPatternAgent>();
         newAgent.suppressIfParentHasAgent = false; // We're intentionally spawning this
@@ -243,6 +260,20 @@ public class ChainPatternAgent : MonoBehaviour
             b = up;                                        // vertical link -> climb
         }
         return false; // root / vertical stem -> right-handed
+    }
+
+    // Climb from this block to the first ancestor carrying a RoutineBudget — that's the bloom root
+    // (FlowerBloomStarter attaches it there). Climbing stops at the root because the root HAS the
+    // budget, so we never cross into the wood stem above the bloom. Null = not part of a budgeted
+    // bloom (e.g. title-screen chains) -> caller runs unconstrained.
+    static RoutineBudget FindBloomBudget(HumanClick start)
+    {
+        for (HumanClick b = start; b != null; b = b.GetParent())
+        {
+            var rb = b.GetComponent<RoutineBudget>();
+            if (rb != null) return rb;
+        }
+        return null;
     }
 
     // Flip East<->West for left/right-handed builds. North/South/None pass through.

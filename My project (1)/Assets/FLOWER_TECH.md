@@ -135,15 +135,84 @@ stiffness, not weight.
 - **Scripted growth uses absolute world directions** (`TryPlaceRelative`); hand-building
   uses rotation-aware arcs (`HandleClick`). Don't assume one path's behaviour for the other.
 
-## 8. FLOWER ENGINE — design goals (not yet built)
+## 8. FLOWER ENGINE — partly built (routine-budget slice done)
 
-> **STATUS: design goals only. Nothing in this section is implemented.** An earlier attempt
-> at a full seed/genome system was built and **rolled back**. The current branch keeps only
-> the left/right handedness (§4) and the agent machinery (§2); there is **no** `FlowerGenome`,
-> `GenomeManager`, builder, colour wheel, or `FlowerGroup` in the code. We are rebuilding
-> **slowly and incrementally** — keeping the design goals below, discarding the previous
-> flawed plan. The owner authors the part shapes; Claude wires the engine and the budgets.
-> **Before writing any code, run the checkpoints in §8.8.**
+> **STATUS: Slice 1 (the routine budget) is BUILT and verified (2026-06-23) — but Phase 2 RETIRES
+> it.** Talking the design through (2026-06-24), the owner reframed the model: a flower is a
+> **recursive tree of "flower parts,"** and growth is bounded by **how far the tree has filled**
+> (one part per pollination), not by a number. So the routine budget is being **removed** and the
+> genome becomes a **part-tree**. What slice 1 actually shipped is recorded in **§8.0** (kept for
+> history); the **Phase-2 plan** that supersedes it is **§8.0.1**. The owner authors the 5 part
+> shapes; Claude wires the engine. **Before writing each slice, re-run the checkpoints in §8.8.**
+
+### 8.0 What's built so far (Slice 1 — the routine budget)
+
+The genome's first and only field today is the **routine budget**: how many growth agents a
+single bloom may run. Built per §8.5 (no block cap — bounded by agent count only); proven in Play
+that raising the budget grows more agents and lowering it grows fewer with the extra blocks left
+in place. Files in `Assets/Flowers/`:
+
+- **`FlowerGenome.cs`** — plain `[Serializable]` class; fields `seed`, `generation`,
+  `routineBudget`. Designed to gain base-shape / parts / colours later.
+- **`GenomeService.cs`** — holds the **one shared genome** in `static` state, so it **persists
+  across scene loads for free** (same idiom as `BlockGeneration`). Counts its **own cumulative
+  pollinations** (because `BeeVisitTracker` resets every scene) and **evolves +1 budget every 10
+  pollinations** from a start of **3** (monotonic). Subscribes to `BeeVisitTracker.OnVisitRegistered`
+  once via `[RuntimeInitializeOnLoadMethod]`. `SetRoutineBudget()` is a clamped debug setter.
+- **`RoutineBudget.cs`** — the live **per-bloom** counter, attached to the bloom **root block** by
+  the starter with capacity snapshotted from the genome. `TryClaim()` **only ever refuses**, never
+  enables (the §8.5 rule). Found by climbing parents; a bloom with no `RoutineBudget` on its root
+  (the BEAN title-screen chains) is **never gated**.
+- **`GenomeResetOnLanding.cs`** — marker component; placed on the landing scene (`StartScene`), its
+  `Awake` wipes the genome back to a fresh generation-0 seed. *(Owner must add this component to
+  StartScene — it is the one manual wiring step.)*
+
+Edits to existing scripts: **`FlowerBloomStarter.cs`** snapshots the genome budget onto a
+`RoutineBudget` at placement; **`ChainPatternAgent.TryStart`** self-gates (climb to the bloom budget,
+`TryClaim` a slot, or self-kill leaving the block — `FindBloomBudget` helper); **`TestOverlay.cs`**
+(the **`/`** overlay) gained a "Flower genome" section with a live readout and **`-`/`+`** budget
+buttons.
+
+**Lifecycle:** the genome persists level→level **and** across level restarts (the whole play
+session is one "run"); **only returning to the landing page resets it**. Adjusting the budget (via
+the `/` overlay or evolution) affects flowers placed **afterward** — existing blooms keep the size
+they snapshotted at placement.
+
+**Next slice:** see **§8.0.1** — the genome becomes a part-tree and this budget is retired.
+
+### 8.0.1 Phase 2 — the part-tree (PLANNED, not yet built)
+
+> Full plan: `C:\Users\JACK\.claude\plans\ok-ok-but-that-synchronous-penguin.md`.
+
+**The model.** A flower is a **recursive tree of flower parts**. A *part* is a `GrowthPattern`;
+there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (empty stubs in
+`Assets/blocktypes/`, owner authors their steps). A part's pattern uses **4 step types**:
+
+- **Move** — plain move (today's behaviour).
+- **GMove** — move whose length scales with G: `round(base + G*gCoeff)` (field now, math in slice B).
+- **SpawnPiece** — spawn a specific hard-coded sub-agent (= today's `Spawn`). **Free/unregulated.**
+- **RandomPiece** — a **slot**, filled from the 5-part catalogue by the genome. The count of
+  RandomPiece steps in a part = its **slot count** (the trailing number in `GCurl[GC]3`).
+
+The **genome** is a tree of nodes `{ part, G, C(colour hue), children[slot] }` (the `[G C]`).
+**Evolution** fills **one empty slot per pollination**, breadth-first; the root is **always
+`GBass`** and every later fill is a **seeded-random** part from the 5 (so all flowers in a level
+match). **No numeric budget** — the finite tree bounds growth, so `RoutineBudget` is **deleted**.
+Placement grows the *current* tree; later flowers are bushier. Lifecycle (cross-scene persistence,
+landing reset, pollination hook) is **kept** from slice 1 — only the payload (number→tree) and
+evolution (+budget→fill-slot) change.
+
+**Slices.** **A** = all the structure (step types, `GenomeNode` tree, 5-part catalogue, tree→bloom
+expansion, manual "Evolve" in the `/` overlay, delete `RoutineBudget`). **A2** = wire `Evolve()` to
+pollinations. **B** = the G length math. **C** = apply colour hue to the part's
+`BracketStateController` material.
+
+**Specificity gaps to resolve while building** (directionally agreed, details open): randomization
+rules (uniform? same-part-in-slot? `GBass` root-only?); how the `static` `GenomeService` loads the
+catalogue asset (`Resources.Load` vs injected); snapshot must be a **deep copy** so evolving the
+genome never mutates a placed bloom; `children[]` index = ordinal of the RandomPiece step; one
+flower `BlockType` for all parts (confirm); GMove fields = `repeats` (base) + new `gCoeff` (rate);
+`G` int / `colourHue` float 0–1.
 
 ### 8.1 The vision
 

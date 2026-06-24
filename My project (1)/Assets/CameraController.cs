@@ -16,12 +16,22 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float edgePanSpeed = 10f;
     [SerializeField] private float edgePanBorder = 20f; // pixels from edge
 
+    [Header("Keyboard Controls")]
+    [SerializeField] private float keyboardPanSpeed = 15f;
+    [SerializeField] private float keyboardZoomSpeed = 15f;
+
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = false;
 
+    public static bool IsPanning { get; private set; } = false;
+
     private Camera cam;
     private Vector3 lastMousePosition;
-    private bool isPanning = false;
+    private bool isMouseOrTouchPanning = false;
+    private bool isOneFingerPanning = false;
+
+    private float initialTouchDistance;
+    private float initialOrthographicSize;
 
     void Start()
     {
@@ -39,8 +49,18 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        HandlePanning();
-        HandleZoom();
+        // Touch Input takes priority (mobile/touch screens)
+        if (Input.touchCount > 0)
+        {
+            HandleTouchInput();
+        }
+        else
+        {
+            // Desktop/Mouse & Keyboard Input
+            HandlePanning();
+            HandleZoom();
+            HandleKeyboardMovement();
+        }
 
         if (enableEdgePanning)
         {
@@ -48,54 +68,193 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    private bool IsOverBlock(Vector2 screenPosition)
+    {
+        if (cam == null) return false;
+        Vector3 worldPos = cam.ScreenToWorldPoint(screenPosition);
+        worldPos.z = 0;
+        
+        Collider2D hit = Physics2D.OverlapPoint(worldPos);
+        if (hit != null && hit.GetComponentInParent<HumanClick>() != null)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsOverUI(int pointerId)
+    {
+        if (UnityEngine.EventSystems.EventSystem.current == null) return false;
+        return UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(pointerId);
+    }
+
+    private bool IsOverUIOrBlock(Touch touch)
+    {
+        if (IsOverUI(touch.fingerId)) return true;
+        return IsOverBlock(touch.position);
+    }
+
+    void HandleTouchInput()
+    {
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                if (!IsOverUIOrBlock(touch))
+                {
+                    isOneFingerPanning = true;
+                    IsPanning = true;
+                    lastMousePosition = touch.position;
+                }
+            }
+            else if (touch.phase == TouchPhase.Moved && isOneFingerPanning)
+            {
+                Vector3 dragDelta = (Vector3)touch.position - lastMousePosition;
+                float worldUnitsPerPixel = (cam.orthographicSize * 2f) / Screen.height;
+                Vector3 worldDelta = new Vector3(
+                    dragDelta.x * worldUnitsPerPixel,
+                    dragDelta.y * worldUnitsPerPixel,
+                    0
+                );
+                transform.position -= worldDelta * panSpeed;
+                lastMousePosition = touch.position;
+            }
+            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                isOneFingerPanning = false;
+                IsPanning = false;
+            }
+        }
+        else if (Input.touchCount == 2)
+        {
+            isOneFingerPanning = false; // Cancel single finger panning
+            Touch touch0 = Input.GetTouch(0);
+            Touch touch1 = Input.GetTouch(1);
+
+            if (touch0.phase == TouchPhase.Began || touch1.phase == TouchPhase.Began)
+            {
+                initialTouchDistance = Vector2.Distance(touch0.position, touch1.position);
+                initialOrthographicSize = cam.orthographicSize;
+                lastMousePosition = (touch0.position + touch1.position) * 0.5f;
+                IsPanning = true;
+            }
+            else if (touch0.phase == TouchPhase.Moved || touch1.phase == TouchPhase.Moved)
+            {
+                // Zoom
+                float currentTouchDistance = Vector2.Distance(touch0.position, touch1.position);
+                if (initialTouchDistance > 0.01f)
+                {
+                    float factor = initialTouchDistance / currentTouchDistance;
+                    float newSize = initialOrthographicSize * factor;
+                    cam.orthographicSize = Mathf.Clamp(newSize, minZoom, maxZoom);
+                }
+
+                // Pan
+                Vector2 currentMidpoint = (touch0.position + touch1.position) * 0.5f;
+                Vector3 dragDelta = (Vector3)currentMidpoint - lastMousePosition;
+                float worldUnitsPerPixel = (cam.orthographicSize * 2f) / Screen.height;
+                Vector3 worldDelta = new Vector3(
+                    dragDelta.x * worldUnitsPerPixel,
+                    dragDelta.y * worldUnitsPerPixel,
+                    0
+                );
+                transform.position -= worldDelta * panSpeed;
+                lastMousePosition = currentMidpoint;
+                IsPanning = true;
+            }
+        }
+        else
+        {
+            isOneFingerPanning = false;
+            IsPanning = false;
+        }
+    }
+
+    private Vector3 panStartMousePosition;
+    private bool isPanningTriggered = false;
+    private const float panDragThreshold = 5f; // pixels
+
     void HandlePanning()
     {
-        // Right mouse button for panning
-        if (Input.GetMouseButtonDown(1))
+        // Right mouse button OR Middle mouse button for panning
+        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
         {
-            isPanning = true;
+            panStartMousePosition = Input.mousePosition;
             lastMousePosition = Input.mousePosition;
+            isPanningTriggered = false;
 
-            if (showDebugLogs)
+            // Middle click or Right click on empty space starts panning immediately
+            bool isMiddleClick = Input.GetMouseButtonDown(2);
+            bool isRightClickOnEmptySpace = Input.GetMouseButtonDown(1) && !IsOverBlock(Input.mousePosition) && !IsOverUI(-1);
+
+            if (isMiddleClick || isRightClickOnEmptySpace)
             {
-                Debug.Log("Started panning");
+                isPanningTriggered = true;
+                isMouseOrTouchPanning = true;
+                IsPanning = true;
+
+                if (showDebugLogs)
+                {
+                    Debug.Log("Started panning immediately");
+                }
             }
         }
 
-        if (Input.GetMouseButtonUp(1))
+        if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {
-            isPanning = false;
+            if (!isPanningTriggered)
+            {
+                // Check if mouse dragged past the threshold
+                if (Vector3.Distance(Input.mousePosition, panStartMousePosition) > panDragThreshold)
+                {
+                    isPanningTriggered = true;
+                    isMouseOrTouchPanning = true;
+                    IsPanning = true;
 
-            if (showDebugLogs)
+                    if (showDebugLogs)
+                    {
+                        Debug.Log("Started panning via mouse drag threshold");
+                    }
+                }
+            }
+
+            if (isMouseOrTouchPanning)
+            {
+                // Calculate mouse movement in screen space
+                Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
+
+                // Convert to world space movement
+                float worldUnitsPerPixel = (cam.orthographicSize * 2f) / Screen.height;
+                Vector3 worldDelta = new Vector3(
+                    mouseDelta.x * worldUnitsPerPixel,
+                    mouseDelta.y * worldUnitsPerPixel,
+                    0
+                );
+
+                // Apply pan direction (inverted feels more natural - drag map to move)
+                if (!invertPan)
+                {
+                    worldDelta = -worldDelta;
+                }
+
+                // Move camera
+                transform.position += worldDelta * panSpeed;
+
+                lastMousePosition = Input.mousePosition;
+            }
+        }
+
+        if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
+        {
+            if (isMouseOrTouchPanning && showDebugLogs)
             {
                 Debug.Log("Stopped panning");
             }
-        }
 
-        if (isPanning)
-        {
-            // Calculate mouse movement in screen space
-            Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
-
-            // Convert to world space movement
-            // Orthographic camera: 1 screen pixel = (orthographicSize * 2 / Screen.height) world units
-            float worldUnitsPerPixel = (cam.orthographicSize * 2f) / Screen.height;
-            Vector3 worldDelta = new Vector3(
-                mouseDelta.x * worldUnitsPerPixel,
-                mouseDelta.y * worldUnitsPerPixel,
-                0
-            );
-
-            // Apply pan direction (inverted feels more natural - drag map to move)
-            if (!invertPan)
-            {
-                worldDelta = -worldDelta;
-            }
-
-            // Move camera
-            transform.position += worldDelta * panSpeed;
-
-            lastMousePosition = Input.mousePosition;
+            isMouseOrTouchPanning = false;
+            IsPanning = false;
+            isPanningTriggered = false;
         }
     }
 
@@ -113,6 +272,38 @@ public class CameraController : MonoBehaviour
             {
                 Debug.Log($"Zoomed to size: {cam.orthographicSize}");
             }
+        }
+    }
+
+    void HandleKeyboardMovement()
+    {
+        // WASD or Arrow Keys for panning
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+
+        if (h != 0 || v != 0)
+        {
+            Vector3 move = new Vector3(h, v, 0).normalized;
+            // Scale speed by orthographicSize so movement speed scales with zoom level
+            float speedScale = cam.orthographicSize / 10f;
+            transform.position += move * keyboardPanSpeed * speedScale * Time.deltaTime;
+        }
+
+        // Keypad Plus/Minus, Equals/Minus, PageUp/PageDown for zoom
+        float zoomDir = 0f;
+        if (Input.GetKey(KeyCode.Equals) || Input.GetKey(KeyCode.KeypadPlus) || Input.GetKey(KeyCode.PageUp))
+        {
+            zoomDir = -1f; // zoom in
+        }
+        else if (Input.GetKey(KeyCode.Minus) || Input.GetKey(KeyCode.KeypadMinus) || Input.GetKey(KeyCode.PageDown))
+        {
+            zoomDir = 1f; // zoom out
+        }
+
+        if (zoomDir != 0)
+        {
+            float newSize = cam.orthographicSize + (zoomDir * keyboardZoomSpeed * Time.deltaTime);
+            cam.orthographicSize = Mathf.Clamp(newSize, minZoom, maxZoom);
         }
     }
 

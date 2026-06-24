@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +42,18 @@ public class HumanClick : MonoBehaviour
     private static bool checkCollisions = true;
 
     private static int totalBlockCount = 0;
+    public static int TotalBlockCount => totalBlockCount;
+
+    public static int GetDynamicCostForType(BlockType blockType)
+    {
+        if (blockType == null) return 0;
+        if (blockType.blockName == "Wood")
+            return 5 + totalBlockCount;
+        else if (blockType.blockName == "Leaf")
+            return 1 + Mathf.CeilToInt(totalBlockCount / 10f);
+        return blockType.cost;
+    }
+
     private static bool anyBlockShowedPreviewThisFrame = false;
     private static int lastPreviewFrame = -1;
     private static Vector3 cachedMouseWorld; // mouse world pos, computed once per frame (shared by all blocks)
@@ -64,9 +76,15 @@ public class HumanClick : MonoBehaviour
 
     private float lastPlacementTime = 0f;
     private bool isHoldingLeftClick = false;
+    private float leftClickDownTime = 0f;
+    private Vector3 leftClickStartPos;
+    private bool hasTriggeredLeftDelete = false;
 
     private float rightClickDownTime = 0f;
-    [SerializeField] private float clickThreshold = 0.25f;
+    private Vector3 rightClickStartPos;
+    private bool hasTriggeredRightDelete = false;
+
+    [SerializeField] private float clickThreshold = 0.3f;
 
 
     void Start()
@@ -81,18 +99,69 @@ public class HumanClick : MonoBehaviour
 
     void Update()
     {
+        // Don't place blocks if we are zooming/panning, or if touch count is not exactly 1 (e.g. 2 touches for pan/zoom)
+        bool blockPlacement = CameraController.IsPanning || Input.touchCount > 1;
+        bool isDeleteMode = BlockTypeManager.Instance != null && BlockTypeManager.Instance.IsDeleteModeActive();
+
+        Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        mousePos.z = 0;
+        float currentScale = transform.localScale.x;
+        float radius = (blockSize / 2f) * currentScale;
+        bool isMouseOverMe = Vector3.Distance(mousePos, transform.position) < radius;
+
+        // 1. LEFT CLICK HANDLING (Placement or Delete Mode)
         if (Input.GetMouseButtonDown(0))
         {
-            isHoldingLeftClick = true;
-            lastPlacementTime = 0f;
+            if (isDeleteMode && isMouseOverMe)
+            {
+                leftClickDownTime = Time.time;
+                leftClickStartPos = Input.mousePosition;
+                hasTriggeredLeftDelete = false;
+
+                DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
+                if (previewSystem != null)
+                {
+                    previewSystem.TriggerRevealOnly();
+                }
+            }
+            else if (!isDeleteMode && !blockPlacement)
+            {
+                isHoldingLeftClick = true;
+                lastPlacementTime = 0f;
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             isHoldingLeftClick = false;
+
+            if (isDeleteMode && !hasTriggeredLeftDelete && leftClickDownTime > 0f)
+            {
+                // Released in < 0.3s -> Keep reveal
+                leftClickDownTime = 0f;
+            }
         }
 
-        if (isHoldingLeftClick && !isSpawning)
+        // Active holding for left-click Delete Mode
+        if (isDeleteMode && leftClickDownTime > 0f && !hasTriggeredLeftDelete)
+        {
+            // If dragging (moved mouse/finger > 5px), cancel delete hold and restore
+            if (Vector3.Distance(Input.mousePosition, leftClickStartPos) > 5f)
+            {
+                leftClickDownTime = 0f;
+                DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
+                if (previewSystem != null) previewSystem.ForceRestore();
+            }
+            else if (Time.time - leftClickDownTime > clickThreshold)
+            {
+                hasTriggeredLeftDelete = true;
+                leftClickDownTime = 0f;
+                TriggerDeleteAction();
+            }
+        }
+
+        // Continuous placement for Left click
+        if (isHoldingLeftClick && !isSpawning && !isDeleteMode && !blockPlacement)
         {
             if (Time.time - lastPlacementTime >= continuousPlacementDelay)
             {
@@ -101,22 +170,49 @@ public class HumanClick : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && DeletePreviewSystem.HasPendingPreview())
+        if (Input.GetMouseButtonDown(0) && !isDeleteMode && !isMouseOverMe && DeletePreviewSystem.HasPendingPreview())
         {
             DeletePreviewSystem.CancelPreview();
         }
 
-        if (Input.GetMouseButtonDown(1))
+        // 2. RIGHT CLICK HANDLING
+        if (Input.GetMouseButtonDown(1) && isMouseOverMe)
         {
             rightClickDownTime = Time.time;
+            rightClickStartPos = Input.mousePosition;
+            hasTriggeredRightDelete = false;
+
+            DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
+            if (previewSystem != null)
+            {
+                previewSystem.TriggerRevealOnly();
+            }
         }
 
         if (Input.GetMouseButtonUp(1))
         {
-            float heldTime = Time.time - rightClickDownTime;
-            if (heldTime <= clickThreshold)
+            if (!hasTriggeredRightDelete && rightClickDownTime > 0f)
             {
-                HandleRightClickDelete();
+                // Released in < 0.3s -> Keep reveal
+                rightClickDownTime = 0f;
+            }
+        }
+
+        // Active holding for right-click Delete
+        if (rightClickDownTime > 0f && !hasTriggeredRightDelete)
+        {
+            // If dragging (moved mouse > 5px), cancel delete hold and restore
+            if (Vector3.Distance(Input.mousePosition, rightClickStartPos) > 5f)
+            {
+                rightClickDownTime = 0f;
+                DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
+                if (previewSystem != null) previewSystem.ForceRestore();
+            }
+            else if (Time.time - rightClickDownTime > clickThreshold)
+            {
+                hasTriggeredRightDelete = true;
+                rightClickDownTime = 0f;
+                TriggerDeleteAction();
             }
         }
 
@@ -131,35 +227,18 @@ public class HumanClick : MonoBehaviour
         }
     }
 
-    private void HandleRightClickDelete()
+    private void TriggerDeleteAction()
     {
-        Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0;
-
-        Vector3 blockCenter = transform.position;
-        float currentScale = transform.localScale.x;
-        float radius = (blockSize / 2f) * currentScale;
-
-        // CIRCLE COLLIDER CHECK: Simple distance comparison
-        if (Vector3.Distance(mousePos, blockCenter) < radius)
+        BlockType bt = GetBlockType();
+        if (!ResourceManager.Instance.AllowPlayerDestroyWood && bt != null && bt.blockName == "Wood")
         {
-            BlockType bt = GetBlockType();
-            if (!ResourceManager.Instance.AllowPlayerDestroyWood && bt != null && bt.blockName == "Wood")
-            {
-                if (ResourceManager.Instance.ShowDebugLogs) Debug.Log("Player attempted to destroy Wood, but policy disallows it.");
-                return;
-            }
-
+            if (ResourceManager.Instance.ShowDebugLogs) Debug.Log("Player attempted to destroy Wood, but policy disallows it.");
             DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
-            if (previewSystem != null)
-            {
-                if (previewSystem.HandleRightClick()) Die();
-            }
-            else
-            {
-                Die();
-            }
+            if (previewSystem != null) previewSystem.ForceRestore();
+            return;
         }
+
+        Die();
     }
 
     private void NotifyConnectionsChanged()
@@ -331,6 +410,15 @@ public class HumanClick : MonoBehaviour
 
     void UpdateHoverPreview()
     {
+        if (BlockTypeManager.Instance != null && BlockTypeManager.Instance.IsDeleteModeActive())
+        {
+            if (PreviewBlockManager.Instance != null)
+            {
+                PreviewBlockManager.Instance.HidePreview();
+            }
+            return;
+        }
+
         int currentFrame = Time.frameCount;
         if (lastPreviewFrame != currentFrame)
         {
@@ -684,11 +772,7 @@ public class HumanClick : MonoBehaviour
 
     int GetDynamicCost(BlockType blockType)
     {
-        if (blockType.blockName == "Wood")
-            return 5 + totalBlockCount;
-        else if (blockType.blockName == "Leaf")
-            return 1 + Mathf.CeilToInt(totalBlockCount / 10f);
-        return blockType.cost;
+        return GetDynamicCostForType(blockType);
     }
 
     bool IsValidPlacement(BlockType selectedType, HumanClick childToMove)

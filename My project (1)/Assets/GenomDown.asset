@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 641e23952fd59a742a8ab1809a42ebf5, type: 3}
-  m_Name: GenomTestChainPatern
+  m_Name: GenomDown
   m_EditorClassIdentifier: Assembly-CSharp::GrowthPattern
   steps:
   - type: 0
     anchor: 1
-    dir: 3
-    repeats: 4
+    dir: 4
+    repeats: 3
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
   - type: 1
     anchor: 1
-    dir: 1
-    repeats: 1
-    spawnPattern: {fileID: 11400000, guid: b2e6531a43466cc4584b2257ba3d8281, type: 2}
+    dir: 4
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: f43c824f2a5818c49be760f644f51f49, type: 2}
     waitForSpawn: 0
   loop: 0
-  intervalSeconds: 0.3
+  intervalSeconds: 0.2

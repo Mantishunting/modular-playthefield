@@ -234,6 +234,16 @@ public class DeletePreviewSystem : MonoBehaviour
         RestoreFromDangerState();
     }
 
+    /// <summary>
+    /// Activates the visual reveal wobble without triggering deletion checks.
+    /// </summary>
+    public void TriggerRevealOnly()
+    {
+        ClearGlobalMarker();
+        blockMarkedForDeletion = this;
+        EnterDangerState();
+    }
+
     private static void ClearGlobalMarker()
     {
         blockMarkedForDeletion = null;

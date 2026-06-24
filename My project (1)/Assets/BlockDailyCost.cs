@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class BlockDailyCost : MonoBehaviour
@@ -183,13 +183,10 @@ public class BlockDailyCost : MonoBehaviour
     
     /// <summary>
     /// Gets the total block count from HumanClick's static tracker
-    /// Uses reflection since totalBlockCount is private
     /// </summary>
     int GetTotalBlockCount()
     {
-        // Count all HumanClick objects as fallback
-        HumanClick[] allBlocks = FindObjectsOfType<HumanClick>();
-        return allBlocks.Length;
+        return HumanClick.TotalBlockCount;
     }
     
     /// <summary>

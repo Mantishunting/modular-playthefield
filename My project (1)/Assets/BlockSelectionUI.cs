@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -11,6 +11,7 @@ public class BlockSelectionUI : MonoBehaviour
     [SerializeField] private Button woodButton;
     [SerializeField] private Button leafButton;
     [SerializeField] private Button flowerButton;
+    [SerializeField] private Button deleteButton;
 
     [Header("Block Types")]
     [SerializeField] private BlockType woodBlockType;
@@ -21,6 +22,7 @@ public class BlockSelectionUI : MonoBehaviour
     [SerializeField] private Color woodAffordableColor = new Color(1f, 0.9f, 0.2f); // Yellow
     [SerializeField] private Color leafAffordableColor = new Color(0.2f, 1f, 0.2f); // Green
     [SerializeField] private Color flowerAffordableColor = new Color(1f, 0.4f, 0.8f); // Pink
+    [SerializeField] private Color deleteModeColor = new Color(1f, 0.2f, 0.2f); // Red
 
     [Header("Colors - Unaffordable")]
     [SerializeField] private Color unaffordableColor = new Color(0.5f, 0.5f, 0.5f); // Gray
@@ -51,6 +53,19 @@ public class BlockSelectionUI : MonoBehaviour
         if (flowerButton != null)
         {
             flowerButton.onClick.AddListener(() => SelectBlockType(flowerBlockType));
+        }
+
+        // Auto-find delete button if not assigned
+        if (deleteButton == null)
+        {
+            Transform deleteBtnTransform = transform.Find("DeleteButton");
+            if (deleteBtnTransform == null) deleteBtnTransform = transform.Find("Delete Button");
+            if (deleteBtnTransform != null) deleteButton = deleteBtnTransform.GetComponent<Button>();
+        }
+
+        if (deleteButton != null)
+        {
+            deleteButton.onClick.AddListener(SelectDeleteMode);
         }
 
         // Default to wood
@@ -87,6 +102,24 @@ public class BlockSelectionUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Called when the delete button is clicked to enter Delete Mode
+    /// </summary>
+    void SelectDeleteMode()
+    {
+        if (BlockTypeManager.Instance != null)
+        {
+            BlockTypeManager.Instance.SetDeleteModeActive(true);
+        }
+
+        if (showDebugLogs)
+        {
+            Debug.Log("BlockSelectionUI: Selected Delete Mode");
+        }
+
+        UpdateButtonVisuals();
+    }
+
+    /// <summary>
     /// Updates button colors based on affordability and selection
     /// </summary>
     void UpdateButtonVisuals()
@@ -94,29 +127,39 @@ public class BlockSelectionUI : MonoBehaviour
         if (resourcesScript == null) return;
 
         int currentFood = resourcesScript.GetCurrentFood();
+        bool isDeleteMode = BlockTypeManager.Instance != null && BlockTypeManager.Instance.IsDeleteModeActive();
 
-        // Update Wood button
+        // Update Wood button using dynamic cost check
         if (woodButton != null && woodBlockType != null)
         {
-            bool canAfford = currentFood >= woodBlockType.cost;
-            bool isSelected = currentlySelectedBlockType == woodBlockType;
+            int dynamicCost = HumanClick.GetDynamicCostForType(woodBlockType);
+            bool canAfford = currentFood >= dynamicCost;
+            bool isSelected = !isDeleteMode && currentlySelectedBlockType == woodBlockType;
             UpdateButtonColor(woodButton, woodAffordableColor, canAfford, isSelected);
         }
 
-        // Update Leaf button
+        // Update Leaf button using dynamic cost check
         if (leafButton != null && leafBlockType != null)
         {
-            bool canAfford = currentFood >= leafBlockType.cost;
-            bool isSelected = currentlySelectedBlockType == leafBlockType;
+            int dynamicCost = HumanClick.GetDynamicCostForType(leafBlockType);
+            bool canAfford = currentFood >= dynamicCost;
+            bool isSelected = !isDeleteMode && currentlySelectedBlockType == leafBlockType;
             UpdateButtonColor(leafButton, leafAffordableColor, canAfford, isSelected);
         }
 
-        // Update Flower button
+        // Update Flower button using dynamic cost check
         if (flowerButton != null && flowerBlockType != null)
         {
-            bool canAfford = currentFood >= flowerBlockType.cost;
-            bool isSelected = currentlySelectedBlockType == flowerBlockType;
+            int dynamicCost = HumanClick.GetDynamicCostForType(flowerBlockType);
+            bool canAfford = currentFood >= dynamicCost;
+            bool isSelected = !isDeleteMode && currentlySelectedBlockType == flowerBlockType;
             UpdateButtonColor(flowerButton, flowerAffordableColor, canAfford, isSelected);
+        }
+
+        // Update Delete button
+        if (deleteButton != null)
+        {
+            UpdateButtonColor(deleteButton, deleteModeColor, true, isDeleteMode);
         }
     }
 
@@ -147,8 +190,15 @@ public class BlockSelectionUI : MonoBehaviour
 
         buttonImage.color = targetColor;
 
-        // Optional: Disable button interaction if can't afford
-        button.interactable = canAfford;
+        // Optional: Disable button interaction if can't afford (Delete is always interactable)
+        if (button == deleteButton)
+        {
+            button.interactable = true;
+        }
+        else
+        {
+            button.interactable = canAfford;
+        }
     }
 
     /// <summary>

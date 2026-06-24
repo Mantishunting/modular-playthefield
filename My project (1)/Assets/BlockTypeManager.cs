@@ -36,6 +36,18 @@ public class BlockTypeManager : MonoBehaviour
         }
     }
 
+    private bool deleteModeActive = false;
+    public static event System.Action<bool> OnDeleteModeToggled;
+
+    public bool IsDeleteModeActive() => deleteModeActive;
+
+    public void SetDeleteModeActive(bool active)
+    {
+        deleteModeActive = active;
+        Debug.Log($"BlockTypeManager: Delete Mode active = {deleteModeActive}");
+        OnDeleteModeToggled?.Invoke(deleteModeActive);
+    }
+
     void Update()
     {
         // Press L for Leaf
@@ -55,6 +67,12 @@ public class BlockTypeManager : MonoBehaviour
         {
             SelectTypeByName("Flower");
         }
+
+        // Press D, X, or Delete for Delete Mode
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.Delete))
+        {
+            SetDeleteModeActive(!deleteModeActive);
+        }
     }
 
     void SelectTypeByName(string typeName)
@@ -64,6 +82,8 @@ public class BlockTypeManager : MonoBehaviour
             if (availableTypes[i].blockName.Equals(typeName, System.StringComparison.OrdinalIgnoreCase))
             {
                 currentTypeIndex = i;
+                deleteModeActive = false;
+                OnDeleteModeToggled?.Invoke(false);
                 Debug.Log($"Selected block type: {availableTypes[currentTypeIndex].blockName} (Color: {availableTypes[currentTypeIndex].blockColor})");
                 return;
             }
@@ -94,6 +114,10 @@ public class BlockTypeManager : MonoBehaviour
             return;
         }
 
+        // Disable delete mode when selecting a block type
+        deleteModeActive = false;
+        OnDeleteModeToggled?.Invoke(false);
+
         // Find the index of this block type in our array
         for (int i = 0; i < availableTypes.Length; i++)
         {
@@ -111,6 +135,7 @@ public class BlockTypeManager : MonoBehaviour
 
     public string GetSelectedTypeName()
     {
+        if (deleteModeActive) return "Delete";
         BlockType selected = GetSelectedType();
         return selected != null ? selected.blockName : "None";
     }

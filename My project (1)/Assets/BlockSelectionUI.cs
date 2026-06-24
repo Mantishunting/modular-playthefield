@@ -11,7 +11,10 @@ public class BlockSelectionUI : MonoBehaviour
     [SerializeField] private Button woodButton;
     [SerializeField] private Button leafButton;
     [SerializeField] private Button flowerButton;
-    [SerializeField] private Button deleteButton;
+    [SerializeField] private Button deleteButton; // Legacy/Alias for Prune Button
+    [SerializeField] private Button pruneModeButton;
+    [SerializeField] private Button inspectModeButton;
+    [SerializeField] private Button exitMenuButton;
 
     [Header("Block Types")]
     [SerializeField] private BlockType woodBlockType;
@@ -22,7 +25,9 @@ public class BlockSelectionUI : MonoBehaviour
     [SerializeField] private Color woodAffordableColor = new Color(1f, 0.9f, 0.2f); // Yellow
     [SerializeField] private Color leafAffordableColor = new Color(0.2f, 1f, 0.2f); // Green
     [SerializeField] private Color flowerAffordableColor = new Color(1f, 0.4f, 0.8f); // Pink
-    [SerializeField] private Color deleteModeColor = new Color(1f, 0.2f, 0.2f); // Red
+    [SerializeField] private Color deleteModeColor = new Color(1f, 0.2f, 0.2f); // Red (Prune Mode)
+    [SerializeField] private Color inspectModeColor = new Color(0.2f, 0.6f, 1f); // Blue (Inspect Mode)
+    [SerializeField] private Color exitMenuColor = new Color(0.9f, 0.9f, 0.9f); // White/Gray (Exit Button)
 
     [Header("Colors - Unaffordable")]
     [SerializeField] private Color unaffordableColor = new Color(0.5f, 0.5f, 0.5f); // Gray
@@ -58,14 +63,115 @@ public class BlockSelectionUI : MonoBehaviour
         // Auto-find delete button if not assigned
         if (deleteButton == null)
         {
-            Transform deleteBtnTransform = transform.Find("DeleteButton");
-            if (deleteBtnTransform == null) deleteBtnTransform = transform.Find("Delete Button");
-            if (deleteBtnTransform != null) deleteButton = deleteBtnTransform.GetComponent<Button>();
+            GameObject deleteBtnGO = GameObject.Find("DeleteButton");
+            if (deleteBtnGO == null) deleteBtnGO = GameObject.Find("Delete Button");
+            if (deleteBtnGO != null) deleteButton = deleteBtnGO.GetComponent<Button>();
         }
 
         if (deleteButton != null)
         {
-            deleteButton.onClick.AddListener(SelectDeleteMode);
+            deleteButton.onClick.AddListener(SelectPruneMode);
+        }
+
+        // Auto-find prune, inspect and exit buttons
+        if (pruneModeButton == null)
+        {
+            GameObject pruneBtnGO = GameObject.Find("PruneButton");
+            if (pruneBtnGO == null) pruneBtnGO = GameObject.Find("Prune Button");
+            if (pruneBtnGO != null) pruneModeButton = pruneBtnGO.GetComponent<Button>();
+        }
+
+        // Dynamic fallback creation for Prune mode button
+        if (pruneModeButton == null)
+        {
+            Button template = flowerButton != null ? flowerButton : woodButton;
+            if (template != null)
+            {
+                RectTransform templateRect = template.GetComponent<RectTransform>();
+                Vector2 targetPos = new Vector2(-800f, 73f); // default
+                if (templateRect != null)
+                {
+                    float offset = templateRect.sizeDelta.x * templateRect.localScale.x + 20f;
+                    targetPos = templateRect.anchoredPosition - new Vector2(offset, 0f);
+                }
+                pruneModeButton = CreateDynamicButton(template, "PruneButton", "PRUNE", targetPos);
+            }
+        }
+
+        if (pruneModeButton != null)
+        {
+            pruneModeButton.onClick.AddListener(SelectPruneMode);
+        }
+
+        if (inspectModeButton == null)
+        {
+            GameObject inspectBtnGO = GameObject.Find("InspectButton");
+            if (inspectBtnGO == null) inspectBtnGO = GameObject.Find("Inspect Button");
+            if (inspectBtnGO != null) inspectModeButton = inspectBtnGO.GetComponent<Button>();
+        }
+
+        // Dynamic fallback creation for Inspect mode button
+        if (inspectModeButton == null)
+        {
+            Button template = leafButton != null ? leafButton : woodButton;
+            if (template != null)
+            {
+                RectTransform templateRect = template.GetComponent<RectTransform>();
+                Vector2 targetPos = new Vector2(800f, 73f); // default
+                if (templateRect != null)
+                {
+                    float offset = templateRect.sizeDelta.x * templateRect.localScale.x + 20f;
+                    targetPos = templateRect.anchoredPosition + new Vector2(offset, 0f);
+                }
+                inspectModeButton = CreateDynamicButton(template, "InspectButton", "INSPECT", targetPos);
+            }
+        }
+
+        if (inspectModeButton != null)
+        {
+            inspectModeButton.onClick.AddListener(SelectInspectMode);
+        }
+
+        if (exitMenuButton == null)
+        {
+            GameObject exitBtnGO = GameObject.Find("ExitButton");
+            if (exitBtnGO == null) exitBtnGO = GameObject.Find("Exit Button");
+            if (exitBtnGO == null) exitBtnGO = GameObject.Find("MenuButton");
+            if (exitBtnGO == null) exitBtnGO = GameObject.Find("Menu Button");
+            if (exitBtnGO != null) exitMenuButton = exitBtnGO.GetComponent<Button>();
+        }
+
+        // Dynamic fallback creation for Exit button
+        if (exitMenuButton == null)
+        {
+            Button restartTemplate = null;
+            GameObject restartGO = GameObject.Find("RestartLevelButton");
+            if (restartGO == null) restartGO = GameObject.Find("Restart Level Button");
+            if (restartGO != null) restartTemplate = restartGO.GetComponent<Button>();
+
+            if (restartTemplate != null)
+            {
+                exitMenuButton = CreateDynamicButton(restartTemplate, "ExitButton", "EXIT", Vector2.zero);
+                if (exitMenuButton != null)
+                {
+                    RectTransform rect = exitMenuButton.GetComponent<RectTransform>();
+                    RectTransform templateRect = restartTemplate.GetComponent<RectTransform>();
+                    if (rect != null && templateRect != null)
+                    {
+                        float offset = templateRect.sizeDelta.x * templateRect.localScale.x + 20f;
+                        rect.anchoredPosition = templateRect.anchoredPosition + new Vector2(offset, 0f);
+                    }
+                }
+            }
+            else if (woodButton != null)
+            {
+                exitMenuButton = CreateDynamicButton(woodButton, "ExitButton", "EXIT", new Vector2(400f, 220f));
+            }
+        }
+
+        if (exitMenuButton != null)
+        {
+            exitMenuButton.onClick.AddListener(ExitToMainMenu);
         }
 
         // Default to wood
@@ -102,21 +208,56 @@ public class BlockSelectionUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when the delete button is clicked to enter Delete Mode
+    /// Called when the prune/delete button is clicked
     /// </summary>
-    void SelectDeleteMode()
+    void SelectPruneMode()
     {
         if (BlockTypeManager.Instance != null)
         {
-            BlockTypeManager.Instance.SetDeleteModeActive(true);
+            BlockTypeManager.Instance.SetInteractionMode(InteractionMode.Prune);
         }
 
         if (showDebugLogs)
         {
-            Debug.Log("BlockSelectionUI: Selected Delete Mode");
+            Debug.Log("BlockSelectionUI: Selected Prune Mode");
         }
 
         UpdateButtonVisuals();
+    }
+
+    /// <summary>
+    /// Called when the inspect button is clicked
+    /// </summary>
+    void SelectInspectMode()
+    {
+        if (BlockTypeManager.Instance != null)
+        {
+            BlockTypeManager.Instance.SetInteractionMode(InteractionMode.Inspect);
+        }
+
+        if (showDebugLogs)
+        {
+            Debug.Log("BlockSelectionUI: Selected Inspect Mode");
+        }
+
+        UpdateButtonVisuals();
+    }
+
+    /// <summary>
+    /// Clears game state and loads the main menu/landing scene
+    /// </summary>
+    void ExitToMainMenu()
+    {
+        if (showDebugLogs)
+        {
+            Debug.Log("BlockSelectionUI: Exiting to Main Menu");
+        }
+
+        HumanClick.ResetStaticData();
+
+        Reseter reseter = FindObjectOfType<Reseter>();
+        string menuScene = reseter != null ? reseter.landingSceneName : "StartScene";
+        UnityEngine.SceneManagement.SceneManager.LoadScene(menuScene);
     }
 
     /// <summary>
@@ -127,14 +268,16 @@ public class BlockSelectionUI : MonoBehaviour
         if (resourcesScript == null) return;
 
         int currentFood = resourcesScript.GetCurrentFood();
-        bool isDeleteMode = BlockTypeManager.Instance != null && BlockTypeManager.Instance.IsDeleteModeActive();
+        bool isBuildMode = BlockTypeManager.Instance == null || BlockTypeManager.Instance.CurrentMode == InteractionMode.Build;
+        bool isPruneMode = BlockTypeManager.Instance != null && BlockTypeManager.Instance.CurrentMode == InteractionMode.Prune;
+        bool isInspectMode = BlockTypeManager.Instance != null && BlockTypeManager.Instance.CurrentMode == InteractionMode.Inspect;
 
         // Update Wood button using dynamic cost check
         if (woodButton != null && woodBlockType != null)
         {
             int dynamicCost = HumanClick.GetDynamicCostForType(woodBlockType);
             bool canAfford = currentFood >= dynamicCost;
-            bool isSelected = !isDeleteMode && currentlySelectedBlockType == woodBlockType;
+            bool isSelected = isBuildMode && currentlySelectedBlockType == woodBlockType;
             UpdateButtonColor(woodButton, woodAffordableColor, canAfford, isSelected);
         }
 
@@ -143,7 +286,7 @@ public class BlockSelectionUI : MonoBehaviour
         {
             int dynamicCost = HumanClick.GetDynamicCostForType(leafBlockType);
             bool canAfford = currentFood >= dynamicCost;
-            bool isSelected = !isDeleteMode && currentlySelectedBlockType == leafBlockType;
+            bool isSelected = isBuildMode && currentlySelectedBlockType == leafBlockType;
             UpdateButtonColor(leafButton, leafAffordableColor, canAfford, isSelected);
         }
 
@@ -152,14 +295,32 @@ public class BlockSelectionUI : MonoBehaviour
         {
             int dynamicCost = HumanClick.GetDynamicCostForType(flowerBlockType);
             bool canAfford = currentFood >= dynamicCost;
-            bool isSelected = !isDeleteMode && currentlySelectedBlockType == flowerBlockType;
+            bool isSelected = isBuildMode && currentlySelectedBlockType == flowerBlockType;
             UpdateButtonColor(flowerButton, flowerAffordableColor, canAfford, isSelected);
         }
 
-        // Update Delete button
+        // Update Delete/Prune button (Legacy button support)
         if (deleteButton != null)
         {
-            UpdateButtonColor(deleteButton, deleteModeColor, true, isDeleteMode);
+            UpdateButtonColor(deleteButton, deleteModeColor, true, isPruneMode);
+        }
+
+        // Update Prune button
+        if (pruneModeButton != null)
+        {
+            UpdateButtonColor(pruneModeButton, deleteModeColor, true, isPruneMode);
+        }
+
+        // Update Inspect button
+        if (inspectModeButton != null)
+        {
+            UpdateButtonColor(inspectModeButton, inspectModeColor, true, isInspectMode);
+        }
+
+        // Update Exit button (always clickable and default color)
+        if (exitMenuButton != null)
+        {
+            UpdateButtonColor(exitMenuButton, exitMenuColor, true, false);
         }
     }
 
@@ -190,8 +351,8 @@ public class BlockSelectionUI : MonoBehaviour
 
         buttonImage.color = targetColor;
 
-        // Optional: Disable button interaction if can't afford (Delete is always interactable)
-        if (button == deleteButton)
+        // Tool buttons and exit button are always interactable
+        if (button == deleteButton || button == pruneModeButton || button == inspectModeButton || button == exitMenuButton)
         {
             button.interactable = true;
         }
@@ -215,5 +376,83 @@ public class BlockSelectionUI : MonoBehaviour
     public void SetSelectedBlockType(BlockType blockType)
     {
         SelectBlockType(blockType);
+    }
+    /// <summary>
+    /// Helper to dynamically instantiate and position fallback buttons at runtime
+    /// </summary>
+    private Button CreateDynamicButton(Button template, string name, string labelText, Vector2 localPos)
+    {
+        if (template == null) return null;
+
+        // Clone the template button under the same parent
+        Button newButton = Instantiate(template, template.transform.parent);
+        newButton.name = name;
+
+        // Position using RectTransform
+        RectTransform rect = newButton.GetComponent<RectTransform>();
+        if (rect != null)
+        {
+            rect.anchoredPosition = localPos;
+        }
+
+        // Clear duplicated click callbacks
+        newButton.onClick.RemoveAllListeners();
+
+        bool textConfigured = false;
+
+        // Traverse children to find/configure text component and hide icons
+        for (int i = 0; i < newButton.transform.childCount; i++)
+        {
+            Transform child = newButton.transform.GetChild(i);
+
+            TMPro.TextMeshProUGUI tmp = child.GetComponent<TMPro.TextMeshProUGUI>();
+            if (tmp == null) tmp = child.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+
+            Text txt = child.GetComponent<Text>();
+            if (txt == null) txt = child.GetComponentInChildren<Text>(true);
+
+            if (tmp != null)
+            {
+                child.gameObject.SetActive(true);
+                tmp.text = labelText;
+                tmp.color = Color.white;
+                textConfigured = true;
+            }
+            else if (txt != null)
+            {
+                child.gameObject.SetActive(true);
+                txt.text = labelText;
+                txt.color = Color.white;
+                textConfigured = true;
+            }
+            else
+            {
+                // Deactivate the block graphics icon so it doesn't overlap text
+                child.gameObject.SetActive(false);
+            }
+        }
+
+        // If no text component was found in children, create one programmatically
+        if (!textConfigured)
+        {
+            GameObject textGO = new GameObject("Text (TMP)");
+            textGO.transform.SetParent(newButton.transform, false);
+            TMPro.TextMeshProUGUI tmp = textGO.AddComponent<TMPro.TextMeshProUGUI>();
+            tmp.text = labelText;
+            tmp.color = Color.white;
+            tmp.alignment = TMPro.TextAlignmentOptions.Center;
+            tmp.fontSize = 24f;
+
+            RectTransform textRect = textGO.GetComponent<RectTransform>();
+            if (textRect != null)
+            {
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.sizeDelta = Vector2.zero;
+                textRect.anchoredPosition = Vector2.zero;
+            }
+        }
+
+        return newButton;
     }
 }

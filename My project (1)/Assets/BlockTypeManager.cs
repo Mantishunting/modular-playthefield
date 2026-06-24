@@ -1,5 +1,7 @@
 using UnityEngine;
 
+public enum InteractionMode { Build, Prune, Inspect }
+
 public class BlockTypeManager : MonoBehaviour
 {
     public static BlockTypeManager Instance { get; private set; }
@@ -36,16 +38,23 @@ public class BlockTypeManager : MonoBehaviour
         }
     }
 
-    private bool deleteModeActive = false;
-    public static event System.Action<bool> OnDeleteModeToggled;
+    private InteractionMode currentMode = InteractionMode.Build;
+    public static event System.Action<InteractionMode> OnInteractionModeChanged;
 
-    public bool IsDeleteModeActive() => deleteModeActive;
+    public InteractionMode CurrentMode => currentMode;
+
+    public bool IsDeleteModeActive() => currentMode == InteractionMode.Prune;
 
     public void SetDeleteModeActive(bool active)
     {
-        deleteModeActive = active;
-        Debug.Log($"BlockTypeManager: Delete Mode active = {deleteModeActive}");
-        OnDeleteModeToggled?.Invoke(deleteModeActive);
+        SetInteractionMode(active ? InteractionMode.Prune : InteractionMode.Build);
+    }
+
+    public void SetInteractionMode(InteractionMode mode)
+    {
+        currentMode = mode;
+        Debug.Log($"BlockTypeManager: Interaction Mode set to {currentMode}");
+        OnInteractionModeChanged?.Invoke(currentMode);
     }
 
     void Update()
@@ -68,10 +77,16 @@ public class BlockTypeManager : MonoBehaviour
             SelectTypeByName("Flower");
         }
 
-        // Press D, X, or Delete for Delete Mode
+        // Press D, X, or Delete for Delete/Prune Mode
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.Delete))
         {
-            SetDeleteModeActive(!deleteModeActive);
+            SetInteractionMode(currentMode == InteractionMode.Prune ? InteractionMode.Build : InteractionMode.Prune);
+        }
+
+        // Press I for Inspect Mode
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            SetInteractionMode(currentMode == InteractionMode.Inspect ? InteractionMode.Build : InteractionMode.Inspect);
         }
     }
 
@@ -82,8 +97,8 @@ public class BlockTypeManager : MonoBehaviour
             if (availableTypes[i].blockName.Equals(typeName, System.StringComparison.OrdinalIgnoreCase))
             {
                 currentTypeIndex = i;
-                deleteModeActive = false;
-                OnDeleteModeToggled?.Invoke(false);
+                currentMode = InteractionMode.Build;
+                OnInteractionModeChanged?.Invoke(InteractionMode.Build);
                 Debug.Log($"Selected block type: {availableTypes[currentTypeIndex].blockName} (Color: {availableTypes[currentTypeIndex].blockColor})");
                 return;
             }
@@ -114,9 +129,9 @@ public class BlockTypeManager : MonoBehaviour
             return;
         }
 
-        // Disable delete mode when selecting a block type
-        deleteModeActive = false;
-        OnDeleteModeToggled?.Invoke(false);
+        // Reset mode to Build when selecting a block type
+        currentMode = InteractionMode.Build;
+        OnInteractionModeChanged?.Invoke(InteractionMode.Build);
 
         // Find the index of this block type in our array
         for (int i = 0; i < availableTypes.Length; i++)
@@ -135,7 +150,8 @@ public class BlockTypeManager : MonoBehaviour
 
     public string GetSelectedTypeName()
     {
-        if (deleteModeActive) return "Delete";
+        if (currentMode == InteractionMode.Prune) return "Prune";
+        if (currentMode == InteractionMode.Inspect) return "Inspect";
         BlockType selected = GetSelectedType();
         return selected != null ? selected.blockName : "None";
     }

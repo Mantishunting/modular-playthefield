@@ -9,6 +9,11 @@ public class ChainPatternAgent : MonoBehaviour
     public GrowthPattern pattern;     // assign in prefab
     public BlockType blockType;       // assign in prefab
 
+    // The genome node this agent grows (set by FlowerBloomStarter for the root, and by
+    // SpawnAgentOnBlock for a RandomPiece child). Null = a free, non-genome agent (e.g. a hard-coded
+    // SpawnPiece sub-agent, or the title-screen BEAN chains) — its RandomPiece slots resolve to empty.
+    [System.NonSerialized] public GenomeNode node;
+
     [Header("Timing")]
     public bool overrideInterval = false;
     public float intervalSeconds = 0.2f;
@@ -89,19 +94,6 @@ public class ChainPatternAgent : MonoBehaviour
         }
 
         if (_running) yield break;
-
-        // ROUTINE BUDGET self-gate: a bloom may run only as many agents as its genome allows. Climb
-        // to the bloom's RoutineBudget and claim a slot. Full -> kill myself but LEAVE my block in
-        // place. No budget in my ancestry (e.g. the title-screen BEAN chains) -> run unconstrained.
-        RoutineBudget budget = FindBloomBudget(host);
-        if (budget != null && !budget.TryClaim())
-        {
-            Debug.Log($"[FLW] BUDGET FULL — '{name}' self-killed (bloom at cap {budget.capacity}); block left in place.");
-            MarkFinished();
-            enabled = false;
-            yield break;
-        }
-
         _running = true;
 
         Debug.Log($"[FLW] RUNNING '{name}' (pattern={pattern.name}, suppress={suppressIfParentHasAgent}, autoStart={autoStart}).");
@@ -119,6 +111,8 @@ public class ChainPatternAgent : MonoBehaviour
     {
         // Safety frame in case something else needs to initialize this tick
         yield return null;
+
+        int slotIndex = 0; // running ordinal of RandomPiece slots encountered -> indexes node.children
 
         int i = 0;
         while (true)
@@ -139,50 +133,48 @@ public class ChainPatternAgent : MonoBehaviour
                 // Apply handedness: a left-handed agent flips East<->West before placing.
                 HumanClick.Direction dir = mirrorHorizontal ? MirrorDir(step.dir) : step.dir;
 
-                // Place the block
-                bool ok = actor.TryPlaceRelative(dir, blockType, true);
-                if (!ok)
+                // RandomPiece is a genome-filled SLOT: it places & grows a part only if the genome
+                // assigned one here. An empty slot (or a non-genome agent) grows nothing — no block.
+                if (step.type == StepType.RandomPiece)
                 {
-                    MarkFinished();
-                    yield break;
-                }
+                    GenomeNode child = (node != null && node.children != null && slotIndex < node.children.Length)
+                                       ? node.children[slotIndex] : null;
+                    slotIndex++;
 
-                // Get reference to newly placed block (must use the SAME mirrored dir)
-                HumanClick newBlock = ChildInDirection(actor, dir);
-                if (newBlock == null)
-                {
-                    MarkFinished();
-                    yield break;
-                }
+                    if (child == null || child.part == null)
+                        continue; // unfilled slot -> nothing grows here
 
-                Debug.Log($"Step {i}: type={step.type}, dir={dir} (raw {step.dir}, mirror={mirrorHorizontal}), spawnPattern={step.spawnPattern}");
+                    if (!actor.TryPlaceRelative(dir, blockType, true)) { MarkFinished(); yield break; }
+                    HumanClick slotBlock = ChildInDirection(actor, dir);
+                    if (slotBlock == null) { MarkFinished(); yield break; }
 
-
-                // Handle spawn vs move
-                if (step.type == StepType.Spawn && step.spawnPattern != null)
-                {
-                    // Spawn a new agent on the newly placed block
-                    ChainPatternAgent spawnedAgent = SpawnAgentOnBlock(newBlock, step.spawnPattern);
-
-                    if (step.waitForSpawn && spawnedAgent != null)
-                    {
-                        // Wait for the spawned agent to complete
-                        while (!spawnedAgent.IsFinished)
-                        {
-                            yield return null;
-                        }
-                    }
-
-                    // For Spawn steps, we typically don't advance the tip
-                    // (the main agent stays where it was, the spawned agent does its thing)
+                    // Grow the child part on the slot block, carrying its own genome node (recursion).
+                    SpawnAgentOnBlock(slotBlock, child.part, child);
+                    // Branch point: the main agent does not advance its tip into the slot.
                 }
                 else
                 {
-                    // Normal Move behavior: advance the tip if using Tip anchor
-                    if (step.anchor == Anchor.Tip)
+                    // Move / GMove / SpawnPiece all place a block in dir.
+                    // (GMove length scaling = slice B; for now GMove behaves as Move.)
+                    if (!actor.TryPlaceRelative(dir, blockType, true)) { MarkFinished(); yield break; }
+                    HumanClick newBlock = ChildInDirection(actor, dir);
+                    if (newBlock == null) { MarkFinished(); yield break; }
+
+                    if (step.type == StepType.SpawnPiece && step.spawnPattern != null)
                     {
-                        current.tip = newBlock;
-                        host = newBlock; // logical handover; still one coroutine
+                        // Hard-coded, FREE sub-agent (no genome node).
+                        ChainPatternAgent spawnedAgent = SpawnAgentOnBlock(newBlock, step.spawnPattern, null);
+                        if (step.waitForSpawn && spawnedAgent != null)
+                            while (!spawnedAgent.IsFinished) yield return null;
+                    }
+                    else
+                    {
+                        // Move / GMove: advance the tip if Tip-anchored.
+                        if (step.anchor == Anchor.Tip)
+                        {
+                            current.tip = newBlock;
+                            host = newBlock; // logical handover; still one coroutine
+                        }
                     }
                 }
 
@@ -205,9 +197,11 @@ public class ChainPatternAgent : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawns a new ChainPatternAgent on the target block with the given pattern.
+    /// Spawns a new ChainPatternAgent on the target block. <paramref name="childNode"/> is the genome
+    /// node for a RandomPiece child (so it grows its own slots recursively); pass null for a free,
+    /// hard-coded SpawnPiece sub-agent.
     /// </summary>
-    ChainPatternAgent SpawnAgentOnBlock(HumanClick targetBlock, GrowthPattern spawnPattern)
+    ChainPatternAgent SpawnAgentOnBlock(HumanClick targetBlock, GrowthPattern spawnPattern, GenomeNode childNode)
     {
         if (targetBlock == null || spawnPattern == null) return null;
 
@@ -227,6 +221,7 @@ public class ChainPatternAgent : MonoBehaviour
         newAgent.autoStart = false;
         newAgent.overrideInterval = overrideInterval;
         newAgent.intervalSeconds = intervalSeconds;
+        newAgent.node = childNode; // genome node for a flower-part slot; null for a free sub-agent
         // Note: the sub-agent computes its OWN handedness from its bud block in TryStart,
         // so we do not copy mirrorHorizontal here.
 
@@ -260,20 +255,6 @@ public class ChainPatternAgent : MonoBehaviour
             b = up;                                        // vertical link -> climb
         }
         return false; // root / vertical stem -> right-handed
-    }
-
-    // Climb from this block to the first ancestor carrying a RoutineBudget — that's the bloom root
-    // (FlowerBloomStarter attaches it there). Climbing stops at the root because the root HAS the
-    // budget, so we never cross into the wood stem above the bloom. Null = not part of a budgeted
-    // bloom (e.g. title-screen chains) -> caller runs unconstrained.
-    static RoutineBudget FindBloomBudget(HumanClick start)
-    {
-        for (HumanClick b = start; b != null; b = b.GetParent())
-        {
-            var rb = b.GetComponent<RoutineBudget>();
-            if (rb != null) return rb;
-        }
-        return null;
     }
 
     // Flip East<->West for left/right-handed builds. North/South/None pass through.

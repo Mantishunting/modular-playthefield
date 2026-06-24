@@ -4,17 +4,18 @@ using System.Collections;
 /// <summary>
 /// Goes on a CLEAN flower block (one with NO baked <see cref="ChainPatternAgent"/> — just like
 /// the wood sub-blocks the BEAN letters spawn). When the block is placed as a bloom ROOT, this
-/// adds an agent at runtime and starts it on <see cref="rootPattern"/>. Spawned sub-blocks are
-/// left alone — their agents are added by <see cref="ChainPatternAgent.SpawnAgentOnBlock"/>, the
-/// same untouched path the title-screen letters use.
+/// reads the shared genome (<see cref="GenomeService"/>), deep-copies its current part-tree, and
+/// grows it: the root agent runs the root part (GBass) and each RandomPiece slot grows the genome's
+/// child recursively. Spawned sub-blocks are left alone — their agents are added by
+/// <see cref="ChainPatternAgent.SpawnAgentOnBlock"/>, the same untouched path the title letters use.
 ///
-/// Step 1 of the genome engine: prove clean blocks grow (spawns fire) without touching any shared
-/// code. Step 2 will replace the serialized <see cref="rootPattern"/> with a genome-supplied part.
+/// Snapshotting a DEEP COPY means evolving the shared genome later never mutates an already-placed
+/// bloom. <see cref="rootPattern"/> is now only a fallback if the genome/catalogue isn't ready.
 /// </summary>
 [DisallowMultipleComponent]
 public class FlowerBloomStarter : MonoBehaviour
 {
-    [Tooltip("Pattern the root agent runs. (Later: supplied by the genome instead.)")]
+    [Tooltip("Fallback root pattern, used only if the genome has no root part yet (catalogue missing).")]
     public GrowthPattern rootPattern;
 
     [Tooltip("Block type the bloom grows. Self-referential for the isolated test rig.")]
@@ -33,7 +34,7 @@ public class FlowerBloomStarter : MonoBehaviour
         yield return null;
         yield return null;
 
-        if (host == null || rootPattern == null || blockType == null) yield break;
+        if (host == null || blockType == null) yield break;
 
         // Only a bloom ROOT starts here. Skip if an agent already exists on me (I was spawned by
         // SpawnAgentOnBlock). Otherwise climb ALL ancestors: a ChainPatternAgent keeps its
@@ -45,16 +46,17 @@ public class FlowerBloomStarter : MonoBehaviour
         for (HumanClick p = host.GetParent(); p != null; p = p.GetParent())
             if (p.GetComponent<ChainPatternAgent>() != null) yield break;
 
-        // Genome -> per-bloom agent allowance. Snapshot the budget onto THIS root block; every agent
-        // the bloom grows climbs here to claim a slot (see ChainPatternAgent.TryStart). The genome
-        // only caps agent count in this slice; rootPattern still decides the shape.
+        // Genome supplies the bloom. Deep-copy the shared tree so later evolution never mutates this
+        // bloom, then grow the root part; RandomPiece slots grow the genome's children recursively.
         GenomeService.EnsureExists();
-        var budget = gameObject.AddComponent<RoutineBudget>();
-        budget.capacity = GenomeService.Current.routineBudget;
+        GenomeNode rootNode = GenomeService.SnapshotRoot();
+        GrowthPattern startPattern = (rootNode != null && rootNode.part != null) ? rootNode.part : rootPattern;
+        if (startPattern == null) yield break; // no genome root and no fallback -> nothing to grow
 
         var agent = gameObject.AddComponent<ChainPatternAgent>();
         agent.autoStart = false;                  // we start it explicitly below
         agent.suppressIfParentHasAgent = false;   // it's the root; nothing above to suppress against
-        agent.StartWithPattern(rootPattern, blockType);
+        agent.node = rootNode;                    // the bloom's own (deep-copied) genome tree
+        agent.StartWithPattern(startPattern, blockType);
     }
 }

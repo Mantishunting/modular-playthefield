@@ -1,89 +1,112 @@
 using UnityEngine;
 
 /// <summary>
-/// Holds the ONE shared <see cref="FlowerGenome"/> for the current run. Static, so it survives
-/// scene loads for free (level -> level keeps evolving) — the same idiom <c>BlockGeneration</c> and
-/// <c>HumanClick.ResetStaticData</c> use for cross-scene state. It is NOT a per-level snapshot:
-/// it drifts mid-run on pollinations and is only wiped when the player returns to the landing page
-/// (<see cref="GenomeResetOnLanding"/>).
+/// Holds the ONE shared <see cref="FlowerGenome"/> for the current run. Static, so it survives scene
+/// loads for free (level -> level keeps its tree) — the same idiom <c>BlockGeneration</c> uses. It is
+/// only wiped when the player returns to the landing page (<see cref="GenomeResetOnLanding"/>).
 ///
-/// Evolution counts pollinations HERE, not in <see cref="BeeVisitTracker"/> — that tracker resets
-/// every scene, so its total can't survive a level change. We keep our own cumulative count.
+/// The genome is a recursive part-tree (see <see cref="GenomeNode"/>). <see cref="Evolve"/> fills the
+/// shallowest empty slot with a random part from the <see cref="FlowerPieceCatalogue"/>. There is NO
+/// numeric budget — the finite tree bounds growth.
 /// </summary>
 public static class GenomeService
 {
-    // Tuning. Kept here for slice 1; can move onto an inspector asset later. All monotonic.
-    public const int StartBudget = 3;
-    public const int PollinationsPerEvolution = 10;
-    public const int BudgetIncrement = 1;
-
-    /// <summary>The live genome every newly placed flower reads. Created lazily.</summary>
+    /// <summary>The live genome every newly placed flower reads (deep-copied at placement).</summary>
     public static FlowerGenome Current { get; private set; }
 
-    /// <summary>Cumulative pollinations since the last landing-page reset (drives evolution).</summary>
+    /// <summary>Cumulative pollinations since the last landing-page reset (display only for slice A).</summary>
     public static int Pollinations { get; private set; }
 
-    /// <summary>
-    /// Subscribe once at app start. The event is static and the handler is static, so this single
-    /// subscription persists for the whole session regardless of how many scenes load.
-    /// </summary>
+    private static FlowerPieceCatalogue _catalogue;
+    private static System.Random _rng;
+
+    /// <summary>The fixed part set. Loaded lazily from Resources; retried until found.</summary>
+    public static FlowerPieceCatalogue Catalogue
+    {
+        get
+        {
+            if (_catalogue == null)
+                _catalogue = Resources.Load<FlowerPieceCatalogue>("FlowerPieceCatalogue");
+            return _catalogue;
+        }
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
     {
-        // Guard against double-subscription if the runtime re-invokes (domain reload settings vary).
+        // Static event + static handler -> one subscription persists for the whole session.
         BeeVisitTracker.OnVisitRegistered -= OnPollination;
         BeeVisitTracker.OnVisitRegistered += OnPollination;
         EnsureExists();
     }
 
-    /// <summary>Make sure a genome exists (cold start straight into a level, no landing visited).</summary>
+    /// <summary>Ensure a genome exists. Also self-heals the root part if the catalogue arrived late.</summary>
     public static void EnsureExists()
     {
-        if (Current == null) RollFresh();
+        if (Current == null || Current.root == null) { RollFresh(); return; }
+        if (Current.root.part == null && Catalogue != null && Catalogue.root != null)
+            Current.root = GenomeNode.Make(Catalogue.root);   // catalogue loaded after the first roll
     }
 
-    /// <summary>
-    /// Force the live budget (debug/tuning, e.g. the / overlay). Affects only flowers placed AFTER
-    /// this — existing blooms already snapshotted their RoutineBudget. Clamped to a sane minimum.
-    /// </summary>
-    public static void SetRoutineBudget(int value)
-    {
-        EnsureExists();
-        Current.routineBudget = Mathf.Max(1, value);
-    }
-
-    /// <summary>Wipe to a brand-new genome at generation 0. Called when returning to the landing page.</summary>
+    /// <summary>Wipe to a brand-new genome (bare GBass root). Called when returning to the landing page.</summary>
     public static void ResetForNewGame()
     {
         RollFresh();
-        Debug.Log("[GENOME] reset for new game (landing page) -> fresh genome, budget " + Current.routineBudget);
+        Debug.Log("[GENOME] reset for new game (landing page) -> fresh GBass root.");
     }
 
     private static void RollFresh()
     {
+        int seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        _rng = new System.Random(seed);
         Current = new FlowerGenome
         {
-            seed = Random.Range(int.MinValue, int.MaxValue),
+            seed = seed,
             generation = 0,
-            routineBudget = StartBudget
+            root = GenomeNode.Make(Catalogue != null ? Catalogue.root : null)
         };
         Pollinations = 0;
     }
 
-    // BeeVisitTracker.OnVisitRegistered passes the per-scene running total; we only treat each
-    // invocation as one pollination pulse and keep our own cross-scene count.
-    private static void OnPollination(int _perSceneTotal)
+    /// <summary>
+    /// One step of growth: fill the shallowest empty slot with a random slot-part (even odds, seeded
+    /// so a run is reproducible). Monotonic — never removes. Slice A drives this manually from the
+    /// overlay; slice A2 wires it to pollinations.
+    /// </summary>
+    public static void Evolve()
     {
         EnsureExists();
-        Pollinations++;
-        if (Pollinations % PollinationsPerEvolution == 0)
-            Evolve();
+        var cat = Catalogue;
+        if (cat == null || cat.slotParts == null || cat.slotParts.Length == 0)
+        {
+            Debug.LogWarning("[GENOME] no FlowerPieceCatalogue (or empty slotParts) in a Resources folder — cannot evolve.");
+            return;
+        }
+
+        var (owner, index) = GenomeNode.FirstEmptySlot(Current.root);
+        if (owner == null)
+        {
+            Debug.Log("[GENOME] no empty slot to fill (does GBass have any RandomPiece slots yet?).");
+            return;
+        }
+
+        if (_rng == null) _rng = new System.Random(Current.seed);
+        GrowthPattern part = cat.slotParts[_rng.Next(cat.slotParts.Length)];
+        owner.children[index] = GenomeNode.Make(part);
+        Current.generation++;
+        Debug.Log($"[GENOME] evolved -> gen {Current.generation}: filled a slot with '{(part != null ? part.name : "null")}'.");
     }
 
-    private static void Evolve()
+    /// <summary>A deep copy of the current tree root for a freshly placed bloom (so later evolution can't mutate it).</summary>
+    public static GenomeNode SnapshotRoot()
     {
-        Current.routineBudget += BudgetIncrement;   // never shrink
-        Current.generation += 1;
-        Debug.Log($"[GENOME] evolved at {Pollinations} pollinations -> gen {Current.generation}, budget {Current.routineBudget}");
+        EnsureExists();
+        return Current.root.Clone();
+    }
+
+    // Slice A: just count pollinations (shown in the overlay). Slice A2 calls Evolve() from here.
+    private static void OnPollination(int _perSceneTotal)
+    {
+        Pollinations++;
     }
 }

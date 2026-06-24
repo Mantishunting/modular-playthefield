@@ -180,9 +180,26 @@ they snapshotted at placement.
 
 **Next slice:** see **§8.0.1** — the genome becomes a part-tree and this budget is retired.
 
-### 8.0.1 Phase 2 — the part-tree (PLANNED, not yet built)
+### 8.0.1 Phase 2 — the part-tree (Slice A CODED 2026-06-24, pending Play verification)
 
 > Full plan: `C:\Users\JACK\.claude\plans\ok-ok-but-that-synchronous-penguin.md`.
+>
+> **Slice A is implemented.** New: `Assets/Flowers/GenomeNode.cs` (tree node + slot count + deep
+> copy + breadth-first first-empty-slot), `Assets/Flowers/FlowerPieceCatalogue.cs` (the 5-part
+> catalogue ScriptableObject). Reworked: `FlowerGenome` (now a tree root, no budget), `GenomeService`
+> (holds the tree, `Evolve()` fills the shallowest empty slot with a random `slotPart`, `SnapshotRoot()`
+> deep-copies for a placed bloom), `Chains.cs` (`StepType` → Move/SpawnPiece/GMove/RandomPiece, kept
+> serialized values; new `gCoeff`), `ChainPatternAgent` (carries a `GenomeNode`, grows RandomPiece
+> slots recursively, budget gate removed), `FlowerBloomStarter` (snapshots & grows the tree),
+> `TestOverlay` (Evolve/Reset + tree print). Deleted: `RoutineBudget.cs`.
+>
+> **Owner setup before it grows anything:** (1) create `Assets/Resources/FlowerPieceCatalogue.asset`
+> (Create ▸ Flowers ▸ Piece Catalogue), set `root = GBass` and `slotParts = [GCross, GCurl, GFron,
+> GPettle]`; (2) author the 5 part `GrowthPattern`s — GBass needs ≥1 **RandomPiece** step (a slot)
+> or evolution has nowhere to grow; (3) the flower block needs `FlowerBloomStarter` + a flower
+> `BlockType`; (4) still-pending from slice 1: `GenomeResetOnLanding` on `StartScene`. Until the
+> catalogue exists, `FlowerBloomStarter` falls back to its serialized `rootPattern` (old GenomTest rig
+> keeps working).
 
 **The model.** A flower is a **recursive tree of flower parts**. A *part* is a `GrowthPattern`;
 there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (empty stubs in

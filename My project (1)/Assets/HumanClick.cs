@@ -102,6 +102,7 @@ public class HumanClick : MonoBehaviour
         // Don't place blocks if we are zooming/panning, or if touch count is not exactly 1 (e.g. 2 touches for pan/zoom)
         bool blockPlacement = CameraController.IsPanning || Input.touchCount > 1;
         bool isDeleteMode = BlockTypeManager.Instance != null && BlockTypeManager.Instance.IsDeleteModeActive();
+        bool isInspectMode = BlockTypeManager.Instance != null && BlockTypeManager.Instance.CurrentMode == InteractionMode.Inspect;
 
         Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
@@ -109,10 +110,10 @@ public class HumanClick : MonoBehaviour
         float radius = (blockSize / 2f) * currentScale;
         bool isMouseOverMe = Vector3.Distance(mousePos, transform.position) < radius;
 
-        // 1. LEFT CLICK HANDLING (Placement or Delete Mode)
+        // 1. LEFT CLICK HANDLING (Placement, Prune Mode, or Inspect Mode)
         if (Input.GetMouseButtonDown(0))
         {
-            if (isDeleteMode && isMouseOverMe)
+            if ((isDeleteMode || isInspectMode) && isMouseOverMe)
             {
                 leftClickDownTime = Time.time;
                 leftClickStartPos = Input.mousePosition;
@@ -124,7 +125,7 @@ public class HumanClick : MonoBehaviour
                     previewSystem.TriggerRevealOnly();
                 }
             }
-            else if (!isDeleteMode && !blockPlacement)
+            else if (!isDeleteMode && !isInspectMode && !blockPlacement)
             {
                 isHoldingLeftClick = true;
                 lastPlacementTime = 0f;
@@ -135,7 +136,7 @@ public class HumanClick : MonoBehaviour
         {
             isHoldingLeftClick = false;
 
-            if (isDeleteMode && !hasTriggeredLeftDelete && leftClickDownTime > 0f)
+            if ((isDeleteMode || isInspectMode) && !hasTriggeredLeftDelete && leftClickDownTime > 0f)
             {
                 // Released in < 0.3s -> Keep reveal
                 leftClickDownTime = 0f;
@@ -159,9 +160,19 @@ public class HumanClick : MonoBehaviour
                 TriggerDeleteAction();
             }
         }
+        else if (isInspectMode && leftClickDownTime > 0f)
+        {
+            // If dragging (moved mouse/finger > 5px), cancel inspect hold and restore
+            if (Vector3.Distance(Input.mousePosition, leftClickStartPos) > 5f)
+            {
+                leftClickDownTime = 0f;
+                DeletePreviewSystem previewSystem = GetComponent<DeletePreviewSystem>();
+                if (previewSystem != null) previewSystem.ForceRestore();
+            }
+        }
 
         // Continuous placement for Left click
-        if (isHoldingLeftClick && !isSpawning && !isDeleteMode && !blockPlacement)
+        if (isHoldingLeftClick && !isSpawning && !isDeleteMode && !isInspectMode && !blockPlacement)
         {
             if (Time.time - lastPlacementTime >= continuousPlacementDelay)
             {
@@ -170,7 +181,7 @@ public class HumanClick : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && !isDeleteMode && !isMouseOverMe && DeletePreviewSystem.HasPendingPreview())
+        if (Input.GetMouseButtonDown(0) && !isDeleteMode && !isInspectMode && !isMouseOverMe && DeletePreviewSystem.HasPendingPreview())
         {
             DeletePreviewSystem.CancelPreview();
         }
@@ -410,7 +421,7 @@ public class HumanClick : MonoBehaviour
 
     void UpdateHoverPreview()
     {
-        if (BlockTypeManager.Instance != null && BlockTypeManager.Instance.IsDeleteModeActive())
+        if (BlockTypeManager.Instance != null && BlockTypeManager.Instance.CurrentMode != InteractionMode.Build)
         {
             if (PreviewBlockManager.Instance != null)
             {

@@ -69,18 +69,40 @@ public class TestOverlay : MonoBehaviour
         GUILayout.Label("Add your GenomTest BlockType to\nBlockTypeManager.availableTypes to see it here.\nThen click it and place in the world.");
 
         GUILayout.Space(12);
-        GUILayout.Label("— Flower genome —");
+        GUILayout.Label("— Flower genome (part-tree) —");
         GenomeService.EnsureExists();
-        GUILayout.Label($"Routine budget (agents/bloom): {GenomeService.Current.routineBudget}");
-        GUILayout.Label($"Generation: {GenomeService.Current.generation}   Pollinations: {GenomeService.Pollinations}");
+        GUILayout.Label($"Generation (slots filled): {GenomeService.Current.generation}   Pollinations: {GenomeService.Pollinations}");
+        if (GenomeService.Catalogue == null)
+            GUILayout.Label("⚠ No FlowerPieceCatalogue in a Resources folder.");
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("-"))
-            GenomeService.SetRoutineBudget(GenomeService.Current.routineBudget - 1);
-        if (GUILayout.Button("+"))
-            GenomeService.SetRoutineBudget(GenomeService.Current.routineBudget + 1);
+        if (GUILayout.Button("Evolve (fill next slot)")) GenomeService.Evolve();
+        if (GUILayout.Button("Reset")) GenomeService.ResetForNewGame();
         GUILayout.EndHorizontal();
-        GUILayout.Label("Applies to flowers placed next\n(existing blooms keep their size).");
+        GUILayout.Label("Tree:");
+        GUILayout.Label(DescribeTree(GenomeService.Current.root));
+        GUILayout.Label("Evolve, then place a flower to grow\nthe current tree.");
 
         GUILayout.EndArea();
+    }
+
+    // Indented text view of the genome tree, for the overlay.
+    private static string DescribeTree(GenomeNode root)
+    {
+        if (root == null) return "(empty)";
+        var sb = new System.Text.StringBuilder();
+        Describe(root, 0, sb);
+        return sb.ToString().TrimEnd();
+    }
+
+    private static void Describe(GenomeNode n, int depth, System.Text.StringBuilder sb)
+    {
+        string pad = new string(' ', depth * 2);
+        sb.AppendLine($"{pad}{(n.part != null ? n.part.name : "null")}");
+        if (n.children == null) return;
+        for (int i = 0; i < n.children.Length; i++)
+        {
+            if (n.children[i] != null) Describe(n.children[i], depth + 1, sb);
+            else sb.AppendLine($"{pad}  [empty slot]");
+        }
     }
 }

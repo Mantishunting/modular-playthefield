@@ -200,6 +200,20 @@ they snapshotted at placement.
 > `BlockType`; (4) still-pending from slice 1: `GenomeResetOnLanding` on `StartScene`. Until the
 > catalogue exists, `FlowerBloomStarter` falls back to its serialized `rootPattern` (old GenomTest rig
 > keeps working).
+>
+> **Slice A.5 — LOCAL-FRAME growth (built 2026-06-25).** Flower agents now grow in a **local frame**:
+> each agent treats its **starting block as local South** and grows **North away from its parent**, so
+> a part orients itself wherever it attaches (petals fan out instead of all pointing world-north, and a
+> bloom on a leaning stem rotates with it). **Authoring convention: draw every part bottom-to-top —
+> its base is South, "up/forward" is North — once; it auto-rotates and the left/right handedness mirror
+> still applies.** Implementation: `ChainPatternAgent` rotates each authored dir by its entry direction
+> (`EntryDirFromParent` → `RotateToWorld`), composed after the handedness `MirrorDir`; gated by a
+> `useLocalFrame` flag that `FlowerBloomStarter` sets on the root and `SpawnAgentOnBlock` propagates to
+> every descendant — so the **BEAN title chains (flag off) keep growing in absolute directions.**
+>
+> **Slice A2 — auto-evolution (built 2026-06-25).** `GenomeService.OnPollination` now calls `Evolve()`
+> every `PollinationsPerEvolution` (=10) pollinations, so the shared genome grows one slot per 10 bee
+> visits. The overlay's manual **Evolve** button still works alongside it.
 
 **The model.** A flower is a **recursive tree of flower parts**. A *part* is a `GrowthPattern`;
 there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (empty stubs in

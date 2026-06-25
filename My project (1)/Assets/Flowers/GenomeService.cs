@@ -14,8 +14,11 @@ public static class GenomeService
     /// <summary>The live genome every newly placed flower reads (deep-copied at placement).</summary>
     public static FlowerGenome Current { get; private set; }
 
-    /// <summary>Cumulative pollinations since the last landing-page reset (display only for slice A).</summary>
+    /// <summary>Cumulative pollinations since the last landing-page reset.</summary>
     public static int Pollinations { get; private set; }
+
+    /// <summary>How many pollinations between automatic evolutions (one filled slot each). Tunable.</summary>
+    public const int PollinationsPerEvolution = 10;
 
     private static FlowerPieceCatalogue _catalogue;
     private static System.Random _rng;
@@ -104,9 +107,12 @@ public static class GenomeService
         return Current.root.Clone();
     }
 
-    // Slice A: just count pollinations (shown in the overlay). Slice A2 calls Evolve() from here.
+    // Every Nth pollination grows the shared genome by one slot. The overlay's Evolve button still
+    // works alongside this for manual testing.
     private static void OnPollination(int _perSceneTotal)
     {
         Pollinations++;
+        if (Pollinations % PollinationsPerEvolution == 0)
+            Evolve();
     }
 }

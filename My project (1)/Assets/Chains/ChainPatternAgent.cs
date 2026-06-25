@@ -14,6 +14,13 @@ public class ChainPatternAgent : MonoBehaviour
     // SpawnPiece sub-agent, or the title-screen BEAN chains) — its RandomPiece slots resolve to empty.
     [System.NonSerialized] public GenomeNode node;
 
+    // LOCAL-FRAME growth: a flower agent treats its STARTING block as local South and grows North
+    // (away from its parent), so an authored part grows "up out of its base" wherever it attaches.
+    // FlowerBloomStarter turns this on for the bloom root and SpawnAgentOnBlock propagates it to every
+    // descendant; the BEAN title chains leave it false and keep growing in absolute world directions.
+    [System.NonSerialized] public bool useLocalFrame = false;
+    private HumanClick.Direction entryDir = HumanClick.Direction.North; // local North = world dir away from parent
+
     [Header("Timing")]
     public bool overrideInterval = false;
     public float intervalSeconds = 0.2f;
@@ -104,6 +111,9 @@ public class ChainPatternAgent : MonoBehaviour
         // Handedness is established by where this branch hangs in the tree (see IsLeftHanded).
         mirrorHorizontal = IsLeftHanded(host);
 
+        // Lock in this agent's local frame: the world direction away from its parent is its "up".
+        if (useLocalFrame) entryDir = EntryDirFromParent(host);
+
         StartCoroutine(Run());
     }
 
@@ -130,8 +140,11 @@ public class ChainPatternAgent : MonoBehaviour
                     yield break;
                 }
 
-                // Apply handedness: a left-handed agent flips East<->West before placing.
+                // Transform the authored direction into world space:
+                //  1) handedness — a left-handed agent flips East<->West (local left/right mirror);
+                //  2) local frame — rotate so the agent's "up" follows the way it budded (flowers only).
                 HumanClick.Direction dir = mirrorHorizontal ? MirrorDir(step.dir) : step.dir;
+                if (useLocalFrame) dir = RotateToWorld(dir, entryDir);
 
                 // RandomPiece is a genome-filled SLOT: it places & grows a part only if the genome
                 // assigned one here. An empty slot (or a non-genome agent) grows nothing — no block.
@@ -222,7 +235,8 @@ public class ChainPatternAgent : MonoBehaviour
         newAgent.overrideInterval = overrideInterval;
         newAgent.intervalSeconds = intervalSeconds;
         newAgent.node = childNode; // genome node for a flower-part slot; null for a free sub-agent
-        // Note: the sub-agent computes its OWN handedness from its bud block in TryStart,
+        newAgent.useLocalFrame = useLocalFrame; // a flower's parts all grow in local frames
+        // Note: the sub-agent computes its OWN handedness (and entry direction) from its bud block in TryStart,
         // so we do not copy mirrorHorizontal here.
 
         // Start it with the spawn pattern
@@ -263,6 +277,44 @@ public class ChainPatternAgent : MonoBehaviour
         if (d == HumanClick.Direction.East) return HumanClick.Direction.West;
         if (d == HumanClick.Direction.West) return HumanClick.Direction.East;
         return d;
+    }
+
+    // --- Local-frame growth helpers ---
+    // The world direction pointing AWAY from this block's parent = the block's local "North" (up).
+    // (Its parent sits to its local South — the side the chain started from.)
+    static HumanClick.Direction EntryDirFromParent(HumanClick b)
+    {
+        if (b == null) return HumanClick.Direction.North;
+        if (b.GetSouthParent() != null) return HumanClick.Direction.North; // parent below -> grow up
+        if (b.GetNorthParent() != null) return HumanClick.Direction.South;
+        if (b.GetWestParent() != null) return HumanClick.Direction.East;
+        if (b.GetEastParent() != null) return HumanClick.Direction.West;
+        return HumanClick.Direction.North; // unattached root -> default up
+    }
+
+    // Compass in clockwise order, used to rotate a local direction into world space.
+    static readonly HumanClick.Direction[] CW =
+    {
+        HumanClick.Direction.North, HumanClick.Direction.East,
+        HumanClick.Direction.South, HumanClick.Direction.West
+    };
+
+    static int CwIndex(HumanClick.Direction d) => d switch
+    {
+        HumanClick.Direction.North => 0,
+        HumanClick.Direction.East => 1,
+        HumanClick.Direction.South => 2,
+        HumanClick.Direction.West => 3,
+        _ => -1
+    };
+
+    // Rotate a LOCAL direction so local-North maps to entryNorth (and E/S/W rotate with it).
+    static HumanClick.Direction RotateToWorld(HumanClick.Direction localDir, HumanClick.Direction entryNorth)
+    {
+        int li = CwIndex(localDir);
+        int ei = CwIndex(entryNorth);
+        if (li < 0 || ei < 0) return localDir; // None passes through unchanged
+        return CW[(li + ei) & 3];
     }
 
     HumanClick ChildInDirection(HumanClick node, HumanClick.Direction dir)

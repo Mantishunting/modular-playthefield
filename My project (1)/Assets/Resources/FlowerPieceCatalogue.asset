@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b5bc735cb64264c8eae7016137269b, type: 3}
   m_Name: FlowerPieceCatalogue
   m_EditorClassIdentifier: Assembly-CSharp::FlowerPieceCatalogue
-  root: {fileID: 0}
+  root: {fileID: 11400000, guid: a5298ce62212f26498890052b98b11c2, type: 2}
   slotParts:
-  - {fileID: 11400000, guid: a5298ce62212f26498890052b98b11c2, type: 2}
+  - {fileID: 11400000, guid: 82d281fb85f13eb438d7c28a90749688, type: 2}
   - {fileID: 11400000, guid: 243905de53323b743bef85dce6861d89, type: 2}
   - {fileID: 11400000, guid: d3e19ec22a039364ebb7940a727c452a, type: 2}
   - {fileID: 11400000, guid: 4a7791af41868f94da7e6289213417fa, type: 2}
-  - {fileID: 11400000, guid: 82d281fb85f13eb438d7c28a90749688, type: 2}

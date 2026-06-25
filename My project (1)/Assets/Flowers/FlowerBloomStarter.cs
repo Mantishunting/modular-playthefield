@@ -57,6 +57,7 @@ public class FlowerBloomStarter : MonoBehaviour
         agent.autoStart = false;                  // we start it explicitly below
         agent.suppressIfParentHasAgent = false;   // it's the root; nothing above to suppress against
         agent.node = rootNode;                    // the bloom's own (deep-copied) genome tree
+        agent.useLocalFrame = true;               // the whole bloom grows in local frames (base = south)
         agent.StartWithPattern(startPattern, blockType);
     }
 }

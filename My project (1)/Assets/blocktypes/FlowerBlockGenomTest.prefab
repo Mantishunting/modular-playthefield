@@ -392,5 +392,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32728f326f9cfe049bee0f8939ad0be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlowerBloomStarter
-  rootPattern: {fileID: 11400000, guid: db5551c200089fe438af47ab0cbd79b1, type: 2}
+  rootPattern: {fileID: 11400000, guid: a5298ce62212f26498890052b98b11c2, type: 2}
   blockType: {fileID: 11400000, guid: fb26fc1475aec2a498f8ad3834fc522d, type: 2}

@@ -12,6 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641e23952fd59a742a8ab1809a42ebf5, type: 3}
   m_Name: GCross
   m_EditorClassIdentifier: Assembly-CSharp::GrowthPattern
-  steps: []
+  steps:
+  - type: 0
+    anchor: 1
+    dir: 1
+    repeats: 3
+    spawnPattern: {fileID: 0}
+    waitForSpawn: 0
+    gCoeff: 0
+  - type: 1
+    anchor: 1
+    dir: 4
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: 99d66e501f4f51a47b7fc5253f7eec15, type: 2}
+    waitForSpawn: 0
+    gCoeff: 0
+  - type: 1
+    anchor: 1
+    dir: 1
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: 99d66e501f4f51a47b7fc5253f7eec15, type: 2}
+    waitForSpawn: 0
+    gCoeff: 0
+  - type: 1
+    anchor: 1
+    dir: 3
+    repeats: 0
+    spawnPattern: {fileID: 11400000, guid: 99d66e501f4f51a47b7fc5253f7eec15, type: 2}
+    waitForSpawn: 0
+    gCoeff: 0
   loop: 0
   intervalSeconds: 0.2

@@ -12,6 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641e23952fd59a742a8ab1809a42ebf5, type: 3}
   m_Name: GCurl
   m_EditorClassIdentifier: Assembly-CSharp::GrowthPattern
-  steps: []
+  steps:
+  - type: 2
+    anchor: 1
+    dir: 1
+    repeats: 1
+    spawnPattern: {fileID: 0}
+    waitForSpawn: 0
+    gCoeff: 2
+  - type: 2
+    anchor: 1
+    dir: 3
+    repeats: 1
+    spawnPattern: {fileID: 0}
+    waitForSpawn: 0
+    gCoeff: 2
+  - type: 2
+    anchor: 1
+    dir: 2
+    repeats: 1
+    spawnPattern: {fileID: 0}
+    waitForSpawn: 0
+    gCoeff: 1
+  - type: 2
+    anchor: 1
+    dir: 4
+    repeats: 1
+    spawnPattern: {fileID: 0}
+    waitForSpawn: 0
+    gCoeff: 1
   loop: 0
   intervalSeconds: 0.2

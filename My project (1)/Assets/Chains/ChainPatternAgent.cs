@@ -9,10 +9,15 @@ public class ChainPatternAgent : MonoBehaviour
     public GrowthPattern pattern;     // assign in prefab
     public BlockType blockType;       // assign in prefab
 
-    // The genome node this agent grows (set by FlowerBloomStarter for the root, and by
-    // SpawnAgentOnBlock for a RandomPiece child). Null = a free, non-genome agent (e.g. a hard-coded
-    // SpawnPiece sub-agent, or the title-screen BEAN chains) — its RandomPiece slots resolve to empty.
+    // The genome node this agent grows. A RandomPiece spawn starts a NEW child subtree (its own node);
+    // a SpawnPiece spawn extends the SAME part and carries this node forward (with a slot offset). Null
+    // = a non-genome agent (e.g. the title-screen BEAN chains) — its RandomPiece slots resolve to empty.
     [System.NonSerialized] public GenomeNode node;
+
+    // Offset into node.children that THIS agent's slots start at. The root of a part is 0; a SpawnPiece
+    // sub-agent gets the running offset so the part's slots (possibly spread across several arms) map to
+    // distinct, deterministic node.children entries.
+    [System.NonSerialized] public int slotBase = 0;
 
     // LOCAL-FRAME growth: a flower agent treats its STARTING block as local South and grows North
     // (away from its parent), so an authored part grows "up out of its base" wherever it attaches.
@@ -122,13 +127,21 @@ public class ChainPatternAgent : MonoBehaviour
         // Safety frame in case something else needs to initialize this tick
         yield return null;
 
-        int slotIndex = 0; // running ordinal of RandomPiece slots encountered -> indexes node.children
+        int consumed = 0; // slots consumed so far in THIS agent's expansion (own RandomPieces + sub-agent slots)
 
         int i = 0;
         while (true)
         {
             var step = pattern.steps[i];
             int reps = Mathf.Max(1, step.repeats);
+
+            // GMove length grows with this part's G: round(base + G * gCoeff). A gCoeff of 0.5 adds one
+            // block every time G rises by 2 (fractional growth, rounded). Non-genome agents use G = 0.
+            if (step.type == StepType.GMove)
+            {
+                int g = node != null ? node.g : 0;
+                reps = Mathf.Max(1, Mathf.RoundToInt(step.repeats + g * step.gCoeff));
+            }
 
             for (int r = 0; r < reps; r++)
             {
@@ -147,22 +160,23 @@ public class ChainPatternAgent : MonoBehaviour
                 if (useLocalFrame) dir = RotateToWorld(dir, entryDir);
 
                 // RandomPiece is a genome-filled SLOT: it places & grows a part only if the genome
-                // assigned one here. An empty slot (or a non-genome agent) grows nothing — no block.
+                // assigned one to this slot. The slot's index = slotBase + slots consumed so far.
                 if (step.type == StepType.RandomPiece)
                 {
-                    GenomeNode child = (node != null && node.children != null && slotIndex < node.children.Length)
-                                       ? node.children[slotIndex] : null;
-                    slotIndex++;
+                    int childIndex = slotBase + consumed;
+                    consumed++;
+                    GenomeNode child = (node != null && node.children != null && childIndex < node.children.Length)
+                                       ? node.children[childIndex] : null;
 
                     if (child == null || child.part == null)
-                        continue; // unfilled slot -> nothing grows here
+                        continue; // unfilled slot (or non-genome agent) -> nothing grows here
 
                     if (!actor.TryPlaceRelative(dir, blockType, true)) { MarkFinished(); yield break; }
                     HumanClick slotBlock = ChildInDirection(actor, dir);
                     if (slotBlock == null) { MarkFinished(); yield break; }
 
-                    // Grow the child part on the slot block, carrying its own genome node (recursion).
-                    SpawnAgentOnBlock(slotBlock, child.part, child);
+                    // Grow the child part on the slot block: a NEW subtree (its own node, slotBase 0).
+                    SpawnAgentOnBlock(slotBlock, child.part, child, 0);
                     // Branch point: the main agent does not advance its tip into the slot.
                 }
                 else
@@ -175,8 +189,10 @@ public class ChainPatternAgent : MonoBehaviour
 
                     if (step.type == StepType.SpawnPiece && step.spawnPattern != null)
                     {
-                        // Hard-coded, FREE sub-agent (no genome node).
-                        ChainPatternAgent spawnedAgent = SpawnAgentOnBlock(newBlock, step.spawnPattern, null);
+                        // Structural sub-agent: extends the SAME part, so it carries this node forward
+                        // with the running slot offset (its RandomPiece slots are this part's slots).
+                        ChainPatternAgent spawnedAgent = SpawnAgentOnBlock(newBlock, step.spawnPattern, node, slotBase + consumed);
+                        consumed += GenomeNode.SlotCount(step.spawnPattern);
                         if (step.waitForSpawn && spawnedAgent != null)
                             while (!spawnedAgent.IsFinished) yield return null;
                     }
@@ -210,11 +226,11 @@ public class ChainPatternAgent : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawns a new ChainPatternAgent on the target block. <paramref name="childNode"/> is the genome
-    /// node for a RandomPiece child (so it grows its own slots recursively); pass null for a free,
-    /// hard-coded SpawnPiece sub-agent.
+    /// Spawns a new ChainPatternAgent on the target block. For a RandomPiece child pass its own
+    /// <paramref name="childNode"/> and <paramref name="childSlotBase"/>=0 (a new subtree); for a
+    /// SpawnPiece structural sub-agent pass THIS agent's node and the running slot offset.
     /// </summary>
-    ChainPatternAgent SpawnAgentOnBlock(HumanClick targetBlock, GrowthPattern spawnPattern, GenomeNode childNode)
+    ChainPatternAgent SpawnAgentOnBlock(HumanClick targetBlock, GrowthPattern spawnPattern, GenomeNode childNode, int childSlotBase)
     {
         if (targetBlock == null || spawnPattern == null) return null;
 
@@ -234,7 +250,8 @@ public class ChainPatternAgent : MonoBehaviour
         newAgent.autoStart = false;
         newAgent.overrideInterval = overrideInterval;
         newAgent.intervalSeconds = intervalSeconds;
-        newAgent.node = childNode; // genome node for a flower-part slot; null for a free sub-agent
+        newAgent.node = childNode; // RandomPiece child = new subtree; SpawnPiece = same node carried forward
+        newAgent.slotBase = childSlotBase;
         newAgent.useLocalFrame = useLocalFrame; // a flower's parts all grow in local frames
         // Note: the sub-agent computes its OWN handedness (and entry direction) from its bud block in TryStart,
         // so we do not copy mirrorHorizontal here.

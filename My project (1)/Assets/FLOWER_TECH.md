@@ -214,6 +214,12 @@ they snapshotted at placement.
 > **Slice A2 — auto-evolution (built 2026-06-25).** `GenomeService.OnPollination` now calls `Evolve()`
 > every `PollinationsPerEvolution` (=10) pollinations, so the shared genome grows one slot per 10 bee
 > visits. The overlay's manual **Evolve** button still works alongside it.
+>
+> **GMove length math (built 2026-06-25, early slice B).** A `GMove` step now places
+> `round(repeats + node.g * gCoeff)` blocks (min 1; non-genome agents use G=0). The `/` overlay has
+> **G- / G+** buttons (`GenomeService.AdjustAllG`) that set G on every node of the live tree — bump G,
+> place a flower, and GMove segments grow. Per-part G *evolution* (vs this global test knob) is still
+> slice B proper.
 
 **The model.** A flower is a **recursive tree of flower parts**. A *part* is a `GrowthPattern`;
 there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (empty stubs in
@@ -221,9 +227,13 @@ there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (
 
 - **Move** — plain move (today's behaviour).
 - **GMove** — move whose length scales with G: `round(base + G*gCoeff)` (field now, math in slice B).
-- **SpawnPiece** — spawn a specific hard-coded sub-agent (= today's `Spawn`). **Free/unregulated.**
-- **RandomPiece** — a **slot**, filled from the 5-part catalogue by the genome. The count of
-  RandomPiece steps in a part = its **slot count** (the trailing number in `GCurl[GC]3`).
+- **SpawnPiece** — a **structural sub-agent** that extends the SAME part (e.g. `GVsubagent`, an arm that
+  builds out then ends in a slot). It carries the part's genome node forward with a slot offset, so
+  RandomPiece slots nested inside it count as *this part's* slots. (Title chains pass `node=null`, so
+  theirs resolve to empty — unchanged.)
+- **RandomPiece** — a **slot**, filled from the 5-part catalogue by the genome; filling it starts a NEW
+  child subtree. A part's **slot count** = every RandomPiece reachable through its pattern **and its
+  SpawnPiece sub-agents** (recursively) — the trailing number in `GCurl[GC]3`.
 
 The **genome** is a tree of nodes `{ part, G, C(colour hue), children[slot] }` (the `[G C]`).
 **Evolution** fills **one empty slot per pollination**, breadth-first; the root is **always

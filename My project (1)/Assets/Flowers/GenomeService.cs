@@ -100,6 +100,25 @@ public static class GenomeService
         Debug.Log($"[GENOME] evolved -> gen {Current.generation}: filled a slot with '{(part != null ? part.name : "null")}'.");
     }
 
+    /// <summary>
+    /// Debug/testing: add to G on EVERY node of the live tree (clamped at 0). G drives GMove length
+    /// (round(base + G*gCoeff)), so bump this then place a flower to see G-steps grow. Real per-part G
+    /// evolution comes in slice B.
+    /// </summary>
+    public static void AdjustAllG(int delta)
+    {
+        EnsureExists();
+        ApplyG(Current.root, delta);
+    }
+
+    private static void ApplyG(GenomeNode n, int delta)
+    {
+        if (n == null) return;
+        n.g = Mathf.Max(0, n.g + delta);
+        if (n.children != null)
+            foreach (var c in n.children) ApplyG(c, delta);
+    }
+
     /// <summary>A deep copy of the current tree root for a freshly placed bloom (so later evolution can't mutate it).</summary>
     public static GenomeNode SnapshotRoot()
     {

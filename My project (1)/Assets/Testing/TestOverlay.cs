@@ -78,6 +78,11 @@ public class TestOverlay : MonoBehaviour
         if (GUILayout.Button("Evolve (fill next slot)")) GenomeService.Evolve();
         if (GUILayout.Button("Reset")) GenomeService.ResetForNewGame();
         GUILayout.EndHorizontal();
+        GUILayout.Label($"G (growth, all nodes): {GenomeService.Current.root.g}   — drives GMove length");
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("G -")) GenomeService.AdjustAllG(-1);
+        if (GUILayout.Button("G +")) GenomeService.AdjustAllG(1);
+        GUILayout.EndHorizontal();
         GUILayout.Label("Tree:");
         GUILayout.Label(DescribeTree(GenomeService.Current.root));
         GUILayout.Label("Evolve, then place a flower to grow\nthe current tree.");

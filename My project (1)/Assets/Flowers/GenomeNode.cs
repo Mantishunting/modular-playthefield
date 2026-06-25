@@ -28,13 +28,25 @@ public class GenomeNode
         };
     }
 
-    /// <summary>Slot count = total RandomPiece step-iterations in the part's pattern.</summary>
-    public static int SlotCount(GrowthPattern part)
+    /// <summary>
+    /// Slot count for a part = every RandomPiece slot reachable through its pattern, INCLUDING those
+    /// nested inside its SpawnPiece structural sub-agents (recursively). A SpawnPiece extends the same
+    /// part's body and carries its slots; a RandomPiece is one slot. Depth-guarded against authoring loops.
+    /// </summary>
+    public static int SlotCount(GrowthPattern part) => SlotCount(part, 0);
+
+    private static int SlotCount(GrowthPattern part, int depth)
     {
-        if (part == null || part.steps == null) return 0;
+        if (part == null || part.steps == null || depth > 16) return 0;
         int n = 0;
         foreach (var s in part.steps)
-            if (s.type == StepType.RandomPiece) n += Mathf.Max(1, s.repeats);
+        {
+            int reps = Mathf.Max(1, s.repeats);
+            if (s.type == StepType.RandomPiece)
+                n += reps;
+            else if (s.type == StepType.SpawnPiece && s.spawnPattern != null)
+                n += reps * SlotCount(s.spawnPattern, depth + 1);
+        }
         return n;
     }
 

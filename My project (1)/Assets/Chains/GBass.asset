@@ -16,23 +16,16 @@ MonoBehaviour:
   - type: 2
     anchor: 1
     dir: 1
-    repeats: 3
-    spawnPattern: {fileID: 0}
-    waitForSpawn: 0
-    gCoeff: 0
-  - type: 3
-    anchor: 1
-    dir: 3
     repeats: 1
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
-    gCoeff: 3
-  - type: 0
+    gCoeff: 1
+  - type: 3
     anchor: 1
-    dir: 3
-    repeats: 3
+    dir: 1
+    repeats: 1
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
-    gCoeff: 0
+    gCoeff: 1
   loop: 0
   intervalSeconds: 0.2

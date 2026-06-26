@@ -34,6 +34,12 @@ public class Flower : MonoBehaviour
             collider.isTrigger = usesTrigger;
         }
 
+        // Dynamically add FlowerPoemNode component if not already present
+        if (GetComponent<FlowerPoemNode>() == null)
+        {
+            gameObject.AddComponent<FlowerPoemNode>();
+        }
+
         // Audio Setup
         if (VoiceManager.Instance != null)
         {

@@ -19,13 +19,13 @@ MonoBehaviour:
     repeats: 1
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
-    gCoeff: 1
+    gCoeff: 0.5
   - type: 3
     anchor: 1
-    dir: 1
+    dir: 3
     repeats: 1
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
     gCoeff: 0
   loop: 0
-  intervalSeconds: 0.2
+  intervalSeconds: 0.4

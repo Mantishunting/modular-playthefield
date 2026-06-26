@@ -12,8 +12,8 @@ using System.Collections.Generic;
 public class GenomeNode
 {
     public GrowthPattern part;     // which flower part this node grows
-    public int g;                  // growth dial (used in slice B)
-    public float colourHue;        // C: shader hue (placeholder, applied in slice C)
+    public int g;                  // growth dial: drives GMove length (round(base + g*gCoeff))
+    public int colour;             // C: a tick-count; each tick steps around a colour wheel (hue applied in slice C)
     public GenomeNode[] children;  // one entry per slot (RandomPiece iteration); null = empty
 
     /// <summary>Make a fresh node for a part, with its slot array sized and empty.</summary>
@@ -23,9 +23,18 @@ public class GenomeNode
         {
             part = part,
             g = 0,
-            colourHue = 0f,
+            colour = 0,
             children = new GenomeNode[SlotCount(part)]
         };
+    }
+
+    /// <summary>Flatten the tree into a list (used to pick a random part to grow G/colour).</summary>
+    public static void Collect(GenomeNode n, System.Collections.Generic.List<GenomeNode> into)
+    {
+        if (n == null) return;
+        into.Add(n);
+        if (n.children != null)
+            foreach (var c in n.children) Collect(c, into);
     }
 
     /// <summary>
@@ -53,7 +62,7 @@ public class GenomeNode
     /// <summary>Deep copy, so an already-placed bloom never mutates when the shared genome evolves.</summary>
     public GenomeNode Clone()
     {
-        var c = new GenomeNode { part = part, g = g, colourHue = colourHue };
+        var c = new GenomeNode { part = part, g = g, colour = colour };
         if (children != null)
         {
             c.children = new GenomeNode[children.Length];

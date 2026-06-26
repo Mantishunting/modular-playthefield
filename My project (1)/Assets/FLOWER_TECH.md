@@ -215,11 +215,16 @@ they snapshotted at placement.
 > every `PollinationsPerEvolution` (=10) pollinations, so the shared genome grows one slot per 10 bee
 > visits. The overlay's manual **Evolve** button still works alongside it.
 >
-> **GMove length math (built 2026-06-25, early slice B).** A `GMove` step now places
-> `round(repeats + node.g * gCoeff)` blocks (min 1; non-genome agents use G=0). The `/` overlay has
-> **G- / G+** buttons (`GenomeService.AdjustAllG`) that set G on every node of the live tree — bump G,
-> place a flower, and GMove segments grow. Per-part G *evolution* (vs this global test knob) is still
-> slice B proper.
+> **GMove length math (built 2026-06-25).** A `GMove` step places `round(repeats + node.g * gCoeff)`
+> blocks (min 1; non-genome agents use G=0). The `/` overlay has **G- / G+** test buttons
+> (`GenomeService.AdjustAllG`) that set G on every live node.
+>
+> **Budget evolution (built 2026-06-26).** `GenomeService.Evolve()` now spends `pointsPerEvolution`
+> points per evolution, each on a weighted-random monotonic change (add part / +G / +colour) to a
+> specific node — see §8.0.1. Tunables live on the `FlowerPieceCatalogue` asset. `GenomeNode.colour`
+> is an int tick-count (hue mapping = slice C). The overlay tree print shows `(g# c#)` per node.
+> Still slice C: turning `colour` into an actual shader hue (jumps around a wheel, offset so a full
+> loop lands on new-but-similar colours).
 
 **The model.** A flower is a **recursive tree of flower parts**. A *part* is a `GrowthPattern`;
 there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (empty stubs in
@@ -235,10 +240,14 @@ there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (
   child subtree. A part's **slot count** = every RandomPiece reachable through its pattern **and its
   SpawnPiece sub-agents** (recursively) — the trailing number in `GCurl[GC]3`.
 
-The **genome** is a tree of nodes `{ part, G, C(colour hue), children[slot] }` (the `[G C]`).
-**Evolution** fills **one empty slot per pollination**, breadth-first; the root is **always
-`GBass`** and every later fill is a **seeded-random** part from the 5 (so all flowers in a level
-match). **No numeric budget** — the finite tree bounds growth, so `RoutineBudget` is **deleted**.
+The **genome** is a tree of nodes `{ part, G(int), C(int colour tick), children[slot] }` (the `[G C]`).
+G and C are **per-part (per-node)**. **Evolution** (built 2026-06-26) grants a **budget of points**
+each time it fires (`FlowerPieceCatalogue.pointsPerEvolution`, default 4); each point is spent by
+**seeded-random weights** (`weightAddPart`/`weightAddG`/`weightAddColour`) on ONE **monotonic** change
+to a specific part: **add a part** (fill the shallowest empty slot with a random `slotPart`; root is
+always `GBass`), **+1 G** to a random node (longer GMoves), or **+1 colour** tick to a random node.
+Never removes; if a chosen action can't apply it falls through so no point is wasted. **No
+agent/block budget** — the finite tree bounds structural growth, so `RoutineBudget` is **deleted**.
 Placement grows the *current* tree; later flowers are bushier. Lifecycle (cross-scene persistence,
 landing reset, pollination hook) is **kept** from slice 1 — only the payload (number→tree) and
 evolution (+budget→fill-slot) change.

@@ -72,9 +72,9 @@ public static class GenomeService
     }
 
     /// <summary>
-    /// One step of growth: fill the shallowest empty slot with a random slot-part (even odds, seeded
-    /// so a run is reproducible). Monotonic — never removes. Slice A drives this manually from the
-    /// overlay; slice A2 wires it to pollinations.
+    /// One evolution: grant the genome `pointsPerEvolution` points and spend each (seeded-random, by the
+    /// catalogue weights) on ONE monotonic change to a specific part — add a part, +G, or +colour. Never
+    /// removes. Driven by pollinations (A2) and the overlay's Evolve button.
     /// </summary>
     public static void Evolve()
     {
@@ -86,18 +86,48 @@ public static class GenomeService
             return;
         }
 
-        var (owner, index) = GenomeNode.FirstEmptySlot(Current.root);
-        if (owner == null)
-        {
-            Debug.Log("[GENOME] no empty slot to fill (does GBass have any RandomPiece slots yet?).");
-            return;
-        }
-
         if (_rng == null) _rng = new System.Random(Current.seed);
+
+        int points = Mathf.Max(1, cat.pointsPerEvolution);
+        for (int p = 0; p < points; p++) SpendPoint(cat);
+
+        Current.generation++;
+        Debug.Log($"[GENOME] evolved -> gen {Current.generation} (spent {points} points).");
+    }
+
+    // Spend one point on a weighted-random monotonic change. If the chosen action can't apply (e.g. no
+    // empty slot to add a part), fall through to the next so a point is never wasted.
+    private static void SpendPoint(FlowerPieceCatalogue cat)
+    {
+        float wPart = Mathf.Max(0f, cat.weightAddPart);
+        float wG = Mathf.Max(0f, cat.weightAddG);
+        float wColour = Mathf.Max(0f, cat.weightAddColour);
+        float total = wPart + wG + wColour;
+        if (total <= 0f) { AddPart(cat); return; }
+
+        float r = (float)_rng.NextDouble() * total;
+        if (r < wPart) { if (AddPart(cat)) return; r = wPart; } // fall through if no slot
+        if (r < wPart + wG) { AddG(); return; }
+        AddColour();
+    }
+
+    private static bool AddPart(FlowerPieceCatalogue cat)
+    {
+        var (owner, index) = GenomeNode.FirstEmptySlot(Current.root);
+        if (owner == null) return false; // tree full -> caller falls through to G/colour
         GrowthPattern part = cat.slotParts[_rng.Next(cat.slotParts.Length)];
         owner.children[index] = GenomeNode.Make(part);
-        Current.generation++;
-        Debug.Log($"[GENOME] evolved -> gen {Current.generation}: filled a slot with '{(part != null ? part.name : "null")}'.");
+        return true;
+    }
+
+    private static void AddG() { var n = PickNode(); if (n != null) n.g++; }
+    private static void AddColour() { var n = PickNode(); if (n != null) n.colour++; }
+
+    private static GenomeNode PickNode()
+    {
+        var all = new System.Collections.Generic.List<GenomeNode>();
+        GenomeNode.Collect(Current.root, all);
+        return all.Count == 0 ? null : all[_rng.Next(all.Count)];
     }
 
     /// <summary>

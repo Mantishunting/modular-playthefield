@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 641e23952fd59a742a8ab1809a42ebf5, type: 3}
-  m_Name: GBass
+  m_Name: GYsubagent
   m_EditorClassIdentifier: Assembly-CSharp::GrowthPattern
   steps:
   - type: 2
@@ -19,13 +19,6 @@ MonoBehaviour:
     repeats: 1
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
-    gCoeff: 0.2
-  - type: 3
-    anchor: 1
-    dir: 1
-    repeats: 1
-    spawnPattern: {fileID: 0}
-    waitForSpawn: 0
-    gCoeff: 0
+    gCoeff: 1
   loop: 0
-  intervalSeconds: 0.2
+  intervalSeconds: 0.4

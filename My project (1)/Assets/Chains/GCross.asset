@@ -16,7 +16,7 @@ MonoBehaviour:
   - type: 0
     anchor: 1
     dir: 1
-    repeats: 3
+    repeats: 1
     spawnPattern: {fileID: 0}
     waitForSpawn: 0
     gCoeff: 0

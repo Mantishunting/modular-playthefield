@@ -102,7 +102,7 @@ public class TestOverlay : MonoBehaviour
     private static void Describe(GenomeNode n, int depth, System.Text.StringBuilder sb)
     {
         string pad = new string(' ', depth * 2);
-        sb.AppendLine($"{pad}{(n.part != null ? n.part.name : "null")}");
+        sb.AppendLine($"{pad}{(n.part != null ? n.part.name : "null")} (g{n.g} c{n.colour})");
         if (n.children == null) return;
         for (int i = 0; i < n.children.Length; i++)
         {

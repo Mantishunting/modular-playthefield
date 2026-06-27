@@ -223,8 +223,14 @@ they snapshotted at placement.
 > points per evolution, each on a weighted-random monotonic change (add part / +G / +colour) to a
 > specific node — see §8.0.1. Tunables live on the `FlowerPieceCatalogue` asset. `GenomeNode.colour`
 > is an int tick-count (hue mapping = slice C). The overlay tree print shows `(g# c#)` per node.
-> Still slice C: turning `colour` into an actual shader hue (jumps around a wheel, offset so a full
-> loop lands on new-but-similar colours).
+> **Still slice C (planned, NOT built): `colour` int → shader hue.** Full handoff plan:
+> `C:\Users\JACK\.claude\plans\ok-ok-but-that-synchronous-penguin.md`. Proven mechanism: the glyph tint
+> is `_BracketColor` in `BracketShader_v2.shader`; `BracketStateController` instances a per-block
+> material (`rend.material`) and never writes `_BracketColor` (and `BracketAnimationState` has no colour
+> field), so add a `SetColour` override on it (like the existing `SetExtraRotation`) and have
+> `ChainPatternAgent` tint each block it owns from `node.colour` via a `hue = frac(baseHue + colour*step)`
+> mapping (small step, non-`1/N` so loops drift = "new but similar"). Verify-first: hard-code
+> `SetColour(red)` on one block before wiring the genome. See the plan for steps + checkpoints.
 
 **The model.** A flower is a **recursive tree of flower parts**. A *part* is a `GrowthPattern`;
 there are exactly **5** valid parts — `GBass, GCross, GCurl, GFron, GPettle` (empty stubs in

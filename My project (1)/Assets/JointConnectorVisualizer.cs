@@ -31,7 +31,7 @@ using System.Collections.Generic;
 public class JointConnectorVisualizer : MonoBehaviour
 {
     [Header("Joint Connectors (J)")]
-    public bool showConnectors = true;
+    public bool showConnectors = false;
     public KeyCode connectorsKey = KeyCode.J;
     public Color connectorColor = new Color(0.2f, 1f, 1f, 0.9f); // cyan
 
@@ -93,6 +93,16 @@ public class JointConnectorVisualizer : MonoBehaviour
     private readonly List<HumanClick.SlotDiag> diagScratch = new List<HumanClick.SlotDiag>();
 
     private Camera cam;
+
+    void Start()
+    {
+        // Enforce all debug visual overlays to be off by default when play mode starts
+        showConnectors = false;
+        showClickNodes = false;
+        showOpenSpots = false;
+        showCursorDot = false;
+        showDiagnostics = false;
+    }
 
     void OnEnable()
     {

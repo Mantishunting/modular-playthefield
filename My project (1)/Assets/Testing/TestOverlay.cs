@@ -31,7 +31,7 @@ public class TestOverlay : MonoBehaviour
     {
         if (!show) return;
 
-        GUILayout.BeginArea(new Rect(10, 10, 320, 420), GUI.skin.box);
+        GUILayout.BeginArea(new Rect(10, 10, 320, 580), GUI.skin.box);
         GUILayout.Label("TEST OVERLAY  ( / )");
         GUILayout.Space(6);
 
@@ -86,6 +86,22 @@ public class TestOverlay : MonoBehaviour
         GUILayout.Label("Tree:");
         GUILayout.Label(DescribeTree(GenomeService.Current.root));
         GUILayout.Label("Evolve, then place a flower to grow\nthe current tree.");
+
+        GUILayout.Space(10);
+        GUILayout.Label("— Debug Visuals (Toggles) —");
+        var viz = FindObjectOfType<JointConnectorVisualizer>();
+        if (viz != null)
+        {
+            viz.showConnectors = GUILayout.Toggle(viz.showConnectors, "  Joint Connectors (J)");
+            viz.showClickNodes = GUILayout.Toggle(viz.showClickNodes, "  Clickable Nodes (N)");
+            viz.showOpenSpots = GUILayout.Toggle(viz.showOpenSpots, "  Open Build Spots (K)");
+            viz.showCursorDot = GUILayout.Toggle(viz.showCursorDot, "  Cursor Snap Dot (M)");
+            viz.showDiagnostics = GUILayout.Toggle(viz.showDiagnostics, "  Diagnostics (U)");
+        }
+        else
+        {
+            GUILayout.Label("No JointConnectorVisualizer in scene.");
+        }
 
         GUILayout.EndArea();
     }
